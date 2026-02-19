@@ -11,8 +11,10 @@ namespace Hairulin_02_01.Services
 
         public ApiService()
         {
-            _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri(_baseUrl);
+            _httpClient = new HttpClient
+            {
+                BaseAddress = new Uri(_baseUrl)
+            };
         }
 
 
