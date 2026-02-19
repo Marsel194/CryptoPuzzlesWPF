@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-
 namespace Hairulin_02_01
 {
     public class AppDbContext : DbContext
@@ -11,7 +10,7 @@ namespace Hairulin_02_01
             if (!optionsBuilder.IsConfigured)
             {
                 string conn = "Server=localhost;Database=crypto_puzzles;User=root;Password=root;";
-                //optionsBuilder.UseMySql(conn, ServerVersion.AutoDetect(conn));
+                optionsBuilder.UseMySql(conn, ServerVersion.AutoDetect(conn));
             }
         }
 
