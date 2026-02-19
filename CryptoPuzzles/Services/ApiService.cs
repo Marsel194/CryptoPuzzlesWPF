@@ -13,30 +13,22 @@ namespace Hairulin_02_01.Services
         {
             _httpClient = new HttpClient
             {
-                BaseAddress = new Uri(_baseUrl)
+                BaseAddress = new Uri(_baseUrl),
+                Timeout = TimeSpan.FromSeconds(20)
             };
         }
 
-
-        public async Task<(bool canConnect, string message)> CheckDatabaseConnectionAsync()
+        public async Task<bool> IsServerAliveAsync()
         {
             try
             {
-                var response = await _httpClient.GetAsync("api/health/check-database");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var result = await response.Content.ReadFromJsonAsync<DatabaseCheckResult>();
-                    return (result.canConnect, result.message);
-                }
-                else
-                {
-                    return (false, "Ошибка при проверке подключения к серверу");
-                }
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+                var response = await _httpClient.GetAsync("api/health/ping", cts.Token);
+                return response.IsSuccessStatusCode;
             }
-            catch (HttpRequestException)
+            catch
             {
-                return (false, "Сервер недоступен.");
+                return false;
             }
         }
 
@@ -55,6 +47,10 @@ namespace Hairulin_02_01.Services
                     var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
                     throw new Exception(error?.message ?? "Ошибка регистрации");
                 }
+            }
+            catch (TaskCanceledException)
+            {
+                throw new Exception("Сервер не ответил вовремя. Проверьте интернет или попробуйте позже.");
             }
             catch (HttpRequestException)
             {

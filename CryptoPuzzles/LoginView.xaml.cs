@@ -6,7 +6,8 @@ namespace Hairulin_02_01
 {
     public partial class LoginView : UserControl
     {
-        ApiService apiService;
+        private readonly ApiService apiService;
+
         public LoginView()
         {
             InitializeComponent();
@@ -16,40 +17,13 @@ namespace Hairulin_02_01
 
         private async void LoginView_Loaded(object sender, RoutedEventArgs e)
         {
-            await CheckServerAndDatabaseAsync();
+            await IsServerAliveAsync();
         }
 
-        private async Task CheckServerAndDatabaseAsync()
+        private async Task IsServerAliveAsync()
         {
-            try
-            {
-                var (canConnect, message) = await apiService.CheckDatabaseConnectionAsync();
-
-                if (!canConnect)
-                {
-                    var result = MessageBox.Show(
-                        $"Сервер: {message}\n\nХотите попробовать снова?",
-                        "Ошибка подключения",
-                        MessageBoxButton.YesNo,
-                        MessageBoxImage.Question);
-
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        await CheckServerAndDatabaseAsync();
-                        return;
-                    }
-                    else
-                    {
-                        Application.Current.Shutdown();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка при подключении к серверу: {ex.Message}",
-                               "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                Application.Current.Shutdown();
-            }
+            if (!await apiService.IsServerAliveAsync())
+                MessageBox.Show("Сервер не отвечает. Проверьте интернет или попробуйте позже");
         }
 
         private async void btnLogin_Click(object sender, RoutedEventArgs e)
