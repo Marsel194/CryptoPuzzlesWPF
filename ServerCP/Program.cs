@@ -1,4 +1,4 @@
-using Hairulin_02_01; // подставь свое пространство имен
+using Hairulin_02_01;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,11 +6,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
-// 👇 ВОТ ЭТА СТРОКА - регистрируем DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        new MySqlServerVersion(new Version(8, 0, 34)) // версия твоей MySQL
+        new MySqlServerVersion(new Version(8, 0, 34))
     ));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
