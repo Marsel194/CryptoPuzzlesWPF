@@ -1,17 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
+
 namespace Hairulin_02_01
 {
     public class AppDbContext : DbContext
     {
         public DbSet<User> Users { get; set; } = null!;
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+            : base(options)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-                string conn = "Server=localhost;Database=crypto_puzzles;User=root;Password=root;";
-                optionsBuilder.UseMySql(conn, ServerVersion.AutoDetect(conn));
-            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

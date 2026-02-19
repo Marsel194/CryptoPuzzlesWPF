@@ -1,4 +1,5 @@
-﻿using Isopoh.Cryptography.Argon2;
+﻿using Hairulin_02_01.Services;
+using Isopoh.Cryptography.Argon2;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -6,9 +7,11 @@ namespace Hairulin_02_01
 {
     public partial class RegisterView : UserControl
     {
+        private readonly ApiService _apiService;
         public RegisterView()
         {
             InitializeComponent();
+            _apiService = new ApiService(); 
         }
 
         private void btnRegister_Click(object sender, RoutedEventArgs e)
@@ -32,7 +35,7 @@ namespace Hairulin_02_01
                 return;
             }
 
-            using var _db = new AppDbContext();
+            /*using var _db = new AppDbContext();
 
             if (_db.Users.Any(s => s.Login == login))
             {
@@ -52,7 +55,7 @@ namespace Hairulin_02_01
             };
 
             _db.Users.Add(user);
-            _db.SaveChanges();
+            _db.SaveChanges();*/
         }
     }
 }

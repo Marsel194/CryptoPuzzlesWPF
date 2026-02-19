@@ -21,7 +21,7 @@ namespace Hairulin_02_01
 
         private async System.Threading.Tasks.Task CheckDatabaseConnectionAsync()
         {
-            try
+            /*try
             {
                 using var db = new AppDbContext();
                 await db.Database.EnsureCreatedAsync();
@@ -47,12 +47,12 @@ namespace Hairulin_02_01
             catch (Exception)
             {
                 MessageBox.Show("Ошибка при подключении к базе данных", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            }*/
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            string login = txtLogin.Text.Trim();
+            /*string login = txtLogin.Text.Trim();
             string password = txtPassword.Password;
 
             if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(password))
@@ -86,7 +86,7 @@ namespace Hairulin_02_01
             catch (Exception)
             {
                 MessageBox.Show("Ошибка подключения к базе данных", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            }*/
         }
     }
 }
