@@ -1,6 +1,4 @@
-﻿using Isopoh.Cryptography.Argon2;
-using System;
-using System.Linq;
+﻿using Hairulin_02_01.Services;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -8,35 +6,37 @@ namespace Hairulin_02_01
 {
     public partial class LoginView : UserControl
     {
+        ApiService apiService;
         public LoginView()
         {
             InitializeComponent();
-            this.Loaded += LoginView_Loaded;
+            Loaded += LoginView_Loaded;
+            apiService = new ApiService();
         }
 
         private async void LoginView_Loaded(object sender, RoutedEventArgs e)
         {
-            await CheckDatabaseConnectionAsync();
+            await CheckServerAndDatabaseAsync();
         }
 
-        private async System.Threading.Tasks.Task CheckDatabaseConnectionAsync()
+        private async Task CheckServerAndDatabaseAsync()
         {
-            /*try
+            try
             {
-                using var db = new AppDbContext();
-                await db.Database.EnsureCreatedAsync();
+                var (canConnect, message) = await apiService.CheckDatabaseConnectionAsync();
 
-                if (!await db.Database.CanConnectAsync())
+                if (!canConnect)
                 {
                     var result = MessageBox.Show(
-                        "Не удалось подключиться к базе данных. Хотите создать новую базу данных?",
+                        $"Сервер: {message}\n\nХотите попробовать снова?",
                         "Ошибка подключения",
                         MessageBoxButton.YesNo,
                         MessageBoxImage.Question);
 
                     if (result == MessageBoxResult.Yes)
                     {
-                        await db.Database.EnsureCreatedAsync();
+                        await CheckServerAndDatabaseAsync();
+                        return;
                     }
                     else
                     {
@@ -44,15 +44,17 @@ namespace Hairulin_02_01
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                MessageBox.Show("Ошибка при подключении к базе данных", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }*/
+                MessageBox.Show($"Ошибка при подключении к серверу: {ex.Message}",
+                               "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                Application.Current.Shutdown();
+            }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void btnLogin_Click(object sender, RoutedEventArgs e)
         {
-            /*string login = txtLogin.Text.Trim();
+            string login = txtLogin.Text.Trim();
             string password = txtPassword.Password;
 
             if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(password))
@@ -63,17 +65,8 @@ namespace Hairulin_02_01
 
             try
             {
-                using var db = new AppDbContext();
-
-                var user = db.Users.FirstOrDefault(u => u.Login == login);
-
-                if (user == null || !Argon2.Verify(user.PasswordHash, password))
-                {
-                    MessageBox.Show("Неверный логин или пароль!", "Ошибка входа", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-
-                MessageBox.Show($"Добро пожаловать, {user.Username}!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                var user = await apiService.LoginAsync(login, password);
+                MessageBox.Show($"Добро пожаловать, {user.Login}!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 if (Application.Current.MainWindow is MainWindow mainWindow)
                 {
@@ -83,10 +76,10 @@ namespace Hairulin_02_01
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                MessageBox.Show("Ошибка подключения к базе данных", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }*/
+                MessageBox.Show(ex.Message, "Ошибка входа", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

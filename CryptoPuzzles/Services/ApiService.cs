@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Hairulin_02_01.Models;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Threading.Tasks;
 
 namespace Hairulin_02_01.Services
 {
@@ -17,38 +15,82 @@ namespace Hairulin_02_01.Services
             _httpClient.BaseAddress = new Uri(_baseUrl);
         }
 
-        // GET все пользователи
-        public async Task<List<User>> GetUsersAsync()
+
+        public async Task<(bool canConnect, string message)> CheckDatabaseConnectionAsync()
         {
-            return await _httpClient.GetFromJsonAsync<List<User>>("api/users");
+            try
+            {
+                var response = await _httpClient.GetAsync("api/health/check-database");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadFromJsonAsync<DatabaseCheckResult>();
+                    return (result.canConnect, result.message);
+                }
+                else
+                {
+                    return (false, "Ошибка при проверке подключения к серверу");
+                }
+            }
+            catch (HttpRequestException)
+            {
+                return (false, "Сервер недоступен.");
+            }
         }
 
-        // GET одного пользователя
-        public async Task<User> GetUserAsync(int id)
+        public async Task<User> RegisterAsync(User user)
         {
-            return await _httpClient.GetFromJsonAsync<User>($"api/users/{id}");
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("api/users/register", user);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<User>();
+                }
+                else
+                {
+                    var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+                    throw new Exception(error?.message ?? "Ошибка регистрации");
+                }
+            }
+            catch (HttpRequestException)
+            {
+                throw new Exception("Сервер недоступен.");
+            }
         }
 
-        // POST создать пользователя
-        public async Task<User> CreateUserAsync(User user)
+        public async Task<User> LoginAsync(string login, string password)
         {
-            var response = await _httpClient.PostAsJsonAsync("api/users", user);
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadFromJsonAsync<User>();
+            try
+            {
+                string encodedLogin = Uri.EscapeDataString(login);
+                string encodedPassword = Uri.EscapeDataString(password);
+
+                var response = await _httpClient.GetAsync($"api/users/login?login={encodedLogin}&password={encodedPassword}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<User>();
+                }
+                else
+                {
+                    var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+                    throw new Exception(error?.message ?? "Ошибка входа");
+                }
+            }
+            catch (HttpRequestException)
+            {
+                throw new Exception("Сервер недоступен.");
+            }
         }
 
-        // PUT обновить пользователя
-        public async Task UpdateUserAsync(User user)
+        public class DatabaseCheckResult
         {
-            var response = await _httpClient.PutAsJsonAsync($"api/users/{user.Id}", user);
-            response.EnsureSuccessStatusCode();
-        }
-
-        // DELETE удалить пользователя
-        public async Task DeleteUserAsync(int id)
-        {
-            var response = await _httpClient.DeleteAsync($"api/users/{id}");
-            response.EnsureSuccessStatusCode();
+            public bool canConnect { get; set; }
+            public bool databaseCreated { get; set; }
+            public string message { get; set; }
+            public string error { get; set; }
         }
     }
 }

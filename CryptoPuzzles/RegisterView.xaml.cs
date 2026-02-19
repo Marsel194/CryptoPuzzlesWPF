@@ -1,5 +1,4 @@
 ﻿using Hairulin_02_01.Services;
-using Isopoh.Cryptography.Argon2;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -14,7 +13,7 @@ namespace Hairulin_02_01
             _apiService = new ApiService(); 
         }
 
-        private void btnRegister_Click(object sender, RoutedEventArgs e)
+        private async void btnRegister_Click(object sender, RoutedEventArgs e)
         {
             string login = txtLogin.Text.Trim();
             string password = txtPassword.Password;
@@ -35,27 +34,32 @@ namespace Hairulin_02_01
                 return;
             }
 
-            /*using var _db = new AppDbContext();
+            btnRegister.IsEnabled = false;
 
-            if (_db.Users.Any(s => s.Login == login))
+            try
             {
-                MessageBox.Show("Логин уже занят");
-                return;
+                var newUser = new User
+                {
+                    Login = login,
+                    PasswordHash = password,
+                    Username = txtUserName.Text,
+                    Email = txtEmail.Text
+                };
+
+                var registeredUser = await _apiService.RegisterAsync(newUser);
+
+                if (registeredUser != null)
+                {
+                    MessageBox.Show($"Регистрация успешна! Добро пожаловать, {registeredUser.Username}",
+               "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+
             }
-            using var db = new AppDbContext();
-
-            var hash = Argon2.Hash(password);
-
-            User user = new()
+            catch (Exception ex)
             {
-                Login = txtLogin.Text,
-                PasswordHash = hash.ToString(),
-                Username = txtUserName.Text,
-                Email = txtEmail.Text,
-            };
-
-            _db.Users.Add(user);
-            _db.SaveChanges();*/
+                MessageBox.Show(ex.Message, "Ошибка регистрации", MessageBoxButton.OK, MessageBoxImage.Error);
+                btnRegister.IsEnabled = true;
+            }
         }
     }
 }

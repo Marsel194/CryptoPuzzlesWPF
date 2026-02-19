@@ -1,6 +1,9 @@
 ﻿using Hairulin_02_01;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Konscious.Security.Cryptography;
+using System.Text;
+using System.Security.Cryptography;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -13,88 +16,85 @@ public class UsersController : ControllerBase
         _context = context;
     }
 
-    // GET: api/users
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+    private string HashPassword(string password)
     {
-        return await _context.Users.ToListAsync();
-    }
-
-    // GET: api/users/5
-    [HttpGet("{id}")]
-    public async Task<ActionResult<User>> GetUser(int id)
-    {
-        var user = await _context.Users.FindAsync(id);
-
-        if (user == null)
+        byte[] salt = new byte[16];
+        using (var rng = RandomNumberGenerator.Create())
         {
-            return NotFound();
+            rng.GetBytes(salt);
         }
 
-        return user;
+        using var argon2 = new Argon2id(Encoding.UTF8.GetBytes(password));
+        argon2.Salt = salt;
+        argon2.DegreeOfParallelism = 1;
+        argon2.MemorySize = 65536;
+        argon2.Iterations = 3;
+
+        byte[] hash = argon2.GetBytes(32);
+
+        byte[] hashBytes = new byte[16 + 32];
+        Array.Copy(salt, 0, hashBytes, 0, 16);
+        Array.Copy(hash, 0, hashBytes, 16, 32);
+
+        return Convert.ToBase64String(hashBytes);
+    }
+
+    private bool VerifyPassword(string password, string storedHash)
+    {
+        byte[] hashBytes = Convert.FromBase64String(storedHash);
+
+        byte[] salt = new byte[16];
+        Array.Copy(hashBytes, 0, salt, 0, 16);
+
+        byte[] hash = new byte[32];
+        Array.Copy(hashBytes, 16, hash, 0, 32);
+
+        using (var argon2 = new Argon2id(Encoding.UTF8.GetBytes(password)))
+        {
+            argon2.Salt = salt;
+            argon2.DegreeOfParallelism = 1;
+            argon2.MemorySize = 65536;
+            argon2.Iterations = 3;
+
+            byte[] newHash = argon2.GetBytes(32);
+
+            for (int i = 0; i < 32; i++)
+            {
+                if (hash[i] != newHash[i])
+                    return false;
+            }
+            return true;
+        }
     }
 
     [HttpPost("register")]
     public async Task<ActionResult<User>> Register(User user)
     {
-        // Проверяем, есть ли такой логин
         var existingUser = await _context.Users
             .FirstOrDefaultAsync(u => u.Login == user.Login);
 
         if (existingUser != null)
-        {
             return BadRequest(new { message = "Логин уже занят" });
-        }
 
-        // Хэшируем пароль на сервере (так безопаснее)
-        // Используй тот же Argon2, что и раньше
-        user.PasswordHash = Argon2.Hash(user.PasswordHash); // Переименуй поле если нужно
+        user.PasswordHash = HashPassword(user.PasswordHash);
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
-        // Не возвращаем хэш пароля клиенту
         user.PasswordHash = null;
         return Ok(user);
     }
-    // POST: api/users
-    [HttpPost]
-    public async Task<ActionResult<User>> PostUser(User user)
+
+    [HttpGet("login")]
+    public async Task<IActionResult> Login(string login, string password)
     {
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Login == login);
 
-        return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
-    }
+        if (user == null || !VerifyPassword(password, user.PasswordHash))
+            return BadRequest(new { message = "Логин или пароль неверные" });
 
-    // PUT: api/users/5
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutUser(int id, User user)
-    {
-        if (id != user.Id)
-        {
-            return BadRequest();
-        }
-
-        _context.Entry(user).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-    // DELETE: api/users/5
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUser(int id)
-    {
-        var user = await _context.Users.FindAsync(id);
-        if (user == null)
-        {
-            return NotFound();
-        }
-
-        _context.Users.Remove(user);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
+        user.PasswordHash = null;
+        return Ok(user);
     }
 }
