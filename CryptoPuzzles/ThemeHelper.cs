@@ -1,6 +1,4 @@
 ﻿using MaterialDesignThemes.Wpf;
-using System.Windows;
-using System.Windows.Media;
 
 namespace Hairulin_02_01
 {
@@ -14,9 +12,7 @@ namespace Hairulin_02_01
             if (theme.GetBaseTheme() == BaseTheme.Dark)
                 theme.SetBaseTheme(BaseTheme.Light);
             else
-            {
                 theme.SetBaseTheme(BaseTheme.Dark);
-            }
 
             paletteHelper.SetTheme(theme);
         }

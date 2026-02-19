@@ -137,7 +137,7 @@
 
                         <Button x:Name="btnRegister" Content="ЗАРЕГИСТРИРОВАТЬСЯ"
                               Background="{DynamicResource PrimaryHueMidBrush}"
-                              Foreground="White" Height="52" FontSize="16" FontWeight="Bold"
+                              Foreground="Black" Height="52" FontSize="16" FontWeight="Bold"
                               Margin="0,16,0,24" Cursor="Hand"
                               materialDesign:ButtonAssist.CornerRadius="26" Click="btnRegister_Click"/>
 

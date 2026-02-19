@@ -18,7 +18,6 @@ namespace Hairulin_02_01
             }
         }
 
-        // Команды для навигации
         public ICommand ShowLoginCommand { get; }
         public ICommand ShowRegisterCommand { get; }
         public ICommand ShowMainAppCommand { get; }
@@ -32,7 +31,6 @@ namespace Hairulin_02_01
             ShowMainAppCommand = new RelayCommand(ShowMainApp);
             LogoutCommand = new RelayCommand(Logout);
 
-            // Стартуем с экрана логина
             ShowLogin();
         }
 

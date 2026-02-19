@@ -1,9 +1,10 @@
 ﻿using Hairulin_02_01;
+using Hairulin_02_01.Models;
+using Konscious.Security.Cryptography;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Konscious.Security.Cryptography;
-using System.Text;
 using System.Security.Cryptography;
+using System.Text;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -83,16 +84,37 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
-    [HttpGet("login")]
-    public async Task<IActionResult> Login(string login, string password)
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] Hairulin_02_01.Models.LoginRequest request)
     {
-        var user = await _context.Users
-            .FirstOrDefaultAsync(u => u.Login == login);
+        try
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Login == request.Login);
 
-        if (user == null || !VerifyPassword(password, user.PasswordHash))
-            return BadRequest(new { message = "Логин или пароль неверные" });
+            if (user == null || !VerifyPassword(request.Password, user.PasswordHash))
+            {
+                return Unauthorized(new ErrorResponse
+                {
+                    message = "Неверный логин или пароль"
+                });
+            }
 
-        user.PasswordHash = null;
-        return Ok(user);
+            var response = new LoginResponse
+            {
+                Id = user.Id,
+                Login = user.Login,
+                Email = user.Email
+            };
+
+            return Ok(response);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new ErrorResponse
+            {
+                message = "Внутренняя ошибка сервера"
+            });
+        }
     }
 }

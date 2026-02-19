@@ -6,13 +6,13 @@ namespace Hairulin_02_01
 {
     public partial class LoginView : UserControl
     {
-        private readonly ApiService apiService;
+        private readonly ApiService _apiService;
 
         public LoginView()
         {
             InitializeComponent();
             Loaded += LoginView_Loaded;
-            apiService = new ApiService();
+            _apiService = new ApiService();
         }
 
         private async void LoginView_Loaded(object sender, RoutedEventArgs e)
@@ -20,10 +20,14 @@ namespace Hairulin_02_01
             await IsServerAliveAsync();
         }
 
-        private async Task IsServerAliveAsync()
+        private async Task<bool> IsServerAliveAsync(bool showMessage = true)
         {
-            if (!await apiService.IsServerAliveAsync())
+            bool isAlive = await _apiService.IsServerAliveAsync();
+
+            if (!isAlive && showMessage)
                 MessageBox.Show("Сервер не отвечает. Проверьте интернет или попробуйте позже");
+
+            return isAlive;
         }
 
         private async void btnLogin_Click(object sender, RoutedEventArgs e)
@@ -39,8 +43,17 @@ namespace Hairulin_02_01
 
             try
             {
-                var user = await apiService.LoginAsync(login, password);
-                MessageBox.Show($"Добро пожаловать, {user.Login}!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                btnLogin.IsEnabled = false;
+                btnLogin.Content = "Вход...";
+
+                if (!await _apiService.IsServerAliveAsync()) return;
+
+                var response = await _apiService.LoginAsync(
+                    login,
+                    password
+                );
+
+                MessageBox.Show($"Добро пожаловать, {response.Login}!");
 
                 if (Application.Current.MainWindow is MainWindow mainWindow)
                 {
@@ -52,7 +65,12 @@ namespace Hairulin_02_01
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Ошибка входа", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка: {ex.Message}");
+            }
+            finally
+            {
+                btnLogin.IsEnabled = true;
+                btnLogin.Content = "Войти";
             }
         }
     }

@@ -7,7 +7,7 @@ namespace Hairulin_02_01.Services
     internal class ApiService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _baseUrl = "http://localhost:5206";
+        private readonly string _baseUrl = "https://localhost:44352";
 
         public ApiService()
         {
@@ -58,24 +58,31 @@ namespace Hairulin_02_01.Services
             }
         }
 
-        public async Task<User> LoginAsync(string login, string password)
+        public async Task<LoginResponse> LoginAsync(string login, string password)
         {
             try
             {
-                string encodedLogin = Uri.EscapeDataString(login);
-                string encodedPassword = Uri.EscapeDataString(password);
+                var loginRequest = new LoginRequest
+                {
+                    Login = login,
+                    Password = password
+                };
 
-                var response = await _httpClient.GetAsync($"api/users/login?login={encodedLogin}&password={encodedPassword}");
+                var response = await _httpClient.PostAsJsonAsync("api/users/login", loginRequest);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return await response.Content.ReadFromJsonAsync<User>();
+                    return await response.Content.ReadFromJsonAsync<LoginResponse>();
                 }
                 else
                 {
                     var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
                     throw new Exception(error?.message ?? "Ошибка входа");
                 }
+            }
+            catch (TaskCanceledException)
+            {
+                throw new Exception("Сервер не ответил вовремя. Проверьте интернет.");
             }
             catch (HttpRequestException)
             {
