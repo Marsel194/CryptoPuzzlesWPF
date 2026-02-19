@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="../HashGenerator/HashGenerator.csproj" Id="b849da95-c7d4-4c0a-87f2-a374be9cb756" />
+  <Project Path="../ServerCP/ServerCP.csproj" Id="993a9465-3586-4a69-9d7f-f8ec0f498b52" />
+  <Project Path="Hairulin_02_01.csproj" />
+</Solution>
