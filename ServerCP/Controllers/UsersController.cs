@@ -49,22 +49,20 @@ public class UsersController : ControllerBase
         byte[] hash = new byte[32];
         Array.Copy(hashBytes, 16, hash, 0, 32);
 
-        using (var argon2 = new Argon2id(Encoding.UTF8.GetBytes(password)))
+        using var argon2 = new Argon2id(Encoding.UTF8.GetBytes(password));
+        argon2.Salt = salt;
+        argon2.DegreeOfParallelism = 1;
+        argon2.MemorySize = 65536;
+        argon2.Iterations = 3;
+
+        byte[] newHash = argon2.GetBytes(32);
+
+        for (int i = 0; i < 32; i++)
         {
-            argon2.Salt = salt;
-            argon2.DegreeOfParallelism = 1;
-            argon2.MemorySize = 65536;
-            argon2.Iterations = 3;
-
-            byte[] newHash = argon2.GetBytes(32);
-
-            for (int i = 0; i < 32; i++)
-            {
-                if (hash[i] != newHash[i])
-                    return false;
-            }
-            return true;
+            if (hash[i] != newHash[i])
+                return false;
         }
+        return true;
     }
 
     [HttpPost("register")]
