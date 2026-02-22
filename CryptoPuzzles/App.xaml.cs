@@ -1,15 +1,26 @@
-﻿using MaterialDesignThemes.Wpf;
-using System.Configuration;
-using System.Data;
+﻿using Hairulin_02_01.Services;
+using Hairulin_02_01.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 
 namespace Hairulin_02_01
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
+        public static IServiceProvider Services { get; private set; }
+
+        public App()
+        {
+            var services = new ServiceCollection();
+
+            services.AddSingleton<ApiService>();
+            services.AddSingleton<DialogService>();
+            services.AddSingleton<NavigationService>();
+
+            services.AddTransient<MainViewModel>();
+
+            Services = services.BuildServiceProvider();
+        }
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
@@ -17,5 +28,4 @@ namespace Hairulin_02_01
             window.Show();
         }
     }
-
 }

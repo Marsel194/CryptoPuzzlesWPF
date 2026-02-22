@@ -3,17 +3,7 @@ using System.Windows;
 
 namespace Hairulin_02_01.Services
 {
-    public interface IDialogService
-    {
-        void ShowMessage(string message);
-        void ShowWarning(string message);
-        void ShowError(string message);
-        bool ShowConfirmation(string message);
-        string ShowOpenFileDialog();
-        T ShowDialog<T>(object viewModel) where T : Window, new();
-    }
-
-    public class DialogService : IDialogService
+    public class DialogService
     {
         public void ShowMessage(string message)
         {
