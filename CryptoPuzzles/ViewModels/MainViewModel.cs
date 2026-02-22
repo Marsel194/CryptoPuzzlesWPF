@@ -1,15 +1,17 @@
-﻿using Hairulin_02_01.ViewModels.Base;
+﻿using Hairulin_02_01.Services;
+using Hairulin_02_01.ViewModels.Base;
+using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Input;
 
 namespace Hairulin_02_01.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
-        private object _currentView;
-        public object CurrentView
+        private object? _currentView;
+        public object? CurrentView
         {
             get => _currentView;
-            set => SetProperty(ref _currentView, value);
+            set { _currentView = value; OnPropertyChanged(); }
         }
 
         public ICommand NavigateToLoginCommand { get; }
@@ -18,24 +20,37 @@ namespace Hairulin_02_01.ViewModels
 
         public MainViewModel()
         {
-            NavigateToLoginCommand = new RelayCommand(_ => NavigateTo<LoginView, LoginViewModel>());
-            NavigateToRegisterCommand = new RelayCommand(_ => NavigateTo<RegisterView, RegisterViewModel>());
-            NavigateToAdminCommand = new RelayCommand(_ => NavigateTo<AdminView, AdminViewModel>());
+            if (App.Services == null)
+                throw new InvalidOperationException("Services not initialized");
 
-            NavigateTo<LoginView, LoginViewModel>();
-        }
+            var navigationService = App.Services.GetService<NavigationService>();
 
-        private void NavigateTo<TView, TViewModel>(params object[] parameters)
-            where TView : new()
-            where TViewModel : class
-        {
-            var viewModel = (TViewModel)Activator.CreateInstance(typeof(TViewModel), parameters);
+            navigationService?.OnViewChanged += (newView) =>
+            {
+                CurrentView = newView;
+            };
 
-            var view = new TView();
-            if (view is System.Windows.FrameworkElement element)
-                element.DataContext = viewModel;
+            var loginVM = App.Services.GetService<LoginViewModel>();
+            CurrentView = loginVM ?? throw new Exception("LoginViewModel not registered");
 
-            CurrentView = view;
+            NavigateToLoginCommand = new RelayCommand(_ =>
+            {
+                var loginVM = App.Services.GetService<LoginViewModel>();
+                if (loginVM != null)
+                    CurrentView = loginVM;
+            });
+
+            NavigateToRegisterCommand = new RelayCommand(_ =>
+            {
+                navigationService?.NavigateTo<RegisterViewModel>();
+            });
+
+            NavigateToAdminCommand = new RelayCommand(_ =>
+            {
+                var adminVM = App.Services.GetService<AdminViewModel>();
+                if (adminVM != null)
+                    CurrentView = adminVM;
+            });
         }
     }
 }

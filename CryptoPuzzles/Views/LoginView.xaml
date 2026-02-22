@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Hairulin_02_01.LoginView"
+﻿<UserControl x:Class="Hairulin_02_01.Views.LoginView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
@@ -50,7 +50,7 @@
                                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
 
-                                <TextBox x:Name="txtLogin"
+                                <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
                                        Grid.Column="1"
                                        materialDesign:HintAssist.Hint="Логин"
                                        MaxLength="40"
@@ -82,9 +82,10 @@
 
                     <Button x:Name="btnLogin" Content="ВОЙТИ"
                           Background="{DynamicResource PrimaryHueMidBrush}"
+                          Command="{Binding LoginCommand}"
                           Foreground="Black" Height="52" FontSize="16" FontWeight="Bold"
                           Margin="0,16,0,24" Cursor="Hand"
-                          materialDesign:ButtonAssist.CornerRadius="26" Click="btnLogin_Click"/>
+                          materialDesign:ButtonAssist.CornerRadius="26"/>
 
                     <Grid Margin="0,0,0,24">
                         <Grid.ColumnDefinitions>

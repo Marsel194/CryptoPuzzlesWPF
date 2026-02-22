@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace Hairulin_02_01
+namespace Hairulin_02_01.Views
 {
     public partial class MainAppView : UserControl
     {

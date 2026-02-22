@@ -1,7 +1,9 @@
 ﻿<Application x:Class="Hairulin_02_01.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+             xmlns:vm="clr-namespace:Hairulin_02_01.ViewModels;assembly=Hairulin_02_01"
+             xmlns:v="clr-namespace:Hairulin_02_01.Views;assembly=Hairulin_02_01"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:local="clr-namespace:Hairulin_02_01">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -9,9 +11,17 @@
                     BaseTheme="Light"
                     PrimaryColor="DeepPurple"
                     SecondaryColor="Teal" />
-                    <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign2.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign2.Defaults.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
+            <DataTemplate DataType="{x:Type vm:LoginViewModel}">
+                <v:LoginView/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:RegisterViewModel}">
+                <v:RegisterView/>
+            </DataTemplate>
+            
             <Style x:Key="BackgroundCircle" TargetType="Ellipse">
                 <Setter Property="Fill" Value="{DynamicResource PrimaryHueLightBrush}"/>
                 <Setter Property="Opacity" Value="0.15"/>

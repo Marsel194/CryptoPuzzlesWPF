@@ -1,60 +1,60 @@
-﻿using Hairulin_02_01.ViewModels.Base;
-using System.Windows;
+﻿using Hairulin_02_01.Services;
+using Hairulin_02_01.ViewModels.Base;
+using Microsoft.Extensions.DependencyInjection;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Hairulin_02_01.ViewModels
 {
     public class LoginViewModel : ViewModelBase
     {
-        private readonly MainViewModel _mainViewModel;
+        private readonly ApiService _apiService;
+        private readonly DialogService _dialogService;
+        private readonly NavigationService _navigationService;
 
-        private string _login;
+        private string _login = string.Empty;
+
+        public ICommand LoginCommand { get; }
+        public ICommand ShowRegisterCommand { get; }
+
         public string Login
         {
             get => _login;
-            set => SetProperty(ref _login, value);
+            set { _login = value ?? string.Empty; OnPropertyChanged(); }
         }
 
-        private string _password;
-        public string Password
+        public LoginViewModel()
         {
-            get => _password;
-            set => SetProperty(ref _password, value);
+            _apiService = App.Services.GetService<ApiService>() ?? throw new Exception("ApiService not registered");
+            _dialogService = App.Services.GetService<DialogService>() ?? throw new Exception("DialogService not registered");
+            _navigationService = App.Services.GetService<NavigationService>() ?? throw new Exception("NavigationService not registered");
+
+            LoginCommand = new RelayCommand(OnLogin);
+            ShowRegisterCommand = new RelayCommand(_ => _navigationService.NavigateTo<RegisterViewModel>());
         }
 
-        private string _errorMessage;
-        public string ErrorMessage
+        private async void OnLogin(object parameter)
         {
-            get => _errorMessage;
-            set => SetProperty(ref _errorMessage, value);
-        }
+            var passwordBox = parameter as PasswordBox;
+            string password = passwordBox?.Password ?? string.Empty;
 
-        public ICommand LoginCommand { get; }
-        public ICommand GoToRegisterCommand { get; }
-
-        public LoginViewModel(MainViewModel mainViewModel)
-        {
-            _mainViewModel = mainViewModel;
-
-            LoginCommand = new RelayCommand(ExecuteLogin, CanExecuteLogin);
-            GoToRegisterCommand = new RelayCommand(_ => _mainViewModel.NavigateToRegisterCommand.Execute(null));
-        }
-
-        private bool CanExecuteLogin(object parameter)
-        {
-            return !string.IsNullOrWhiteSpace(Login) && !string.IsNullOrWhiteSpace(Password);
-        }
-
-        private void ExecuteLogin(object parameter)
-        {
-            // Здесь будет обращение к БД через сервис
-            if (Login == "admin" && Password == "admin")
+            if (string.IsNullOrWhiteSpace(Login) || string.IsNullOrWhiteSpace(password))
             {
-                _mainViewModel.NavigateToAdminCommand.Execute(null);
+                _dialogService.ShowError("Введите логин и пароль!");
+                return;
             }
-            else
+
+            try
             {
-                ErrorMessage = "Неверный логин или пароль";
+                var response = await _apiService.LoginAsync(Login, password);
+                if (response != null)
+                {
+                    _dialogService.ShowMessage($"Добро пожаловать, {response.Username}!");
+                }
+            }
+            catch (Exception ex)
+            {
+                _dialogService.ShowError($"Ошибка входа: {ex.Message}");
             }
         }
     }
