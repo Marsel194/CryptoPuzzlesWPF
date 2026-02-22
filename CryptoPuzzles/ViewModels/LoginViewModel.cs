@@ -50,6 +50,7 @@ namespace Hairulin_02_01.ViewModels
                 if (response != null)
                 {
                     _dialogService.ShowMessage($"Добро пожаловать, {response.Username}!");
+                    _navigationService.NavigateTo<UserViewModel>();
                 }
             }
             catch (Exception ex)

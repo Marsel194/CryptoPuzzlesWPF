@@ -9,7 +9,7 @@ namespace Hairulin_02_01.Views
         public RegisterView()
         {
             InitializeComponent();
-            DataContext = App.Services.GetService<RegisterViewModel>();
+            //DataContext = App.Services.GetService<RegisterViewModel>();
         }
     }
 }

@@ -50,7 +50,7 @@
                                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
 
-                                <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
+                                <TextBox Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}"
                                        Grid.Column="1"
                                        materialDesign:HintAssist.Hint="Логин"
                                        MaxLength="40"
@@ -83,6 +83,7 @@
                     <Button x:Name="btnLogin" Content="ВОЙТИ"
                           Background="{DynamicResource PrimaryHueMidBrush}"
                           Command="{Binding LoginCommand}"
+                          CommandParameter="{Binding ElementName=txtPassword}"
                           Foreground="Black" Height="52" FontSize="16" FontWeight="Bold"
                           Margin="0,16,0,24" Cursor="Hand"
                           materialDesign:ButtonAssist.CornerRadius="26"/>

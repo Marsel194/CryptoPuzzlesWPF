@@ -22,6 +22,10 @@
                 <v:RegisterView/>
             </DataTemplate>
             
+            <DataTemplate DataType="{x:Type vm:UserViewModel}">
+                <v:UserView/>
+            </DataTemplate>
+            
             <Style x:Key="BackgroundCircle" TargetType="Ellipse">
                 <Setter Property="Fill" Value="{DynamicResource PrimaryHueLightBrush}"/>
                 <Setter Property="Opacity" Value="0.15"/>

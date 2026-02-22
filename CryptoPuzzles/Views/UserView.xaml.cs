@@ -3,11 +3,12 @@ using System.Windows.Controls;
 
 namespace Hairulin_02_01.Views
 {
-    public partial class MainAppView : UserControl
+    public partial class UserView : UserControl
     {
-        public MainAppView()
+        public UserView()
         {
             InitializeComponent();
+            MessageBox.Show("ТУА");
         }
 
         private void ThemeButton_Click(object sender, RoutedEventArgs e)
