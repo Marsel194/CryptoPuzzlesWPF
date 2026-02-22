@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Hairulin_02_01.ViewModels;
 
 namespace Hairulin_02_01
 {

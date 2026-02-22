@@ -1,4 +1,5 @@
 ﻿using Hairulin_02_01.Services;
+using Hairulin_02_01.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -59,8 +60,8 @@ namespace Hairulin_02_01
                 {
                     if (mainWindow.DataContext is MainViewModel viewModel)
                     {
-                        viewModel.ShowMainApp();
-                    }
+                        viewModel.NavigateToAdminCommand.Execute(null);
+                    }   
                 }
             }
             catch (Exception ex)

@@ -7,8 +7,7 @@ namespace Hairulin_02_01.Services
     internal class ApiService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _baseUrl = "https://localhost:44352";
-
+        private readonly string _baseUrl = "https://localhost:44352/";
         public ApiService()
         {
             _httpClient = new HttpClient

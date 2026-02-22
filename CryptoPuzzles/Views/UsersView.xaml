@@ -1,0 +1,66 @@
+﻿<UserControl x:Class="Hairulin_02_01.Views.UsersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,16">
+            <materialDesign:PackIcon Kind="AccountGroup" Width="32" Height="32"
+                                     Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+            <TextBlock Text="Управление пользователями"
+                      FontSize="24" FontWeight="Bold"
+                      Foreground="{DynamicResource PrimaryHueMidBrush}"
+                      Margin="8,0,0,0"
+                      VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Кнопки действий -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,16">
+            <Button Content="Добавить"
+                    Command="{Binding AddUserCommand}"
+                    Style="{StaticResource MaterialDesignRaisedButton}"
+                    Background="{DynamicResource PrimaryHueMidBrush}"
+                    Foreground="Black"
+                    Padding="16 8"
+                    Margin="0,0,8,0"/>
+
+            <Button Content="Редактировать"
+                    Command="{Binding EditUserCommand}"
+                    Style="{StaticResource MaterialDesignRaisedButton}"
+                    Padding="16 8"
+                    Margin="8,0"/>
+
+            <Button Content="Удалить"
+                    Command="{Binding DeleteUserCommand}"
+                    Style="{StaticResource MaterialDesignRaisedButton}"
+                    Background="{DynamicResource MaterialDesignError}"
+                    Foreground="White"
+                    Padding="16 8"
+                    Margin="8,0,0,0"/>
+        </StackPanel>
+
+        <!-- Таблица пользователей -->
+        <DataGrid Grid.Row="2"
+                  ItemsSource="{Binding Users}"
+                  SelectedItem="{Binding SelectedUser}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  materialDesign:DataGridAssist.CellPadding="8"
+                  materialDesign:DataGridAssist.ColumnHeaderPadding="8">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
+                <DataGridTextColumn Header="Логин" Binding="{Binding Login}" Width="*"/>
+                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*"/>
+                <DataGridTextColumn Header="Дата регистрации" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy'}" Width="120"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>
