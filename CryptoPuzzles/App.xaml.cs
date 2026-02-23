@@ -29,6 +29,7 @@ namespace Hairulin_02_01
             services.AddTransient<SessionsViewModel>();
             services.AddTransient<TutorialsViewModel>();
             services.AddTransient<UsersViewModel>();
+            services.AddTransient<UserViewModel>();
 
             Services = services.BuildServiceProvider();
         }

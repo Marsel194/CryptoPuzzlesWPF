@@ -34,7 +34,7 @@
                          VerticalAlignment="Center"/>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <Button Click="ThemeButton_Click" 
+                    <Button 
                           Foreground="White" Cursor="Hand"
                           Style="{StaticResource MaterialDesignFlatButton}">
                         <StackPanel Orientation="Horizontal">

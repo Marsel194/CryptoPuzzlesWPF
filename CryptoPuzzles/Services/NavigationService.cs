@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Hairulin_02_01.Services
 {
-    internal class NavigationService
+    public class NavigationService
     {
         public event Action<ViewModelBase> OnViewChanged;
 
