@@ -86,13 +86,7 @@ namespace Hairulin_02_01.ViewModels
 
             try
             {
-                var newUser = new User
-                {
-                    Login = Login,
-                    PasswordHash = password,
-                    Username = Username,
-                    Email = Email
-                };
+                var newUser = new CryptoPuzzles.SharedDTO.UUser(Login, Username, Email);
 
                 var registeredUser = await _apiService.RegisterAsync(newUser);
 

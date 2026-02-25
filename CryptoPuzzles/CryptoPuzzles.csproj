@@ -19,4 +19,8 @@
     <Folder Include="DeleteAfter\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CryptoPuzzles.SharedDTO\CryptoPuzzles.SharedDTO.csproj" />
+  </ItemGroup>
+
 </Project>

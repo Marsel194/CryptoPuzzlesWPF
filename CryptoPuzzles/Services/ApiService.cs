@@ -1,4 +1,4 @@
-﻿using Hairulin_02_01.Models;
+﻿using CryptoPuzzles.SharedDTO;
 using System.Net.Http;
 using System.Net.Http.Json;
 
@@ -31,7 +31,7 @@ namespace Hairulin_02_01.Services
             }
         }
 
-        public async Task<User> RegisterAsync(User user)
+        public async Task<UUser> RegisterAsync(UUser user)
         {
             try
             {
@@ -39,12 +39,12 @@ namespace Hairulin_02_01.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return await response.Content.ReadFromJsonAsync<User>();
+                    return await response.Content.ReadFromJsonAsync<UUser>();
                 }
                 else
                 {
-                    var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
-                    throw new Exception(error?.message ?? "Ошибка регистрации");
+                    var error = await response.Content.ReadFromJsonAsync<UAErrorResponse>();
+                    throw new Exception(error?.Message ?? "Ошибка регистрации");
                 }
             }
             catch (TaskCanceledException)
@@ -57,26 +57,22 @@ namespace Hairulin_02_01.Services
             }
         }
 
-        public async Task<LoginResponse> LoginAsync(string login, string password)
+        public async Task<UALoginResponse> LoginAsync(string login, string password)
         {
             try
             {
-                var loginRequest = new LoginRequest
-                {
-                    Login = login,
-                    Password = password
-                };
+                var loginRequest = new UALoginRequest(login, password);
 
                 var response = await _httpClient.PostAsJsonAsync("api/users/login", loginRequest);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return await response.Content.ReadFromJsonAsync<LoginResponse>();
+                    return await response.Content.ReadFromJsonAsync<UALoginResponse>();
                 }
                 else
                 {
-                    var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
-                    throw new Exception(error?.message ?? "Ошибка входа");
+                    var error = await response.Content.ReadFromJsonAsync<UAErrorResponse>();
+                    throw new Exception(error?.Message ?? "Ошибка входа");
                 }
             }
             catch (TaskCanceledException)

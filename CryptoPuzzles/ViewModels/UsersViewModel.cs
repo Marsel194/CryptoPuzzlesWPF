@@ -1,4 +1,4 @@
-﻿using Hairulin_02_01.Models;
+﻿using CryptoPuzzles.SharedDTO;
 using Hairulin_02_01.ViewModels.Base;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -7,15 +7,15 @@ namespace Hairulin_02_01.ViewModels
 {
     public class UsersViewModel : ViewModelBase
     {
-        private ObservableCollection<User> _users;
-        public ObservableCollection<User> Users
+        private ObservableCollection<UUser> _users;
+        public ObservableCollection<UUser> Users
         {
             get => _users;
             set => SetProperty(ref _users, value);
         }
 
-        private User _selectedUser;
-        public User SelectedUser
+        private UUser _selectedUser;
+        public UUser SelectedUser
         {
             get => _selectedUser;
             set => SetProperty(ref _selectedUser, value);
@@ -40,37 +40,25 @@ namespace Hairulin_02_01.ViewModels
 
         private void LoadUsers()
         {
-            // Загрузка из БД
-            Users = new ObservableCollection<User>
-            {
-                new User { Id = 1, Login = "user1", Email = "user1@test.com", CreatedAt = DateTime.Now },
-                new User { Id = 2, Login = "user2", Email = "user2@test.com", CreatedAt = DateTime.Now }
-            };
+            
         }
 
         private void AddUser()
         {
-            SelectedUser = new User();
-            // Открыть диалог добавления
         }
 
         private void EditUser()
         {
-            // Открыть диалог редактирования
         }
 
         private void DeleteUser()
         {
-            if (SelectedUser != null)
-            {
-                Users.Remove(SelectedUser);
-                // Удаление из БД
-            }
+
         }
 
         private void SaveUser()
         {
-            // Сохранение в БД
+
         }
     }
 }

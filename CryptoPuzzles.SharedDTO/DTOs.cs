@@ -6,7 +6,9 @@
     public record UAGameSession(int Id);
     public record UAHint(int Id);
     public record UALoginResponse(int Id, string Login, string Email, string Username, string Token);
+    public record UALoginRequest(string Login, string Password);
     public record UAPuzzle(int Id);
-    public record UAUser(int Id, string Login, string Username, string Email, string CreatedAt);
+    public record AUser(int Id, string Login, string Username, string Email, DateTime CreatedAt);
+    public record UUser(string Login, string Username, string Email);
     public record UATutorial(int Id);
 }
