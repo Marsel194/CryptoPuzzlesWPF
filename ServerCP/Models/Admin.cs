@@ -1,6 +1,6 @@
-﻿namespace Hairulin_02_01
+﻿namespace CryptoPuzzles.Server.Models
 {
-    internal class Admin
+    public class Admin
     {
         public int Id { get; set; }
         public string Login { get; set; }

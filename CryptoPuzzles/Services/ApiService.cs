@@ -71,8 +71,18 @@ namespace Hairulin_02_01.Services
                 }
                 else
                 {
-                    var error = await response.Content.ReadFromJsonAsync<UAErrorResponse>();
-                    throw new Exception(error?.Message ?? "Ошибка входа");
+                    response = await _httpClient.PostAsJsonAsync("api/admins/login", loginRequest);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        
+                         return await response.Content.ReadFromJsonAsync<UALoginResponse>();
+                    }
+                    else
+                    {
+                        var error = await response.Content.ReadFromJsonAsync<UAErrorResponse>();
+                        throw new Exception(error?.Message ?? "Ошибка входа");
+                    }
                 }
             }
             catch (TaskCanceledException)

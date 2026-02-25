@@ -5,7 +5,7 @@
     public record UAErrorResponse(string Message, string? Details);
     public record UAGameSession(int Id);
     public record UAHint(int Id);
-    public record UALoginResponse(int Id, string Login, string Email, string Username, string Token);
+    public record UALoginResponse(int Id, string Login, string Email, string Username, string Token, bool IsAdmin);
     public record UALoginRequest(string Login, string Password);
     public record UAPuzzle(int Id);
     public record AUser(int Id, string Login, string Username, string Email, DateTime CreatedAt);

@@ -1,4 +1,4 @@
-﻿namespace Hairulin_02_01
+﻿namespace CryptoPuzzles.Server.Models
 {
     public class User
     {

@@ -47,7 +47,13 @@ namespace Hairulin_02_01.ViewModels
             try
             {
                 var response = await _apiService.LoginAsync(Login, password);
-                if (response != null)
+                if (response == null)
+                    return;
+                if (response.IsAdmin){
+                    _dialogService.ShowMessage($"Добро пожаловать, {response.Username}!");
+                    _navigationService.NavigateTo<AdminViewModel>();
+                }
+                else
                 {
                     _dialogService.ShowMessage($"Добро пожаловать, {response.Username}!");
                     _navigationService.NavigateTo<UserViewModel>();

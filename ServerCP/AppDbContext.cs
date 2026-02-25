@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Hairulin_02_01
+namespace CryptoPuzzles.Server
 {
     public class AppDbContext : DbContext
     {
         public DbSet<User> Users { get; set; } = null!;
+        public DbSet<Admin> Admins { get; set; } = null!;
 
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)

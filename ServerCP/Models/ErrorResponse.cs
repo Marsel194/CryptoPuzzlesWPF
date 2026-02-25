@@ -1,4 +1,4 @@
-﻿namespace Hairulin_02_01.Models
+﻿namespace CryptoPuzzles.Server.Models
 {
     public class ErrorResponse
     {

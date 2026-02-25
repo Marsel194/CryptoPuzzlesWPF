@@ -25,6 +25,26 @@
             <DataTemplate DataType="{x:Type vm:UserViewModel}">
                 <v:UserView/>
             </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:AdminsViewModel}">
+                <v:AdminsView/>
+            </DataTemplate>
+            
+            <DataTemplate DataType="{x:Type vm:AdminViewModel}">
+                <v:AdminView/>
+            </DataTemplate>
+            
+            <DataTemplate DataType="{x:Type vm:MethodsViewModel}">
+                <v:MethodsView/>
+            </DataTemplate>
+            
+            <DataTemplate DataType="{x:Type vm:PuzzlesViewModel}">
+                <v:PuzzlesView/>
+            </DataTemplate>
+            
+            <DataTemplate DataType="{x:Type vm:SessionsViewModel}">
+                <v:SessionsView/>
+            </DataTemplate>
             
             <Style x:Key="BackgroundCircle" TargetType="Ellipse">
                 <Setter Property="Fill" Value="{DynamicResource PrimaryHueLightBrush}"/>
