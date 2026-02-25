@@ -1,4 +1,4 @@
-using Hairulin_02_01;
+using CryptoPuzzles.Server;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

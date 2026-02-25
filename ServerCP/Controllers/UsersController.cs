@@ -1,11 +1,10 @@
 ﻿using CryptoPuzzles.Server;
-using Hairulin_02_01;
-using Hairulin_02_01.Models;
 using Konscious.Security.Cryptography;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
+using CryptoPuzzles.Server.Models;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -60,7 +59,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] Hairulin_02_01.Models.LoginRequest request)
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         try
         {

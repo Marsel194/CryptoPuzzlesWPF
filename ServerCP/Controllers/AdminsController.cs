@@ -1,10 +1,6 @@
-﻿using Hairulin_02_01;
-using Hairulin_02_01.Models;
-using Konscious.Security.Cryptography;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
-using CryptoPuzzles.Server;
+using CryptoPuzzles.Server.Models;
 
 namespace CryptoPuzzles.Server.Controllers
 {
@@ -47,7 +43,5 @@ namespace CryptoPuzzles.Server.Controllers
                 });
             }
         }
-
-       
     }
 }

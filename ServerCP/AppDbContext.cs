@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using CryptoPuzzles.Server.Models;
 
 namespace CryptoPuzzles.Server
 {
