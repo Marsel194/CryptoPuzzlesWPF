@@ -1,20 +1,20 @@
 ﻿using CryptoPuzzles.SharedDTO;
-using Hairulin_02_01.ViewModels.Base;
+using CryptoPuzzles.ViewModels.Base;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
-namespace Hairulin_02_01.ViewModels
+namespace CryptoPuzzles.ViewModels
 {
     public class UsersViewModel : ViewModelBase
     {
-        private ObservableCollection<UUser> _users;
+        private ObservableCollection<UUser> _users = [];
         public ObservableCollection<UUser> Users
         {
             get => _users;
             set => SetProperty(ref _users, value);
         }
 
-        private UUser _selectedUser;
+        private UUser _selectedUser = new("", "", "");
         public UUser SelectedUser
         {
             get => _selectedUser;

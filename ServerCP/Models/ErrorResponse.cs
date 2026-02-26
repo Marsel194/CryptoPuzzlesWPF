@@ -2,7 +2,7 @@
 {
     public class ErrorResponse
     {
-        public string message { get; set; }
-        public string? details { get; set; }
+        public required string Message { get; set; }
+        public string? Details { get; set; }
     }
 }

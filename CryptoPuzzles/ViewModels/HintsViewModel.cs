@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Hairulin_02_01.ViewModels
+﻿
+namespace CryptoPuzzles.ViewModels
 {
     internal class HintsViewModel
     {

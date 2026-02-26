@@ -1,6 +1,6 @@
 ﻿using MaterialDesignThemes.Wpf;
 
-namespace Hairulin_02_01
+namespace CryptoPuzzles
 {
     internal class ThemeHelper
     {

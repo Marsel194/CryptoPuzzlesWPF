@@ -1,14 +1,10 @@
-﻿using Hairulin_02_01.ViewModels.Base;
+﻿using CryptoPuzzles.ViewModels.Base;
 
-namespace Hairulin_02_01.ViewModels
+namespace CryptoPuzzles.ViewModels
 {
     public class UserViewModel : ViewModelBase
     {
-        public UserViewModel()
-        {
-        }
-
-        private string _username;
+        private string _username = string.Empty;
         public string Username
         {
             get => _username;

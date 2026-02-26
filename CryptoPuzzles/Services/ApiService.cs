@@ -2,12 +2,13 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 
-namespace Hairulin_02_01.Services
+namespace CryptoPuzzles.Services
 {
     internal class ApiService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _baseUrl = "https://localhost:44352/";
+        private readonly string _baseUrl = "https://localhost:7280/";
+
         public ApiService()
         {
             _httpClient = new HttpClient
@@ -39,7 +40,8 @@ namespace Hairulin_02_01.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return await response.Content.ReadFromJsonAsync<UUser>();
+                    var result = await response.Content.ReadFromJsonAsync<UUser>();
+                    return result ?? throw new Exception("Сервер вернул пустой ответ");
                 }
                 else
                 {
@@ -62,27 +64,17 @@ namespace Hairulin_02_01.Services
             try
             {
                 var loginRequest = new UALoginRequest(login, password);
-
-                var response = await _httpClient.PostAsJsonAsync("api/users/login", loginRequest);
+                var response = await _httpClient.PostAsJsonAsync("api/login", loginRequest);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return await response.Content.ReadFromJsonAsync<UALoginResponse>();
+                    var result = await response.Content.ReadFromJsonAsync<UALoginResponse>();
+                    return result ?? throw new Exception("Сервер вернул пустой ответ");
                 }
                 else
                 {
-                    response = await _httpClient.PostAsJsonAsync("api/admins/login", loginRequest);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        
-                         return await response.Content.ReadFromJsonAsync<UALoginResponse>();
-                    }
-                    else
-                    {
-                        var error = await response.Content.ReadFromJsonAsync<UAErrorResponse>();
-                        throw new Exception(error?.Message ?? "Ошибка входа");
-                    }
+                    var error = await response.Content.ReadFromJsonAsync<UAErrorResponse>();
+                    throw new Exception(error?.Message ?? "Ошибка входа");
                 }
             }
             catch (TaskCanceledException)
@@ -97,10 +89,10 @@ namespace Hairulin_02_01.Services
 
         public class DatabaseCheckResult
         {
-            public bool canConnect { get; set; }
-            public bool databaseCreated { get; set; }
-            public string message { get; set; }
-            public string error { get; set; }
+            public bool CanConnect { get; set; }
+            public bool DatabaseCreated { get; set; }
+            public string? Message { get; set; }
+            public string? Error { get; set; }
         }
     }
 }
