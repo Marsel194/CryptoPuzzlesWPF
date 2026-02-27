@@ -30,7 +30,7 @@ namespace Hairulin_02_01.ViewModels
                 CurrentView = newView;
             };
 
-            var loginVM = App.Services.GetService<LoginViewModel>();
+            var loginVM = App.Services.GetService<AdminsViewModel>();
             CurrentView = loginVM ?? throw new Exception("LoginViewModel not registered");
 
             NavigateToLoginCommand = new RelayCommand(_ =>

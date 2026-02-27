@@ -36,7 +36,7 @@ namespace CryptoPuzzles.Server
                 entity.Property(e => e.PasswordHash).HasColumnName("password_hash").IsRequired();
                 entity.Property(e => e.FirstName).HasColumnName("first_name").IsRequired();
                 entity.Property(e => e.LastName).HasColumnName("last_name").IsRequired();
-                entity.Property(e => e.MiddleName).HasColumnName("middle_name").IsRequired();
+                entity.Property(e => e.MiddleName).HasColumnName("middle_name");
                 entity.Property(e => e.CreatedAt).HasColumnName("created_at");
             });
         }

@@ -9,7 +9,7 @@ namespace Hairulin_02_01.ViewModels
     {
         private ApiService _apiService;
         private AAdminDto _admins;
-        private AAdminDto Admins
+        public AAdminDto Admins
         {
             get => _admins;
             set { _admins = value;
@@ -20,11 +20,13 @@ namespace Hairulin_02_01.ViewModels
         public AdminsViewModel()
         {
             _apiService = App.Services.GetService<ApiService>();
+
+            LoadAdmins();
         }
 
-        private void LoadAdmins()
+        private async Task LoadAdmins()
         {
-            
+            Admins = await _apiService.GetAdmins();
         }
     }
 }

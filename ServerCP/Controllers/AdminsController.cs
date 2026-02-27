@@ -43,5 +43,27 @@ namespace CryptoPuzzles.Server.Controllers
                 });
             }
         }
+
+        [HttpGet("get")]
+        public async Task<ActionResult<Admin>> GetAdmins()
+        {
+            try
+            {
+                var admins = await _context.Admins.ToListAsync();
+
+                if (admins != null)
+                {
+                    return Ok(admins);
+                }
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ErrorResponse
+                {
+                    message = "Внутренняя ошибка сервера"
+                });
+            }
+        }
     }
 }

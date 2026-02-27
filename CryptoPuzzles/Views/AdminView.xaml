@@ -330,8 +330,6 @@
                         </DataGrid>
                     </StackPanel>
                 </Border>
-
-                <!-- 10. НАСТРОЙКИ -->
                 <Border Style="{StaticResource AdminCardStyle}" Height="310">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
@@ -339,9 +337,6 @@
                                                      Foreground="{DynamicResource PrimaryHueMidBrush}"/>
                             <TextBlock Text="Настройки" Style="{StaticResource CardTitleStyle}" Foreground="{DynamicResource MaterialDesignBody}"/>
                         </StackPanel>
-                        <CheckBox Content="Автомодерация" Margin="0,4"/>
-                        <CheckBox Content="Уведомления" Margin="0,4"/>
-                        <CheckBox Content="Бэкапы" Margin="0,4"/>
                         <ComboBox Margin="0,8,0,0"
                                   materialDesign:HintAssist.Hint="Язык"
                                   SelectedIndex="0">
@@ -357,17 +352,9 @@
                     </StackPanel>
                 </Border>
 
+                <!-- 10. НАСТРОЙКИ -->
+
                 <!-- 11. БЫСТРОЕ ДОБАВЛЕНИЕ (заглушка) -->
-                <Border Style="{StaticResource AdminCardStyle}"
-                        BorderBrush="{DynamicResource PrimaryHueMidBrush}"
-                        BorderThickness="2">
-                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <materialDesign:PackIcon Kind="PlusCircle"
-                                                 Width="48" Height="48"
-                                                 Foreground="{DynamicResource PrimaryHueMidBrush}"
-                                                 Opacity="0.6"/>
-                    </StackPanel>
-                </Border>
             </WrapPanel>
         </ScrollViewer>
     </Grid>

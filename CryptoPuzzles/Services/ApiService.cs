@@ -7,7 +7,7 @@ namespace Hairulin_02_01.Services
     internal class ApiService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _baseUrl = "https://localhost:44352/";
+        private readonly string _baseUrl = "http://localhost:5206";
         public ApiService()
         {
             _httpClient = new HttpClient
@@ -95,6 +95,31 @@ namespace Hairulin_02_01.Services
             }
         }
 
+        public async Task<AAdminDto> GetAdmins()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/admins/get");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<AAdminDto>();
+                }
+                else
+                {
+                    var error = await response.Content.ReadFromJsonAsync<UAErrorResponse>();
+                    throw new Exception(error?.Message ?? "Ошибка получения данных");
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                throw new Exception("Сервер не ответил вовремя. Проверьте интернет.");
+            }
+            catch (HttpRequestException)
+            {
+                throw new Exception("Сервер недоступен.");
+            }
+        }
         public class DatabaseCheckResult
         {
             public bool canConnect { get; set; }
