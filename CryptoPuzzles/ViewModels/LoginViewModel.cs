@@ -1,10 +1,10 @@
-﻿using Hairulin_02_01.Services;
-using Hairulin_02_01.ViewModels.Base;
+﻿using CryptoPuzzles.Services;
+using CryptoPuzzles.ViewModels.Base;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace Hairulin_02_01.ViewModels
+namespace CryptoPuzzles.ViewModels
 {
     public class LoginViewModel : ViewModelBase
     {
@@ -33,14 +33,14 @@ namespace Hairulin_02_01.ViewModels
             ShowRegisterCommand = new RelayCommand(_ => _navigationService.NavigateTo<RegisterViewModel>());
         }
 
-        private async void OnLogin(object parameter)
+        private async void OnLogin(object? parameter)
         {
             var passwordBox = parameter as PasswordBox;
             string password = passwordBox?.Password ?? string.Empty;
 
             if (string.IsNullOrWhiteSpace(Login) || string.IsNullOrWhiteSpace(password))
             {
-                _dialogService.ShowError("Введите логин и пароль!");
+                DialogService.ShowError("Введите логин и пароль!");
                 return;
             }
 
@@ -50,18 +50,18 @@ namespace Hairulin_02_01.ViewModels
                 if (response == null)
                     return;
                 if (response.IsAdmin){
-                    _dialogService.ShowMessage($"Добро пожаловать, {response.Username}!");
+                    DialogService.ShowMessage($"Добро пожаловать, {response.Username}!");
                     _navigationService.NavigateTo<AdminViewModel>();
                 }
                 else
                 {
-                    _dialogService.ShowMessage($"Добро пожаловать, {response.Username}!");
+                    DialogService.ShowMessage($"Добро пожаловать, {response.Username}!");
                     _navigationService.NavigateTo<UserViewModel>();
                 }
             }
             catch (Exception ex)
             {
-                _dialogService.ShowError($"Ошибка входа: {ex.Message}");
+                DialogService.ShowError($"Ошибка входа: {ex.Message}");
             }
         }
     }

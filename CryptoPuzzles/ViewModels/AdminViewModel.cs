@@ -1,14 +1,12 @@
-﻿using Hairulin_02_01.ViewModels.Base;
+﻿using CryptoPuzzles.ViewModels.Base;
 
-namespace Hairulin_02_01.ViewModels
+namespace CryptoPuzzles.ViewModels
 {
     public class AdminViewModel : ViewModelBase
     {
-        private readonly MainViewModel _mainViewModel;
-
-        public AdminViewModel(MainViewModel mainViewModel)
+        public AdminViewModel()
         {
-            _mainViewModel = mainViewModel;
+
         }
     }
 }

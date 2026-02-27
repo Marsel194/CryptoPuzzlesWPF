@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace Hairulin_02_01.Views
+namespace CryptoPuzzles.Views
 {
     public partial class UserView : UserControl
     {

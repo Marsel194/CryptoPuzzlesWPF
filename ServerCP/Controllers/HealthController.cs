@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-[Route("api/[controller]")]
-[ApiController]
-public class HealthController : ControllerBase
+namespace CryptoPuzzles.Server.Controllers
 {
-    [HttpGet("ping")]
-    public IActionResult Ping()
+    [Route("api/[controller]")]
+    [ApiController]
+    public class HealthController : ControllerBase
     {
-        return Ok("pong");
+        [HttpGet("ping")]
+        public IActionResult Ping()
+        {
+            return Ok("pong");
+        }
     }
 }

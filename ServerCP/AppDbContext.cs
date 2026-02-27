@@ -3,15 +3,10 @@ using CryptoPuzzles.Server.Models;
 
 namespace CryptoPuzzles.Server
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
     {
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<Admin> Admins { get; set; } = null!;
-
-        public AppDbContext(DbContextOptions<AppDbContext> options)
-            : base(options)
-        {
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

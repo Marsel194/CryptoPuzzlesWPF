@@ -1,8 +1,8 @@
-﻿using Hairulin_02_01.ViewModels;
+﻿using CryptoPuzzles.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 
-namespace Hairulin_02_01.Views
+namespace CryptoPuzzles.Views
 {
     public partial class MainWindow : Window
     {

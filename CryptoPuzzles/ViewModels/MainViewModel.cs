@@ -1,9 +1,9 @@
-﻿using Hairulin_02_01.Services;
-using Hairulin_02_01.ViewModels.Base;
+﻿using CryptoPuzzles.Services;
+using CryptoPuzzles.ViewModels.Base;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Input;
 
-namespace Hairulin_02_01.ViewModels
+namespace CryptoPuzzles.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {

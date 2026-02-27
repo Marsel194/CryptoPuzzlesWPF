@@ -11,7 +11,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Hairulin_02_01.Views
+namespace CryptoPuzzles.Views
 {
     public partial class TutorialsView : UserControl
     {

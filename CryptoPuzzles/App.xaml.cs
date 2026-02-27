@@ -1,14 +1,14 @@
-﻿using Hairulin_02_01.Services;
-using Hairulin_02_01.ViewModels;
-using Hairulin_02_01.Views;
+﻿using CryptoPuzzles.Services;
+using CryptoPuzzles.ViewModels;
+using CryptoPuzzles.Views;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 
-namespace Hairulin_02_01
+namespace CryptoPuzzles
 {
     public partial class App : Application
     {
-        public static IServiceProvider Services { get; private set; }
+        public static IServiceProvider Services { get; private set; } = null!;
 
         public App()
         {
@@ -33,6 +33,7 @@ namespace Hairulin_02_01
 
             Services = services.BuildServiceProvider();
         }
+
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
