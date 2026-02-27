@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CryptoPuzzles.Server.Models;
+using CryptoPuzzles.Server.Data;
 
 namespace CryptoPuzzles.Server.Controllers
 {
@@ -27,7 +28,7 @@ namespace CryptoPuzzles.Server.Controllers
             {
                 return BadRequest(new ErrorResponse
                 {
-                    message = "Внутренняя ошибка сервера"
+                    Message = "Внутренняя ошибка сервера"
                 });
             }
         }

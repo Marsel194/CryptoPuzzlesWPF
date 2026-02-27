@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CryptoPuzzles.Server.Models;
+using CryptoPuzzles.Server.Data;
+using CryptoPuzzles.Server.Helpers;
 
 namespace CryptoPuzzles.Server.Controllers
 {
@@ -17,7 +19,7 @@ namespace CryptoPuzzles.Server.Controllers
             {
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == request.Login);
 
-                if (user != null && VerifyPasswordArgon.VerifyPassword(request.Password, user.PasswordHash))
+                if (user != null && Argon2PasswordVerifier.VerifyPassword(request.Password, user.PasswordHash))
                 {
                     var response = new LoginResponse
                     {
@@ -32,7 +34,7 @@ namespace CryptoPuzzles.Server.Controllers
 
                 var admin = await _context.Admins.FirstOrDefaultAsync(u => u.Login == request.Login);
 
-                if (admin != null && VerifyPasswordArgon.VerifyPassword(request.Password, admin.PasswordHash))
+                if (admin != null && Argon2PasswordVerifier.VerifyPassword(request.Password, admin.PasswordHash))
                 {
                     var response = new LoginResponse
                     {

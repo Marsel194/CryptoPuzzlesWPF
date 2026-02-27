@@ -1,32 +1,45 @@
-﻿using CryptoPuzzles.SharedDTO;
-using Microsoft.Extensions.DependencyInjection;
-using CryptoPuzzles.ViewModels.Base;
+﻿using CryptoPuzzles;
 using CryptoPuzzles.Services;
+using CryptoPuzzles.SharedDTO;
+using CryptoPuzzles.ViewModels.Base;
+using Microsoft.Extensions.DependencyInjection;
+using System.Collections.ObjectModel;
 
-namespace CryptoPuzzles.ViewModels
+internal class AdminsViewModel : ViewModelBase
 {
-    internal class AdminsViewModel : ViewModelBase
+    private readonly ApiService _apiService;
+
+    private ObservableCollection<AAdminDto>? _admins;
+    public ObservableCollection<AAdminDto>? Admins
     {
-        private readonly ApiService _apiService;
-        private AAdminDto? _admins;
-        private AAdminDto? Admins
+        get => _admins;
+        set
         {
-            get => _admins;
-            set { _admins = value;
-                OnPropertyChanged();
-            }
+            _admins = value;
+            OnPropertyChanged();
         }
+    }
 
-        public AdminsViewModel()
-        {
-            LoadAdmins();
-            _apiService = App.Services.GetService<ApiService>()
+    public AdminsViewModel()
+    {
+        _apiService = App.Services.GetService<ApiService>()
             ?? throw new Exception("ApiService not registered");
-        }
 
-        private async Task LoadAdmins()
+        Admins = [];
+
+        _ = LoadAdminsAsync();
+    }
+
+    private async Task LoadAdminsAsync()
+    {
+        try
         {
-            Admins = await _apiService.GetAdmins();
+            var adminsList = await _apiService.GetAdmins();
+            Admins = new ObservableCollection<AAdminDto>(adminsList);
+        }
+        catch (Exception ex)
+        {
+            DialogService.ShowError("Ошибка обработки запроса: " + ex.Message);
         }
     }
 }

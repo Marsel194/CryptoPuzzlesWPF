@@ -7,7 +7,7 @@ namespace CryptoPuzzles.Services
     internal class ApiService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _baseUrl = "http://localhost:5206"
+        private readonly string _baseUrl = "http://localhost:5206";
         public ApiService()
         {
             _httpClient = new HttpClient
@@ -86,15 +86,15 @@ namespace CryptoPuzzles.Services
             }
         }
 
-        public async Task<AAdminDto> GetAdmins()
+        public async Task<List<AAdminDto>> GetAdmins()
         {
             try
             {
                 var response = await _httpClient.GetAsync("api/admins/get");
-
                 if (response.IsSuccessStatusCode)
                 {
-                    return await response.Content.ReadFromJsonAsync<AAdminDto>();
+                    return await response.Content.ReadFromJsonAsync<List<AAdminDto>>()
+                           ?? new List<AAdminDto>();
                 }
                 else
                 {

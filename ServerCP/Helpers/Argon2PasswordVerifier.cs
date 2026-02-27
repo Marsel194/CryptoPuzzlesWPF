@@ -1,9 +1,9 @@
 ﻿using Konscious.Security.Cryptography;
 using System.Text;
 
-namespace CryptoPuzzles.Server
+namespace CryptoPuzzles.Server.Helpers
 {
-    public static class VerifyPasswordArgon
+    public static class Argon2PasswordVerifier
     {
         public static bool VerifyPassword(string password, string storedHash)
         {
