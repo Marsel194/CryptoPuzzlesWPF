@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using CryptoPuzzles.Server.Models;
 using CryptoPuzzles.Server.Data;
 using CryptoPuzzles.Server.Helpers;
+using CryptoPuzzles.Server.DTOs;
 
 namespace CryptoPuzzles.Server.Controllers
 {

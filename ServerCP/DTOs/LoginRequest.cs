@@ -1,4 +1,4 @@
-﻿namespace CryptoPuzzles.Server.Models
+﻿namespace CryptoPuzzles.Server.DTOs
 {
     public class LoginRequest
     {

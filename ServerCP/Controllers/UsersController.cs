@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 using System.Text;
 using CryptoPuzzles.Server.Models;
-using CryptoPuzzles.Server.Repositories; // подключили пространство имён репозиториев
+using CryptoPuzzles.Server.Repositories;
 
 namespace CryptoPuzzles.Server.Controllers
 {
@@ -13,13 +13,11 @@ namespace CryptoPuzzles.Server.Controllers
     {
         private readonly IUserRepository _userRepository;
 
-        // Внедряем репозиторий через конструктор
         public UsersController(IUserRepository userRepository)
         {
             _userRepository = userRepository;
         }
 
-        // Хэширование пароля (оставили как есть)
         private static string HashPassword(string password)
         {
             byte[] salt = new byte[16];

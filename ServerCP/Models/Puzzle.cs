@@ -1,11 +1,19 @@
-﻿namespace CryptoPuzzles.Server.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace CryptoPuzzles.Server.Models
 {
     public class Puzzle
     {
         public int Id { get; set; }
-        public string Title { get; set; } = string.Empty;
-        public string Content { get; set; } = string.Empty;
-        public string Answer { get; set; } = string.Empty;
+
+        [MaxLength(100)]
+        public required string Title { get; set; }
+
+        public required string Content { get; set; }
+
+        [MaxLength(100)]
+        public required string Answer { get; set; }
+
         public int MaxScore { get; set; } = 50;
         public int DifficultyId { get; set; }
         public int? MethodId { get; set; }
@@ -13,7 +21,8 @@
         public int? TutorialOrder { get; set; }
         public int? CreatedByAdminId { get; set; }
         public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public bool IsDeleted { get; set; }
+        public DateTime? DeletedAt { get; set; }
 
         public virtual Difficulty Difficulty { get; set; } = null!;
         public virtual EncryptionMethod? Method { get; set; }

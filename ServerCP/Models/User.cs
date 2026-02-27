@@ -1,14 +1,27 @@
-﻿namespace CryptoPuzzles.Server.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace CryptoPuzzles.Server.Models
 {
     public class User
     {
         public int Id { get; set; }
-        public string Login { get; set; } = string.Empty;
-        public string PasswordHash { get; set; } = string.Empty;
-        public string? Email { get; set; }
-        public string? Username { get; set; }
-        public DateTime CreatedAt { get; set; }
 
-        public virtual ICollection<GameSession> GameSessions { get; set; } = [];
+        [MaxLength(50)]
+        public required string Login { get; set; }
+
+        [MaxLength(128)]
+        public required string PasswordHash { get; set; }
+
+        [MaxLength(150)]
+        public required string Email { get; set; }
+
+        [MaxLength(60)]
+        public required string Username { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+        public bool IsDeleted { get; set; }
+        public DateTime? DeletedAt { get; set; }
+
+        public virtual ICollection<GameSession> GameSessions { get; set; } = new List<GameSession>();
     }
 }
