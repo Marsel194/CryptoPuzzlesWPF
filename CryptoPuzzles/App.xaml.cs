@@ -38,7 +38,8 @@ namespace CryptoPuzzles
         {
             base.OnStartup(e);
 
-            var mainVM = new MainViewModel();
+            var mainVM = Services.GetRequiredService<MainViewModel>();
+
             var mainWindow = new MainWindow
             {
                 DataContext = mainVM

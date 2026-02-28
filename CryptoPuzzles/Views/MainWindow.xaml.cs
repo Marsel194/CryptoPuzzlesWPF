@@ -10,7 +10,7 @@ namespace CryptoPuzzles.Views
         {
             InitializeComponent();
 
-            DataContext = App.Services.GetService<MainViewModel>();
+            //DataContext = App.Services.GetService<MainViewModel>();
         }
     }
 }

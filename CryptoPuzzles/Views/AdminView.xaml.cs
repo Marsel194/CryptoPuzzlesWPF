@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using CryptoPuzzles.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using System.Windows.Controls;
 
 namespace CryptoPuzzles.Views
 {
@@ -7,6 +9,7 @@ namespace CryptoPuzzles.Views
         public AdminView()
         {
             InitializeComponent();
+            //DataContext = App.Services.GetRequiredService<AdminViewModel>();
         }
     }
 }

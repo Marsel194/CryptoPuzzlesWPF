@@ -7,11 +7,13 @@ namespace CryptoPuzzles.Services
     {
         public event Action<ViewModelBase>? OnViewChanged;
 
-        public void NavigateTo<T>() where T : ViewModelBase
+        public Task NavigateToAsync<T>() where T : ViewModelBase
         {
-            var viewModel = App.Services.GetService<T>() ??
-                throw new InvalidOperationException($"ViewModel {typeof(T).Name} не зарегистрирован в DI");
+            var viewModel = App.Services.GetService<T>() ?? throw new InvalidOperationException(
+$"ViewModel {typeof(T).Name} не зарегистрирован в DI");
+
             OnViewChanged?.Invoke(viewModel);
+            return Task.CompletedTask;
         }
     }
 }

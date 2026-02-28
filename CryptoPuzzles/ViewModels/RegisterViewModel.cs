@@ -55,11 +55,14 @@ namespace CryptoPuzzles.ViewModels
             _apiService = App.Services.GetService<ApiService>() ?? throw new Exception("ApiService not registered");
             _navigationService = App.Services.GetService<NavigationService>() ?? throw new Exception("NavigationService not registered");
 
-            RegisterCommand = new RelayCommand(p => OnRegister(p));
-            ShowLoginCommand = new RelayCommand(_ => _navigationService.NavigateTo<LoginViewModel>());
+            RegisterCommand = new AsyncRelayCommand(async _ =>
+            {
+                await RegisterAsync();
+            });
+            ShowLoginCommand = new AsyncRelayCommand(_ => _navigationService.NavigateToAsync<LoginViewModel>());
         }
 
-        private async void OnRegister(object? parameter)
+        private async Task RegisterAsync(object? parameter = null)
         {
             var view = parameter as FrameworkElement;
             var pbPassword = view?.FindName("txtPassword") as PasswordBox;

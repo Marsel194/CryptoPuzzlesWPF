@@ -1,45 +1,47 @@
-﻿using CryptoPuzzles;
-using CryptoPuzzles.Services;
+﻿using CryptoPuzzles.Services;
 using CryptoPuzzles.SharedDTO;
 using CryptoPuzzles.ViewModels.Base;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 
-internal class AdminsViewModel : ViewModelBase
+namespace CryptoPuzzles.ViewModels
 {
-    private readonly ApiService _apiService;
-
-    private ObservableCollection<AAdminDto>? _admins;
-    public ObservableCollection<AAdminDto>? Admins
+    internal class AdminsViewModel : ViewModelBase
     {
-        get => _admins;
-        set
+        private readonly ApiService _apiService;
+
+        private ObservableCollection<AAdminDto>? _admins;
+        public ObservableCollection<AAdminDto>? Admins
         {
-            _admins = value;
-            OnPropertyChanged();
+            get => _admins;
+            set
+            {
+                _admins = value;
+                OnPropertyChanged();
+            }
         }
-    }
 
-    public AdminsViewModel()
-    {
-        _apiService = App.Services.GetService<ApiService>()
-            ?? throw new Exception("ApiService not registered");
-
-        Admins = [];
-
-        _ = LoadAdminsAsync();
-    }
-
-    private async Task LoadAdminsAsync()
-    {
-        try
+        public AdminsViewModel()
         {
-            var adminsList = await _apiService.GetAdmins();
-            Admins = new ObservableCollection<AAdminDto>(adminsList);
+            _apiService = App.Services.GetService<ApiService>()
+                ?? throw new Exception("ApiService not registered");
+
+            Admins = [];
+
+            _ = LoadAdminsAsync();
         }
-        catch (Exception ex)
+
+        private async Task LoadAdminsAsync()
         {
-            DialogService.ShowError("Ошибка обработки запроса: " + ex.Message);
+            try
+            {
+                var adminsList = await _apiService.GetAdmins();
+                Admins = new ObservableCollection<AAdminDto>(adminsList);
+            }
+            catch (Exception ex)
+            {
+                DialogService.ShowError("Ошибка обработки запроса: " + ex.Message);
+            }
         }
     }
 }

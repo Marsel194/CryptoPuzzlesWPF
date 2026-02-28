@@ -9,7 +9,6 @@ namespace CryptoPuzzles.ViewModels
     public class LoginViewModel : ViewModelBase
     {
         private readonly ApiService _apiService;
-        private readonly DialogService _dialogService;
         private readonly NavigationService _navigationService;
 
         private string _login = string.Empty;
@@ -26,14 +25,13 @@ namespace CryptoPuzzles.ViewModels
         public LoginViewModel()
         {
             _apiService = App.Services.GetService<ApiService>() ?? throw new Exception("ApiService not registered");
-            _dialogService = App.Services.GetService<DialogService>() ?? throw new Exception("DialogService not registered");
             _navigationService = App.Services.GetService<NavigationService>() ?? throw new Exception("NavigationService not registered");
 
-            LoginCommand = new RelayCommand(OnLogin);
-            ShowRegisterCommand = new RelayCommand(_ => _navigationService.NavigateTo<RegisterViewModel>());
+            LoginCommand = new AsyncRelayCommand(OnLoginAsync);
+            ShowRegisterCommand = new AsyncRelayCommand(_ => _navigationService.NavigateToAsync<RegisterViewModel>());
         }
 
-        private async void OnLogin(object? parameter)
+        private async Task OnLoginAsync(object? parameter)
         {
             var passwordBox = parameter as PasswordBox;
             string password = passwordBox?.Password ?? string.Empty;
@@ -51,12 +49,12 @@ namespace CryptoPuzzles.ViewModels
                     return;
                 if (response.IsAdmin){
                     DialogService.ShowMessage($"Добро пожаловать, {response.Username}!");
-                    _navigationService.NavigateTo<AdminViewModel>();
+                    await _navigationService.NavigateToAsync<AdminViewModel>();
                 }
                 else
                 {
                     DialogService.ShowMessage($"Добро пожаловать, {response.Username}!");
-                    _navigationService.NavigateTo<UserViewModel>();
+                    await _navigationService.NavigateToAsync<UserViewModel>();
                 }
             }
             catch (Exception ex)

@@ -29,36 +29,38 @@ namespace CryptoPuzzles.ViewModels
 
         public UsersViewModel()
         {
-            LoadUsersCommand = new RelayCommand(_ => LoadUsers());
-            AddUserCommand = new RelayCommand(_ => AddUser());
-            EditUserCommand = new RelayCommand(_ => EditUser(), _ => SelectedUser != null);
-            DeleteUserCommand = new RelayCommand(_ => DeleteUser(), _ => SelectedUser != null);
-            SaveUserCommand = new RelayCommand(_ => SaveUser());
+            LoadUsersCommand = new AsyncRelayCommand(_ => LoadUsers());
+            AddUserCommand = new AsyncRelayCommand(_ => AddUser());
+            EditUserCommand = new AsyncRelayCommand(_ => EditUser(), _ => SelectedUser != null);
+            DeleteUserCommand = new AsyncRelayCommand(_ => DeleteUser(), _ => SelectedUser != null);
+            SaveUserCommand = new AsyncRelayCommand(_ => SaveUser());
 
-            LoadUsers();
+            _ = LoadUsers();
         }
 
-        private void LoadUsers()
+        private async Task LoadUsers()
         {
-            
+            await Task.CompletedTask;
         }
 
-        private void AddUser()
+        private async Task AddUser()
         {
+            await Task.CompletedTask;
         }
 
-        private void EditUser()
+        private async Task EditUser()
         {
+            await Task.CompletedTask;
         }
 
-        private void DeleteUser()
+        private async Task DeleteUser()
         {
-
+            await Task.CompletedTask;
         }
 
-        private void SaveUser()
+        private async Task SaveUser()
         {
-
+            await Task.CompletedTask;
         }
     }
 }
