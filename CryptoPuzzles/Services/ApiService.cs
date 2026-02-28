@@ -1,6 +1,7 @@
 ﻿using CryptoPuzzles.SharedDTO;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace CryptoPuzzles.Services
 {
@@ -31,21 +32,28 @@ namespace CryptoPuzzles.Services
             }
         }
 
-        public async Task<UUser> RegisterAsync(UUser user)
+        public async Task<AUser> RegisterAsync(UARegisterRequest request)  // Изменить сигнатуру
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync("api/users/register", user);
+                var response = await _httpClient.PostAsJsonAsync("api/users/register", request);
+                var content = await response.Content.ReadAsStringAsync();  // Сначала читаем как string
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var result = await response.Content.ReadFromJsonAsync<UUser>();
-                    return result ?? throw new Exception("Сервер вернул пустой ответ");
+                    return JsonSerializer.Deserialize<AUser>(content) ?? throw new Exception("Сервер вернул пустой ответ");
                 }
                 else
                 {
-                    var error = await response.Content.ReadFromJsonAsync<UAErrorResponse>();
-                    throw new Exception(error?.Message ?? "Ошибка регистрации");
+                    try
+                    {
+                        var error = JsonSerializer.Deserialize<UAErrorResponse>(content);
+                        throw new Exception(error?.Message ?? "Ошибка регистрации");
+                    }
+                    catch (JsonException)
+                    {
+                        throw new Exception($"Сервер вернул невалидный ответ: {content}");
+                    }
                 }
             }
             catch (TaskCanceledException)

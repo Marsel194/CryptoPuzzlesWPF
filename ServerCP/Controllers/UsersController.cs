@@ -1,9 +1,12 @@
-﻿using Konscious.Security.Cryptography;
+﻿using CryptoPuzzles.SharedDTO;
+using CryptoPuzzles.Server.Models;
+using CryptoPuzzles.Server.Repositories;
+using Konscious.Security.Cryptography;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 using System.Text;
-using CryptoPuzzles.Server.Models;
-using CryptoPuzzles.Server.Repositories;
+
+using CryptoPuzzles.Server.Helpers;
 
 namespace CryptoPuzzles.Server.Controllers
 {
@@ -18,47 +21,38 @@ namespace CryptoPuzzles.Server.Controllers
             _userRepository = userRepository;
         }
 
-        private static string HashPassword(string password)
-        {
-            byte[] salt = new byte[16];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(salt);
-            }
-
-            using var argon2 = new Argon2id(Encoding.UTF8.GetBytes(password));
-            argon2.Salt = salt;
-            argon2.DegreeOfParallelism = 1;
-            argon2.MemorySize = 65536;
-            argon2.Iterations = 3;
-
-            byte[] hash = argon2.GetBytes(32);
-
-            byte[] hashBytes = new byte[16 + 32];
-            Array.Copy(salt, 0, hashBytes, 0, 16);
-            Array.Copy(hash, 0, hashBytes, 16, 32);
-
-            return Convert.ToBase64String(hashBytes);
-        }
 
         // Пример: регистрация с проверкой логина через репозиторий
         [HttpPost("register")]
-        public async Task<ActionResult<User>> Register(User user)
+        public async Task<ActionResult<AUser>> Register([FromBody] UARegisterRequest request)  // Изменить на DTO
         {
-            // 1. Проверяем, существует ли пользователь с таким логином
-            var existingUser = await _userRepository.GetByLoginAsync(user.Login);
+            if (string.IsNullOrWhiteSpace(request.Login) || string.IsNullOrWhiteSpace(request.Username) ||
+                string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
+            {
+                return BadRequest(new UAErrorResponse("Все поля обязательны", null));
+            }
+
+            // Проверка email (простая)
+            if (!request.Email.Contains("@"))  // Или используй EmailAddressAttribute
+                return BadRequest(new UAErrorResponse("Некорректный email", null));
+
+            var existingUser = await _userRepository.GetByLoginAsync(request.Login);
             if (existingUser != null)
-                return BadRequest(new { message = "Логин уже занят" });
+                return BadRequest(new UAErrorResponse("Логин уже занят", null));
 
-            // 2. Хэшируем пароль
-            user.PasswordHash = HashPassword(user.PasswordHash);
+            var user = new User
+            {
+                Login = request.Login,
+                Username = request.Username,
+                Email = request.Email,
+                PasswordHash = Argon2PasswordActions.HashPassword(request.Password),
+                CreatedAt = DateTime.UtcNow
+            };
 
-            // 3. Создаём пользователя через репозиторий
             var createdUser = await _userRepository.CreateAsync(user);
 
-            // 4. Возвращаем пользователя без пароля (лучше через DTO, но для примера так)
-            createdUser.PasswordHash = string.Empty;
-            return Ok(createdUser);
+            // Возврат как AUser (без пароля)
+            return Ok(new AUser(createdUser.Id, createdUser.Login, createdUser.Username, createdUser.Email, createdUser.CreatedAt));
         }
 
         // GET: api/users
@@ -98,7 +92,7 @@ namespace CryptoPuzzles.Server.Controllers
             // Лучше принимать DTO, но пока упростим
             if (!string.IsNullOrEmpty(user.PasswordHash))
             {
-                user.PasswordHash = HashPassword(user.PasswordHash);
+                user.PasswordHash = Argon2PasswordActions.HashPassword(user.PasswordHash);
             }
             else
             {

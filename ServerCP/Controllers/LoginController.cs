@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using CryptoPuzzles.Server.Models;
 using CryptoPuzzles.Server.Data;
 using CryptoPuzzles.Server.Helpers;
-using CryptoPuzzles.Server.DTOs;
+using CryptoPuzzles.SharedDTO;
 
 namespace CryptoPuzzles.Server.Controllers
 {
@@ -14,51 +14,93 @@ namespace CryptoPuzzles.Server.Controllers
         private readonly AppDbContext _context = context;
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] UALoginRequest request)  // используем общий DTO
         {
             try
             {
+                // Проверяем в Users
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == request.Login);
-
-                if (user != null && Argon2PasswordVerifier.VerifyPassword(request.Password, user.PasswordHash))
+                if (user != null)
                 {
-                    var response = new LoginResponse
+                    if (Argon2PasswordActions.VerifyPassword(request.Password, user.PasswordHash))
                     {
-                        Id = user.Id,
-                        Login = user.Login,
-                        Email = user.Email,
-                        Username = user.Username,
-                        IsAdmin = false
-                    };
-                    return Ok(response);
+                        var response = new UALoginResponse(user.Login, user.Email, user.Username, false);
+                        return Ok(response);
+                    }
                 }
 
-                var admin = await _context.Admins.FirstOrDefaultAsync(u => u.Login == request.Login);
-
-                if (admin != null && Argon2PasswordVerifier.VerifyPassword(request.Password, admin.PasswordHash))
+                // Проверяем в Admins
+                var admin = await _context.Admins.FirstOrDefaultAsync(a => a.Login == request.Login);
+                if (admin != null)
                 {
-                    var response = new LoginResponse
+                    if (Argon2PasswordActions.VerifyPassword(request.Password, admin.PasswordHash))
                     {
-                        Id = admin.Id,
-                        Login = admin.Login,
-                        Username = admin.LastName + " " + admin.FirstName[0] + ". " +
-                            (admin.MiddleName != null ? admin.MiddleName[0] + "." : ""),
-                        IsAdmin = true
-                    };
-                    return Ok(response);
+                        // Формируем имя для админа
+                        string username = $"{admin.LastName} {admin.FirstName[0]}.";
+                        if (!string.IsNullOrEmpty(admin.MiddleName))
+                        {
+                            username += $" {admin.MiddleName[0]}.";
+                        }
+
+                        var response = new UALoginResponse(admin.Login, "", username, true);
+                        return Ok(response);
+                    }
                 }
 
-                return Unauthorized(new ErrorResponse
-                {
-                    Message = "Неверный логин или пароль"
-                });
+                // Неудачная попытка входа
+                return Unauthorized(new UAErrorResponse("Неверный логин или пароль", null));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return BadRequest(new ErrorResponse
+                return StatusCode(500, new UAErrorResponse("Внутренняя ошибка сервера", ex.Message));
+            }
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] UARegisterRequest request)  // используем общий DTO
+        {
+            try
+            {
+                // Проверяем, не занят ли логин
+                var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Login == request.Login);
+                if (existingUser != null)
                 {
-                    Message = "Внутренняя ошибка сервера"
-                });
+                    return Conflict(new UAErrorResponse("Пользователь с таким логином уже существует", null));
+                }
+
+                // Проверяем, не занят ли email
+                var existingEmail = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+                if (existingEmail != null)
+                {
+                    return Conflict(new UAErrorResponse("Пользователь с таким email уже существует", null));
+                }
+
+                // Создаём нового пользователя (нужно будет добавить хеширование пароля)
+                var newUser = new User
+                {
+                    Login = request.Login,
+                    Username = request.Username,
+                    Email = request.Email,
+                    PasswordHash = Argon2PasswordActions.HashPassword(request.Password), // если такой метод есть
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _context.Users.Add(newUser);
+                await _context.SaveChangesAsync();
+
+                var response = new UARegisterResponse(
+                    Id: newUser.Id,
+                    Login: newUser.Login,
+                    Username: newUser.Username,
+                    Email: newUser.Email,
+                    CreatedAt: newUser.CreatedAt
+                );
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new UAErrorResponse("Внутренняя ошибка сервера при регистрации", ex.Message));
             }
         }
     }

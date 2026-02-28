@@ -16,6 +16,8 @@ namespace CryptoPuzzles.ViewModels
         private string _login = string.Empty;
         private string _username = string.Empty;
         private string _email = string.Empty;
+        private string _password = string.Empty;
+        private string _confirmPassword = string.Empty;
 
         public ICommand RegisterCommand { get; }
         public ICommand ShowLoginCommand { get; }
@@ -23,9 +25,7 @@ namespace CryptoPuzzles.ViewModels
         public string Login
         {
             get => _login;
-            set
-            {
-                _login = value?.Trim() ?? string.Empty;
+            set{  _login = value?.Trim() ?? string.Empty;
                 OnPropertyChanged();
             }
         }
@@ -33,9 +33,7 @@ namespace CryptoPuzzles.ViewModels
         public string Username
         {
             get => _username;
-            set
-            {
-                _username = value;
+            set{  _username = value;
                 OnPropertyChanged();
             }
         }
@@ -43,13 +41,26 @@ namespace CryptoPuzzles.ViewModels
         public string Email
         {
             get => _email;
-            set
-            {
-                _email = value?.Trim() ?? string.Empty;
+            set{  _email = value?.Trim() ?? string.Empty;
                 OnPropertyChanged();
             }
         }
 
+        public string Password
+        {
+            get => _password;
+            set{  _password = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string ConfirmPassword
+        {
+            get => _confirmPassword;
+            set{  _confirmPassword = value;
+                OnPropertyChanged();
+            }
+        }
         public RegisterViewModel()
         {
             _apiService = App.Services.GetService<ApiService>() ?? throw new Exception("ApiService not registered");
@@ -64,21 +75,14 @@ namespace CryptoPuzzles.ViewModels
 
         private async Task RegisterAsync(object? parameter = null)
         {
-            var view = parameter as FrameworkElement;
-            var pbPassword = view?.FindName("txtPassword") as PasswordBox;
-            var pbConfirm = view?.FindName("txtConfirmPassword") as PasswordBox;
-
-            string? password = pbPassword?.Password;
-            string? confirm = pbConfirm?.Password;
-
-            if (string.IsNullOrWhiteSpace(Login) || string.IsNullOrWhiteSpace(password) ||
+            if (string.IsNullOrWhiteSpace(Login) || string.IsNullOrWhiteSpace(Password) ||
                 string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email))
             {
                 DialogService.ShowError("Заполните все поля!");
                 return;
             }
 
-            if (password != confirm)
+            if (Password != ConfirmPassword)
             {
                 DialogService.ShowError("Пароли не совпадают!");
                 return;
@@ -86,8 +90,8 @@ namespace CryptoPuzzles.ViewModels
 
             try
             {
-                var newUser = new UUser(Login, Username, Email);
-                var registeredUser = await _apiService.RegisterAsync(newUser);
+                var registerRequest = new UARegisterRequest(Login, Username, Email, Password);
+                var registeredUser = await _apiService.RegisterAsync(registerRequest);  // Now passes request with password
 
                 if (registeredUser != null)
                     DialogService.ShowMessage($"Регистрация успешна! Добро пожаловать, {registeredUser.Username}");
