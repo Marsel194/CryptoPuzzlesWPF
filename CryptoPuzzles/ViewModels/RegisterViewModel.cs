@@ -2,15 +2,14 @@
 using CryptoPuzzles.ViewModels.Base;
 using CryptoPuzzles.SharedDTO;
 using Microsoft.Extensions.DependencyInjection;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
+using CryptoPuzzles.Services.ApiService;
 
 namespace CryptoPuzzles.ViewModels
 {
     public class RegisterViewModel : ViewModelBase
     {
-        private readonly ApiService _apiService;
+        private readonly AuthApiService _apiService;
         private readonly NavigationService _navigationService;
 
         private string _login = string.Empty;
@@ -63,13 +62,10 @@ namespace CryptoPuzzles.ViewModels
         }
         public RegisterViewModel()
         {
-            _apiService = App.Services.GetService<ApiService>() ?? throw new Exception("ApiService not registered");
+            _apiService = App.Services.GetService<AuthApiService>() ?? throw new Exception("ApiService not registered");
             _navigationService = App.Services.GetService<NavigationService>() ?? throw new Exception("NavigationService not registered");
 
-            RegisterCommand = new AsyncRelayCommand(async _ =>
-            {
-                await RegisterAsync();
-            });
+            RegisterCommand = new AsyncRelayCommand(async _ => await RegisterAsync());
             ShowLoginCommand = new AsyncRelayCommand(_ => _navigationService.NavigateToAsync<LoginViewModel>());
         }
 
@@ -100,7 +96,10 @@ namespace CryptoPuzzles.ViewModels
                 var registeredUser = await _apiService.RegisterAsync(registerRequest);
 
                 if (registeredUser != null)
+                {
                     DialogService.ShowMessage($"Регистрация успешна! Добро пожаловать, {registeredUser.Username}");
+                    await _navigationService.NavigateToAsync<LoginViewModel>();
+                }
             }
             catch (Exception ex)
             {

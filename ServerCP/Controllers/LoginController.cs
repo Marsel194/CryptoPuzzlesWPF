@@ -13,8 +13,8 @@ namespace CryptoPuzzles.Server.Controllers
     {
         private readonly AppDbContext _context = context;
 
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] UALoginRequest request)  // используем общий DTO
+        [HttpPost]
+        public async Task<IActionResult> Login([FromBody] UALoginRequest request)
         {
             try
             {
@@ -92,8 +92,7 @@ namespace CryptoPuzzles.Server.Controllers
                     Id: newUser.Id,
                     Login: newUser.Login,
                     Username: newUser.Username,
-                    Email: newUser.Email,
-                    CreatedAt: newUser.CreatedAt
+                    Email: newUser.Email
                 );
 
                 return Ok(response);

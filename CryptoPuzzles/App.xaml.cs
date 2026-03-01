@@ -1,7 +1,10 @@
 ﻿using CryptoPuzzles.Services;
+using CryptoPuzzles.Services.Api;
+using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.ViewModels;
 using CryptoPuzzles.Views;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http;
 using System.Windows;
 
 namespace CryptoPuzzles
@@ -14,7 +17,12 @@ namespace CryptoPuzzles
         {
             var services = new ServiceCollection();
 
-            services.AddSingleton<ApiService>();
+            var httpClient = new HttpClient
+            {
+                BaseAddress = new Uri("http://localhost:5206"),
+                Timeout = TimeSpan.FromSeconds(20)
+            };
+
             services.AddSingleton<DialogService>();
             services.AddSingleton<NavigationService>();
 
@@ -30,6 +38,11 @@ namespace CryptoPuzzles
             services.AddTransient<TutorialsViewModel>();
             services.AddTransient<UsersViewModel>();
             services.AddTransient<UserViewModel>();
+
+            services.AddSingleton(httpClient);
+            //services.AddSingleton<UserApiService>();
+            services.AddSingleton<AdminApiService>();
+            services.AddSingleton<AuthApiService>();
 
             Services = services.BuildServiceProvider();
         }

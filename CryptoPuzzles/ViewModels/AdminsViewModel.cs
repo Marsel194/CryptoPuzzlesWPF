@@ -1,4 +1,5 @@
 ﻿using CryptoPuzzles.Services;
+using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.SharedDTO;
 using CryptoPuzzles.ViewModels.Base;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,10 +9,10 @@ namespace CryptoPuzzles.ViewModels
 {
     internal class AdminsViewModel : ViewModelBase
     {
-        private readonly ApiService _apiService;
+        private readonly AdminApiService _apiService;
 
-        private ObservableCollection<AAdminDto>? _admins;
-        public ObservableCollection<AAdminDto>? Admins
+        private ObservableCollection<AAdmin>? _admins;
+        public ObservableCollection<AAdmin>? Admins
         {
             get => _admins;
             set
@@ -23,7 +24,7 @@ namespace CryptoPuzzles.ViewModels
 
         public AdminsViewModel()
         {
-            _apiService = App.Services.GetService<ApiService>()
+            _apiService = App.Services.GetService<AdminApiService>()
                 ?? throw new Exception("ApiService not registered");
 
             Admins = [];
@@ -35,8 +36,8 @@ namespace CryptoPuzzles.ViewModels
         {
             try
             {
-                var adminsList = await _apiService.GetAdmins();
-                Admins = new ObservableCollection<AAdminDto>(adminsList);
+                var adminsList = await _apiService.GetAdminsAsync();
+                Admins = new ObservableCollection<AAdmin>(adminsList);
             }
             catch (Exception ex)
             {

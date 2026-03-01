@@ -21,59 +21,57 @@ namespace CryptoPuzzles.Server.Controllers
             _userRepository = userRepository;
         }
 
-
-        // Пример: регистрация с проверкой логина через репозиторий
         [HttpPost("register")]
-        public async Task<ActionResult<AUser>> RegisterAsync([FromBody] UARegisterRequest request)  // Изменить на DTO
+        public async Task<ActionResult<UARegisterResponse>> RegisterAsync([FromBody] UARegisterRequest request)
         {
-            if (string.IsNullOrWhiteSpace(request.Login) || string.IsNullOrWhiteSpace(request.Username) ||
-                string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
             {
-                return BadRequest(new UAErrorResponse("Все поля обязательны", null));
+                if (string.IsNullOrWhiteSpace(request.Login) || string.IsNullOrWhiteSpace(request.Username) ||
+                    string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
+                {
+                    return BadRequest(new UAErrorResponse("Все поля обязательны", null));
+                }
+
+                if (!request.Email.Contains('@'))
+                    return BadRequest(new UAErrorResponse("Некорректный email", null));
+
+                var existingUser = await _userRepository.GetByLoginAsync(request.Login);
+                if (existingUser != null)
+                    return BadRequest(new UAErrorResponse("Логин уже занят", null));
+
+                var user = new User
+                {
+                    Login = request.Login,
+                    Username = request.Username,
+                    Email = request.Email,
+                    PasswordHash = Argon2PasswordActions.HashPassword(request.Password)
+                };
+
+                var createdUser = await _userRepository.CreateAsync(user);
+
+                return Ok(new UARegisterResponse(
+                    createdUser.Id,
+                    createdUser.Login,
+                    createdUser.Username,
+                    createdUser.Email));
             }
-
-            if (!request.Email.Contains('@'))
-                return BadRequest(new UAErrorResponse("Некорректный email", null));
-
-            var existingUser = await _userRepository.GetByLoginAsync(request.Login);
-            if (existingUser != null)
-                return BadRequest(new UAErrorResponse("Логин уже занят", null));
-
-            var user = new User
-            {
-                Login = request.Login,
-                Username = request.Username,
-                Email = request.Email,
-                PasswordHash = Argon2PasswordActions.HashPassword(request.Password),
-                CreatedAt = DateTime.UtcNow
-            };
-
-            var createdUser = await _userRepository.CreateAsync(user);
-
-            // Возврат как AUser (без пароля)
-            return Ok(new AUser(createdUser.Id, createdUser.Login, createdUser.Username, createdUser.Email, createdUser.CreatedAt));
         }
 
         // GET: api/users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetAll()
+        public async Task<ActionResult<IEnumerable<UUser>>> GetAll()
         {
             var users = await _userRepository.GetAllAsync();
-            // Убираем пароль перед отправкой (в реальном проекте используй DTO)
-            foreach (var u in users)
-                u.PasswordHash = string.Empty;
             return Ok(users);
         }
 
         // GET: api/users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> Get(int id)
+        public async Task<ActionResult<UUser>> Get(int id)
         {
             var user = await _userRepository.GetByIdAsync(id);
             if (user == null)
                 return NotFound();
 
-            user.PasswordHash = string.Empty;
             return Ok(user);
         }
 

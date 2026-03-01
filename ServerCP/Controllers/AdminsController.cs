@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using CryptoPuzzles.Server.Models;
 using CryptoPuzzles.Server.Data;
+using CryptoPuzzles.Server.Models;
 using CryptoPuzzles.SharedDTO;
+using CryptoPuzzles.Server.Helpers;
 
 namespace CryptoPuzzles.Server.Controllers
 {
@@ -12,62 +13,64 @@ namespace CryptoPuzzles.Server.Controllers
     {
         private readonly AppDbContext _context = context;
 
-        [HttpGet("get")]
-        public async Task<ActionResult<IEnumerable<AAdminDto>>> GetAdmins()
+        // READ: Получить всех (кроме удаленных)
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<AAdmin>>> GetAll()
         {
-            try
-            {
-                var admins = await _context.Admins.ToListAsync();
-
-                if (admins != null && admins.Any())
-                {
-                    var adminDtos = admins.Select(a => new AAdminDto(
-                        Id: a.Id,
-                        Login: a.Login,
-                        FirstName: a.FirstName,
-                        LastName: a.LastName,
-                        MiddleName: a.MiddleName ?? string.Empty,
-                        CreatedAt: a.CreatedAt
-                    ));
-
-                    return Ok(adminDtos);
-                }
-
-                return NotFound(new UAErrorResponse("Администраторы не найдены", null));
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new UAErrorResponse("Внутренняя ошибка сервера", ex.Message));
-            }
+            var admins = await _context.Admins
+                .Where(a => !a.IsDeleted)
+                .Select(a => new AAdmin(a.Id, a.Login, a.FirstName, a.LastName, a.MiddleName ?? "", a.CreatedAt))
+                .ToListAsync();
+            return Ok(admins);
         }
 
-        [HttpGet("get/{id}")]
-        public async Task<ActionResult<AAdminDto>> GetAdmin(int id)
+        // CREATE: Добавить нового
+        [HttpPost]
+        public async Task<ActionResult<AAdmin>> Create([FromBody] Admin admin)
         {
-            try
-            {
-                var admin = await _context.Admins.FindAsync(id);
+            // Хешируем пароль перед сохранением
+            admin.PasswordHash = Argon2PasswordActions.HashPassword(admin.PasswordHash);
+            admin.CreatedAt = DateTime.Now;
 
-                if (admin == null)
-                {
-                    return NotFound(new UAErrorResponse($"Администратор с ID {id} не найден", null));
-                }
+            _context.Admins.Add(admin);
+            await _context.SaveChangesAsync();
 
-                var adminDto = new AAdminDto(
-                    Id: admin.Id,
-                    Login: admin.Login,
-                    FirstName: admin.FirstName,
-                    LastName: admin.LastName,
-                    MiddleName: admin.MiddleName ?? string.Empty,
-                    CreatedAt: admin.CreatedAt
-                );
+            return CreatedAtAction(nameof(GetAll), new { id = admin.Id },
+                new AAdmin(admin.Id, admin.Login, admin.FirstName, admin.LastName, admin.MiddleName ?? "", admin.CreatedAt));
+        }
 
-                return Ok(adminDto);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new UAErrorResponse("Внутренняя ошибка сервера", ex.Message));
-            }
+        // UPDATE: Редактировать данные
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] Admin updatedAdmin)
+        {
+            var existing = await _context.Admins.FindAsync(id);
+            if (existing == null) return NotFound();
+
+            existing.FirstName = updatedAdmin.FirstName;
+            existing.LastName = updatedAdmin.LastName;
+            existing.MiddleName = updatedAdmin.MiddleName;
+            existing.Login = updatedAdmin.Login;
+
+            // Если пришел новый пароль — обновляем его
+            if (!string.IsNullOrWhiteSpace(updatedAdmin.PasswordHash))
+                existing.PasswordHash = Argon2PasswordActions.HashPassword(updatedAdmin.PasswordHash);
+
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        // DELETE: Мягкое удаление (флаг is_deleted)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var admin = await _context.Admins.FindAsync(id);
+            if (admin == null) return NotFound();
+
+            admin.IsDeleted = true;
+            admin.DeletedAt = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }

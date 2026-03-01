@@ -1,4 +1,5 @@
 ﻿using CryptoPuzzles.Services;
+using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.ViewModels.Base;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Controls;
@@ -8,7 +9,7 @@ namespace CryptoPuzzles.ViewModels
 {
     public class LoginViewModel : ViewModelBase
     {
-        private readonly ApiService _apiService;
+        private readonly AuthApiService _apiService;
         private readonly NavigationService _navigationService;
 
         private string _login = string.Empty;
@@ -24,7 +25,7 @@ namespace CryptoPuzzles.ViewModels
 
         public LoginViewModel()
         {
-            _apiService = App.Services.GetService<ApiService>() ?? throw new Exception("ApiService not registered");
+            _apiService = App.Services.GetService<AuthApiService>() ?? throw new Exception("ApiService not registered");
             _navigationService = App.Services.GetService<NavigationService>() ?? throw new Exception("NavigationService not registered");
 
             LoginCommand = new AsyncRelayCommand(OnLoginAsync);

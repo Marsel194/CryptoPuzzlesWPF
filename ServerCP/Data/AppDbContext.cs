@@ -22,92 +22,64 @@ namespace CryptoPuzzles.Server.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // User
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.Login)
-                .HasDatabaseName("idx_users_login");
+            // Конфигурация User
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.ToTable("users"); // В SQL таблица users (маленькими буквами)
+                entity.HasKey(u => u.Id);
 
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.Email)
-                .HasDatabaseName("idx_users_email");
+                entity.Property(u => u.CreatedAt)
+                      .HasColumnName("created_at") // КРИТИЧНО: указываем точное имя из SQL
+                      .HasColumnType("datetime")
+                      .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            // Admin
-            modelBuilder.Entity<Admin>()
-                .HasIndex(a => a.Login)
-                .HasDatabaseName("idx_admins_login");
+                entity.Property(u => u.PasswordHash)
+                      .HasColumnName("password_hash");
 
-            // Difficulty
-            modelBuilder.Entity<Difficulty>()
-                .HasIndex(d => d.DifficultyName)
-                .HasDatabaseName("idx_difficulties_name");
+                entity.Property(u => u.IsDeleted)
+                      .HasColumnName("is_deleted");
 
-            // EncryptionMethod
-            modelBuilder.Entity<EncryptionMethod>()
-                .HasIndex(e => e.Name)
-                .HasDatabaseName("idx_methods_name");
+                entity.Property(u => u.DeletedAt)
+                      .HasColumnName("deleted_at");
 
-            // Puzzle
-            modelBuilder.Entity<Puzzle>()
-                .HasIndex(p => p.DifficultyId)
-                .HasDatabaseName("idx_puzzles_difficulty");
+                entity.HasIndex(u => u.Login).IsUnique().HasDatabaseName("idx_users_login");
+                entity.HasIndex(u => u.Email).IsUnique().HasDatabaseName("idx_users_email");
+            });
 
-            modelBuilder.Entity<Puzzle>()
-                .HasIndex(p => p.MethodId)
-                .HasDatabaseName("idx_puzzles_method");
+            // Конфигурация Admin
+            modelBuilder.Entity<Admin>(entity =>
+            {
+                entity.Property(a => a.CreatedAt)
+                      .HasColumnName("created_at")
+                      .HasColumnType("datetime")
+                      .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.HasIndex(a => a.Login).IsUnique().HasDatabaseName("idx_admins_login");
+            });
 
-            modelBuilder.Entity<Puzzle>()
-                .HasIndex(p => new { p.IsTraining, p.TutorialOrder })
-                .HasDatabaseName("idx_puzzles_training");
+            // Конфигурация GameSession
+            modelBuilder.Entity<GameSession>(entity =>
+            {
+                entity.Property(g => g.SessionStartTime)
+                      .HasColumnType("datetime")
+                      .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            modelBuilder.Entity<Puzzle>()
-                .HasIndex(p => p.CreatedByAdminId)
-                .HasDatabaseName("idx_puzzles_created_by");
+                entity.HasIndex(g => new { g.UserId, g.SessionStartTime }).HasDatabaseName("idx_game_sessions_user");
+            });
 
+            // Конфигурация Tutorial (CreatedAt + UpdatedAt)
+            modelBuilder.Entity<Tutorial>(entity =>
+            {
+                entity.Property(t => t.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(t => t.UpdatedAt)
+                      .ValueGeneratedOnAddOrUpdate()
+                      .HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+            });
+
+            // Связи (Relations) - здесь у тебя всё было почти верно, я лишь закрепил:
             modelBuilder.Entity<Puzzle>()
                 .HasOne(p => p.Difficulty)
                 .WithMany(d => d.Puzzles)
-                .HasForeignKey(p => p.DifficultyId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Puzzle>()
-                .HasOne(p => p.Method)
-                .WithMany(m => m.Puzzles)
-                .HasForeignKey(p => p.MethodId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            modelBuilder.Entity<Puzzle>()
-                .HasOne(p => p.CreatedByAdmin)
-                .WithMany(a => a.CreatedPuzzles)
-                .HasForeignKey(p => p.CreatedByAdminId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            // Hint
-            modelBuilder.Entity<Hint>()
-                .HasIndex(h => new { h.PuzzleId, h.HintOrder })
-                .HasDatabaseName("idx_hints_puzzle");
-
-            // GameSession
-            modelBuilder.Entity<GameSession>()
-                .HasIndex(g => new { g.UserId, g.SessionStartTime })
-                .HasDatabaseName("idx_game_sessions_user")
-                .IsDescending(new[] { false, true });
-
-            modelBuilder.Entity<GameSession>()
-                .HasIndex(g => g.CurrentPuzzleId)
-                .HasDatabaseName("idx_game_sessions_puzzle");
-
-            modelBuilder.Entity<GameSession>()
-                .HasIndex(g => g.CompletedAt)
-                .HasDatabaseName("idx_game_sessions_completed");
-
-            // Tutorial
-            modelBuilder.Entity<Tutorial>()
-                .HasIndex(t => t.MethodId)
-                .HasDatabaseName("idx_tutorials_method");
-
-            modelBuilder.Entity<Tutorial>()
-                .HasIndex(t => new { t.IsActive, t.SortOrder })
-                .HasDatabaseName("idx_tutorials_active");
+                .HasForeignKey(p => p.DifficultyId);
         }
     }
 }

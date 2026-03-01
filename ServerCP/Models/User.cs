@@ -12,16 +12,16 @@ namespace CryptoPuzzles.Server.Models
         [MaxLength(128)]
         public required string PasswordHash { get; set; }
 
-        [MaxLength(150)]
+        [MaxLength(150), EmailAddress]
         public required string Email { get; set; }
 
         [MaxLength(60)]
         public required string Username { get; set; }
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual ICollection<GameSession> GameSessions { get; set; } = new List<GameSession>();
+        public virtual ICollection<GameSession> GameSessions { get; set; } = [];
     }
 }
