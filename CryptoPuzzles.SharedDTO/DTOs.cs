@@ -33,6 +33,7 @@
     public record AGameSession(int Id, int UserId, string UserLogin, int Score, DateTime SessionStartTime,
         int? CurrentPuzzleId, string? CurrentPuzzleTitle, bool TrainingCompleted, int HintsUsed, DateTime? CompletedAt);
     public record AGameSessionUpdate(int Id, int Score, int? CurrentPuzzleId, bool TrainingCompleted, int HintsUsed, DateTime? CompletedAt);
+    public record AGameSessionCreate(int UserId, int Score, int? CurrentPuzzleId, bool TrainingCompleted, int HintsUsed, DateTime? CompletedAt);
 
     // Tutorial
     public record ATutorial(int Id, int MethodId, string MethodName, string TheoryTitle,

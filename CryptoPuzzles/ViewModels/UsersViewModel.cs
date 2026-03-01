@@ -20,5 +20,13 @@ namespace CryptoPuzzles.ViewModels
 
         protected override AUserUpdate MapToUpdateDto(AUser item) => MapToCreateDto(item);
         protected override int GetId(AUser item) => item.Id;
+
+        protected override bool IsEqual(AUser x, AUser y)
+        {
+            return x.Id == y.Id &&
+                   x.Login == y.Login &&
+                   x.Username == y.Username &&
+                   x.Email == y.Email;
+        }
     }
 }

@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using CryptoPuzzles.Server.Data;
+﻿using CryptoPuzzles.Server.Data;
+using CryptoPuzzles.Server.Helpers;
 using CryptoPuzzles.Server.Models;
 using CryptoPuzzles.SharedDTO;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace CryptoPuzzles.Server.Controllers
@@ -39,14 +40,14 @@ namespace CryptoPuzzles.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<AUser>> Create(AUserUpdate dto)
+        public async Task<ActionResult<AUser>> Create([FromBody] AUserCreate dto)
         {
             var user = new User
             {
                 Login = dto.Login,
                 Username = dto.Username,
                 Email = dto.Email,
-                PasswordHash = "temporary",
+                PasswordHash = Argon2PasswordActions.HashPassword(dto.Password), // используйте ваш метод хеширования
                 CreatedAt = DateTime.UtcNow
             };
             _context.Users.Add(user);
@@ -56,11 +57,13 @@ namespace CryptoPuzzles.Server.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, AUserUpdate dto)
+        public async Task<IActionResult> Update(int id, [FromBody] AUserUpdate dto)
         {
             if (id != dto.Id) return BadRequest();
-            var user = await _context.Users.FindAsync(id);
-            if (user == null || user.IsDeleted) return NotFound();
+            var user = await _context.Users
+                .Where(u => u.Id == id && !u.IsDeleted)
+                .FirstOrDefaultAsync();
+            if (user == null) return NotFound();
 
             user.Login = dto.Login;
             user.Username = dto.Username;

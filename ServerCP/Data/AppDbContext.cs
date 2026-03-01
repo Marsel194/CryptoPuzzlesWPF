@@ -22,83 +22,167 @@ namespace CryptoPuzzles.Server.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // Пользователи
             modelBuilder.Entity<User>(entity =>
             {
                 entity.ToTable("users");
                 entity.HasKey(u => u.Id);
-
-                entity.Property(u => u.CreatedAt)
-                      .HasColumnName("created_at")
-                      .HasColumnType("datetime")
-                      .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                entity.Property(u => u.PasswordHash)
-                      .HasColumnName("password_hash");
-
-                entity.Property(u => u.IsDeleted)
-                      .HasColumnName("is_deleted");
-
-                entity.Property(u => u.DeletedAt)
-                      .HasColumnName("deleted_at");
-
+                entity.Property(u => u.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(u => u.PasswordHash).HasColumnName("password_hash");
+                entity.Property(u => u.IsDeleted).HasColumnName("is_deleted");
+                entity.Property(u => u.DeletedAt).HasColumnName("deleted_at");
                 entity.HasIndex(u => u.Login).IsUnique().HasDatabaseName("idx_users_login");
                 entity.HasIndex(u => u.Email).IsUnique().HasDatabaseName("idx_users_email");
             });
 
+            // Администраторы
             modelBuilder.Entity<Admin>(entity =>
             {
                 entity.ToTable("admins");
                 entity.HasKey(a => a.Id);
-
-                entity.Property(a => a.CreatedAt)
-                      .HasColumnName("created_at")
-                      .HasColumnType("datetime")
-                      .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                entity.Property(a => a.PasswordHash)
-                      .HasColumnName("password_hash");
-
-                entity.Property(a => a.FirstName)
-                      .HasColumnName("first_name");
-
-                entity.Property(a => a.LastName)
-                      .HasColumnName("last_name");
-
-                entity.Property(a => a.MiddleName)
-                      .HasColumnName("middle_name");
-
-                entity.Property(a => a.IsDeleted)
-                      .HasColumnName("is_deleted");
-
-                entity.Property(a => a.DeletedAt)
-                      .HasColumnName("deleted_at");
-
-                entity.HasIndex(a => a.Login)
-                      .IsUnique()
-                      .HasDatabaseName("idx_admins_login");
+                entity.Property(a => a.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(a => a.PasswordHash).HasColumnName("password_hash");
+                entity.Property(a => a.FirstName).HasColumnName("first_name");
+                entity.Property(a => a.LastName).HasColumnName("last_name");
+                entity.Property(a => a.MiddleName).HasColumnName("middle_name");
+                entity.Property(a => a.IsDeleted).HasColumnName("is_deleted");
+                entity.Property(a => a.DeletedAt).HasColumnName("deleted_at");
+                entity.HasIndex(a => a.Login).IsUnique().HasDatabaseName("idx_admins_login");
             });
 
+            // Сложности
+            modelBuilder.Entity<Difficulty>(entity =>
+            {
+                entity.ToTable("difficulties");
+                entity.HasKey(d => d.Id);
+                entity.Property(d => d.DifficultyName).HasColumnName("difficulty").IsRequired();
+                entity.Property(d => d.IsDeleted).HasColumnName("is_deleted");
+                entity.Property(d => d.DeletedAt).HasColumnName("deleted_at");
+                entity.HasIndex(d => d.DifficultyName).IsUnique().HasDatabaseName("idx_difficulties_name");
+            });
+
+            // Методы шифрования
+            modelBuilder.Entity<EncryptionMethod>(entity =>
+            {
+                entity.ToTable("encryption_methods");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).HasColumnName("name").IsRequired();
+                entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
+                entity.Property(e => e.DeletedAt).HasColumnName("deleted_at");
+                entity.HasIndex(e => e.Name).IsUnique().HasDatabaseName("idx_methods_name");
+            });
+
+            // Головоломки
+            modelBuilder.Entity<Puzzle>(entity =>
+            {
+                entity.ToTable("puzzles");
+                entity.HasKey(p => p.Id);
+                entity.Property(p => p.Title).HasColumnName("title").IsRequired();
+                entity.Property(p => p.Content).HasColumnName("content").IsRequired();
+                entity.Property(p => p.Answer).HasColumnName("answer").IsRequired();
+                entity.Property(p => p.MaxScore).HasColumnName("max_score").HasDefaultValue(50);
+                entity.Property(p => p.DifficultyId).HasColumnName("difficulty_id");
+                entity.Property(p => p.MethodId).HasColumnName("method_id");
+                entity.Property(p => p.IsTraining).HasColumnName("is_training");
+                entity.Property(p => p.TutorialOrder).HasColumnName("tutorial_order");
+                entity.Property(p => p.CreatedByAdminId).HasColumnName("created_by_admin_id");
+                entity.Property(p => p.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(p => p.IsDeleted).HasColumnName("is_deleted");
+                entity.Property(p => p.DeletedAt).HasColumnName("deleted_at");
+
+                entity.HasOne(p => p.Difficulty)
+                      .WithMany(d => d.Puzzles)
+                      .HasForeignKey(p => p.DifficultyId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(p => p.Method)
+                      .WithMany(m => m.Puzzles)
+                      .HasForeignKey(p => p.MethodId)
+                      .OnDelete(DeleteBehavior.SetNull);
+
+                entity.HasOne(p => p.CreatedByAdmin)
+                      .WithMany(a => a.CreatedPuzzles)
+                      .HasForeignKey(p => p.CreatedByAdminId)
+                      .OnDelete(DeleteBehavior.SetNull);
+
+                entity.HasIndex(p => p.DifficultyId).HasDatabaseName("idx_puzzles_difficulty");
+                entity.HasIndex(p => p.MethodId).HasDatabaseName("idx_puzzles_method");
+                entity.HasIndex(p => p.CreatedByAdminId).HasDatabaseName("idx_puzzles_created_by");
+                entity.HasIndex(p => new { p.IsTraining, p.TutorialOrder }).HasDatabaseName("idx_puzzles_training");
+            });
+
+            // Подсказки
+            modelBuilder.Entity<Hint>(entity =>
+            {
+                entity.ToTable("hints");
+                entity.HasKey(h => h.Id);
+                entity.Property(h => h.PuzzleId).HasColumnName("puzzle_id");
+                entity.Property(h => h.HintText).HasColumnName("hint_text").IsRequired();
+                entity.Property(h => h.HintOrder).HasColumnName("hint_order").HasDefaultValue(1);
+                entity.Property(h => h.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(h => h.IsDeleted).HasColumnName("is_deleted");
+                entity.Property(h => h.DeletedAt).HasColumnName("deleted_at");
+
+                entity.HasOne(h => h.Puzzle)
+                      .WithMany(p => p.Hints)
+                      .HasForeignKey(h => h.PuzzleId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(h => new { h.PuzzleId, h.HintOrder }).HasDatabaseName("idx_hints_puzzle");
+            });
+
+            // Игровые сессии
             modelBuilder.Entity<GameSession>(entity =>
             {
-                entity.Property(g => g.SessionStartTime)
-                      .HasColumnType("datetime")
-                      .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.ToTable("game_sessions");
+                entity.HasKey(g => g.Id);
+                entity.Property(g => g.UserId).HasColumnName("user_id");
+                entity.Property(g => g.Score).HasColumnName("score").HasDefaultValue(0);
+                entity.Property(g => g.SessionStartTime).HasColumnName("session_start_time").HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(g => g.CurrentPuzzleId).HasColumnName("current_puzzle_id");
+                entity.Property(g => g.TrainingCompleted).HasColumnName("training_completed");
+                entity.Property(g => g.HintsUsed).HasColumnName("hints_used");
+                entity.Property(g => g.CompletedAt).HasColumnName("completed_at");
+                entity.Property(g => g.IsDeleted).HasColumnName("is_deleted");
+                entity.Property(g => g.DeletedAt).HasColumnName("deleted_at");
+
+                entity.HasOne(g => g.User)
+                      .WithMany(u => u.GameSessions)
+                      .HasForeignKey(g => g.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(g => g.CurrentPuzzle)
+                      .WithMany(p => p.GameSessions)
+                      .HasForeignKey(g => g.CurrentPuzzleId)
+                      .OnDelete(DeleteBehavior.SetNull);
 
                 entity.HasIndex(g => new { g.UserId, g.SessionStartTime }).HasDatabaseName("idx_game_sessions_user");
+                entity.HasIndex(g => g.CurrentPuzzleId).HasDatabaseName("idx_game_sessions_puzzle");
+                entity.HasIndex(g => g.CompletedAt).HasDatabaseName("idx_game_sessions_completed");
             });
 
+            // Туториалы
             modelBuilder.Entity<Tutorial>(entity =>
             {
-                entity.Property(t => t.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-                entity.Property(t => t.UpdatedAt)
-                      .ValueGeneratedOnAddOrUpdate()
-                      .HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
-            });
+                entity.ToTable("tutorials");
+                entity.HasKey(t => t.Id);
+                entity.Property(t => t.MethodId).HasColumnName("method_id");
+                entity.Property(t => t.TheoryTitle).HasColumnName("theory_title").IsRequired();
+                entity.Property(t => t.TheoryContent).HasColumnName("theory_content").IsRequired();
+                entity.Property(t => t.SortOrder).HasColumnName("sort_order");
+                entity.Property(t => t.IsActive).HasColumnName("is_active");
+                entity.Property(t => t.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(t => t.UpdatedAt).HasColumnName("updated_at").ValueGeneratedOnAddOrUpdate().HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+                entity.Property(t => t.IsDeleted).HasColumnName("is_deleted");
+                entity.Property(t => t.DeletedAt).HasColumnName("deleted_at");
 
-            modelBuilder.Entity<Puzzle>()
-                .HasOne(p => p.Difficulty)
-                .WithMany(d => d.Puzzles)
-                .HasForeignKey(p => p.DifficultyId);
+                entity.HasOne(t => t.Method)
+                      .WithMany(m => m.Tutorials)
+                      .HasForeignKey(t => t.MethodId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(t => t.MethodId).HasDatabaseName("idx_tutorials_method");
+            });
         }
     }
 }

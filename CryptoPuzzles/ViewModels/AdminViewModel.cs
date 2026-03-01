@@ -39,36 +39,22 @@ namespace CryptoPuzzles.ViewModels
         private int _solvedToday;
         private ObservableCollection<RecentAction> _recentActions;
 
-        public AdminViewModel(AdminNavigationService adminNavigation, NavigationService navigation)
+        public AdminViewModel(AdminNavigationService adminNavigation)
         {
             _adminNavigation = adminNavigation;
-            _navigation = navigation;
-            // инициализация команд
+
             NavigateToUsersCommand = new AsyncRelayCommand(_ => { _adminNavigation.NavigateTo<UsersViewModel>(); return Task.CompletedTask; });
             NavigateToAdminsCommand = new AsyncRelayCommand(_ => { _adminNavigation.NavigateTo<AdminsViewModel>(); return Task.CompletedTask; });
-            NavigateToMethodsCommand = new AsyncRelayCommand(_ => _navigation.NavigateToAsync<MethodsViewModel>());
-
-            _navigation = App.Services.GetRequiredService<NavigationService>();
-
-            _userApi = App.Services.GetService<UserApiService>();
-            _adminApi = App.Services.GetService<AdminApiService>();
-            _methodApi = App.Services.GetService<EncryptionMethodApiService>();
-            _puzzleApi = App.Services.GetService<PuzzleApiService>();
-            _hintApi = App.Services.GetService<HintApiService>();
-            _sessionApi = App.Services.GetService<GameSessionApiService>();
-            _tutorialApi = App.Services.GetService<TutorialApiService>();
-
-            NavigateToMethodsCommand = new AsyncRelayCommand(_ => _navigation.NavigateToAsync<MethodsViewModel>());
-            NavigateToPuzzlesCommand = new AsyncRelayCommand(_ => _navigation.NavigateToAsync<PuzzlesViewModel>());
-            NavigateToHintsCommand = new AsyncRelayCommand(_ => _navigation.NavigateToAsync<HintsViewModel>());
-            NavigateToSessionsCommand = new AsyncRelayCommand(_ => _navigation.NavigateToAsync<SessionsViewModel>());
-            NavigateToTutorialsCommand = new AsyncRelayCommand(_ => _navigation.NavigateToAsync<TutorialsViewModel>());
-            NavigateToStatisticsCommand = new AsyncRelayCommand(_ => _navigation.NavigateToAsync<StatisticsViewModel>());
-
+            NavigateToMethodsCommand = new AsyncRelayCommand(_ => { _adminNavigation.NavigateTo<MethodsViewModel>(); return Task.CompletedTask; });
+            NavigateToPuzzlesCommand = new AsyncRelayCommand(_ => { _adminNavigation.NavigateTo<PuzzlesViewModel>(); return Task.CompletedTask; });
+            NavigateToHintsCommand = new AsyncRelayCommand(_ => { _adminNavigation.NavigateTo<HintsViewModel>(); return Task.CompletedTask; });
+            NavigateToSessionsCommand = new AsyncRelayCommand(_ => { _adminNavigation.NavigateTo<SessionsViewModel>(); return Task.CompletedTask; });
+            NavigateToTutorialsCommand = new AsyncRelayCommand(_ => { _adminNavigation.NavigateTo<TutorialsViewModel>(); return Task.CompletedTask; });
+            NavigateToStatisticsCommand = new AsyncRelayCommand(_ => { _adminNavigation.NavigateTo<StatisticsViewModel>(); return Task.CompletedTask; });
             ToggleThemeCommand = new AsyncRelayCommand(async _ => await ThemeHelper.ToggleTheme());
-            LogoutCommand = new AsyncRelayCommand(async _ => await _navigation.NavigateToAsync<LoginViewModel>());
+            //LogoutCommand = new AsyncRelayCommand(async _ => );
 
-            //_ = LoadStatsAsync();
+            _ = LoadStatsAsync();
         }
 
         public int TotalUsers { get => _totalUsers; set => SetProperty(ref _totalUsers, value); }

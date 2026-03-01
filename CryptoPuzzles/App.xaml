@@ -55,9 +55,13 @@
             <DataTemplate DataType="{x:Type vm:PuzzlesViewModel}">
                 <v:PuzzlesView/>
             </DataTemplate>
-            
+
             <DataTemplate DataType="{x:Type vm:SessionsViewModel}">
                 <v:SessionsView/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:AdminLayoutViewModel}">
+                <v:AdminLayoutView/>
             </DataTemplate>
             
             <Style x:Key="BackgroundCircle" TargetType="Ellipse">
