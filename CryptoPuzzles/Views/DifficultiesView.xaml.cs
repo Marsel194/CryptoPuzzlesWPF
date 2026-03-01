@@ -2,9 +2,9 @@
 
 namespace CryptoPuzzles.Views
 {
-    public partial class TutorialsView : UserControl
+    public partial class DifficultiesView : UserControl
     {
-        public TutorialsView()
+        public DifficultiesView()
         {
             InitializeComponent();
         }

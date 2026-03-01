@@ -26,12 +26,26 @@
                 <v:UserView/>
             </DataTemplate>
 
+            <!-- Для админки -->
+            
+            <DataTemplate DataType="{x:Type vm:AdminViewModel}">
+                <v:AdminView/>
+            </DataTemplate>
+
             <DataTemplate DataType="{x:Type vm:AdminsViewModel}">
                 <v:AdminsView/>
             </DataTemplate>
             
-            <DataTemplate DataType="{x:Type vm:AdminViewModel}">
-                <v:AdminView/>
+            <DataTemplate DataType="{x:Type vm:UsersViewModel}">
+                <v:UsersView/>
+            </DataTemplate>
+            
+            <DataTemplate DataType="{x:Type vm:TutorialsViewModel}">
+                <v:TutorialsView/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:DifficultiesViewModel}">
+                <v:DifficultiesView/>
             </DataTemplate>
             
             <DataTemplate DataType="{x:Type vm:MethodsViewModel}">
@@ -172,6 +186,16 @@
                 <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="22"/>
                 <Setter Property="Padding" Value="8,0"/>
                 <Setter Property="Cursor" Value="Hand"/>
+            </Style>
+
+            <Style TargetType="DataGrid" BasedOn="{StaticResource MaterialDesignDataGrid}">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="RowBackground" Value="{DynamicResource MaterialDesignCardBackground}"/>
+                <Setter Property="AlternatingRowBackground" Value="{DynamicResource MaterialDesignPaper}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <!-- <Setter Property="CornerRadius" Value="26"/> -->
+                <Setter Property="Margin" Value="0,8,0,0"/>
             </Style>
         </ResourceDictionary>
     </Application.Resources>

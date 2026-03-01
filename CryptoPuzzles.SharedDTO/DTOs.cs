@@ -43,6 +43,7 @@
     // User
     public record AUser(int Id, string Login, string Username, string Email, DateTime? CreatedAt);
     public record AUserUpdate(int Id, string Login, string Username, string Email);
+    public record AUserCreate(string Login, string Password, string Username, string Email);
 
     // Auth / Common
     public record UAErrorResponse(string Message, string? Details);

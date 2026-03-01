@@ -1,23 +1,27 @@
 ﻿using CryptoPuzzles.Services;
 using CryptoPuzzles.Services.ApiService;
-using CryptoPuzzles.SharedDTO;
 using CryptoPuzzles.ViewModels.Base;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace CryptoPuzzles.ViewModels
 {
     public class AdminViewModel : ViewModelBase
     {
+        private readonly AdminNavigationService _adminNavigation;
         private readonly NavigationService _navigation;
-        private readonly UserApiService _userApi;
-        private readonly AdminApiService _adminApi;
-        private readonly EncryptionMethodApiService _methodApi;
-        private readonly PuzzleApiService _puzzleApi;
-        private readonly HintApiService _hintApi;
-        private readonly GameSessionApiService _sessionApi;
-        private readonly TutorialApiService _tutorialApi;
+
+        private readonly UserApiService? _userApi;
+        private readonly AdminApiService? _adminApi;
+        private readonly EncryptionMethodApiService? _methodApi;
+        private readonly PuzzleApiService? _puzzleApi;
+        private readonly HintApiService? _hintApi;
+        private readonly GameSessionApiService? _sessionApi;
+        private readonly TutorialApiService? _tutorialApi;
+        private readonly AdminLayoutViewModel _layout;
 
         private int _totalUsers;
         private int _newUsersToday;
@@ -35,29 +39,36 @@ namespace CryptoPuzzles.ViewModels
         private int _solvedToday;
         private ObservableCollection<RecentAction> _recentActions;
 
-        public AdminViewModel()
+        public AdminViewModel(AdminNavigationService adminNavigation, NavigationService navigation)
         {
+            _adminNavigation = adminNavigation;
+            _navigation = navigation;
+            // инициализация команд
+            NavigateToUsersCommand = new AsyncRelayCommand(_ => { _adminNavigation.NavigateTo<UsersViewModel>(); return Task.CompletedTask; });
+            NavigateToAdminsCommand = new AsyncRelayCommand(_ => { _adminNavigation.NavigateTo<AdminsViewModel>(); return Task.CompletedTask; });
+            NavigateToMethodsCommand = new AsyncRelayCommand(_ => _navigation.NavigateToAsync<MethodsViewModel>());
+
             _navigation = App.Services.GetRequiredService<NavigationService>();
-            _userApi = App.Services.GetRequiredService<UserApiService>();
-            _adminApi = App.Services.GetRequiredService<AdminApiService>();
-            _methodApi = App.Services.GetRequiredService<EncryptionMethodApiService>();
-            _puzzleApi = App.Services.GetRequiredService<PuzzleApiService>();
-            _hintApi = App.Services.GetRequiredService<HintApiService>();
-            _sessionApi = App.Services.GetRequiredService<GameSessionApiService>();
-            _tutorialApi = App.Services.GetRequiredService<TutorialApiService>();
 
-            NavigateToUsersCommand = new AsyncRelayCommand(() => _navigation.NavigateToAsync<UsersViewModel>());
-            NavigateToAdminsCommand = new AsyncRelayCommand(() => _navigation.NavigateToAsync<AdminsViewModel>());
-            NavigateToMethodsCommand = new AsyncRelayCommand(() => _navigation.NavigateToAsync<MethodsViewModel>());
-            NavigateToPuzzlesCommand = new AsyncRelayCommand(() => _navigation.NavigateToAsync<PuzzlesViewModel>());
-            NavigateToHintsCommand = new AsyncRelayCommand(() => _navigation.NavigateToAsync<HintsViewModel>());
-            NavigateToSessionsCommand = new AsyncRelayCommand(() => _navigation.NavigateToAsync<SessionsViewModel>());
-            NavigateToTutorialsCommand = new AsyncRelayCommand(() => _navigation.NavigateToAsync<TutorialsViewModel>());
-            NavigateToStatisticsCommand = new AsyncRelayCommand(() => _navigation.NavigateToAsync<StatisticsViewModel>());
-            ToggleThemeCommand = new AsyncRelayCommand(() => { ToggleTheme(); return Task.CompletedTask; });
-            LogoutCommand = new AsyncRelayCommand(LogoutAsync);
+            _userApi = App.Services.GetService<UserApiService>();
+            _adminApi = App.Services.GetService<AdminApiService>();
+            _methodApi = App.Services.GetService<EncryptionMethodApiService>();
+            _puzzleApi = App.Services.GetService<PuzzleApiService>();
+            _hintApi = App.Services.GetService<HintApiService>();
+            _sessionApi = App.Services.GetService<GameSessionApiService>();
+            _tutorialApi = App.Services.GetService<TutorialApiService>();
 
-            LoadStatsAsync();
+            NavigateToMethodsCommand = new AsyncRelayCommand(_ => _navigation.NavigateToAsync<MethodsViewModel>());
+            NavigateToPuzzlesCommand = new AsyncRelayCommand(_ => _navigation.NavigateToAsync<PuzzlesViewModel>());
+            NavigateToHintsCommand = new AsyncRelayCommand(_ => _navigation.NavigateToAsync<HintsViewModel>());
+            NavigateToSessionsCommand = new AsyncRelayCommand(_ => _navigation.NavigateToAsync<SessionsViewModel>());
+            NavigateToTutorialsCommand = new AsyncRelayCommand(_ => _navigation.NavigateToAsync<TutorialsViewModel>());
+            NavigateToStatisticsCommand = new AsyncRelayCommand(_ => _navigation.NavigateToAsync<StatisticsViewModel>());
+
+            ToggleThemeCommand = new AsyncRelayCommand(async _ => await ThemeHelper.ToggleTheme());
+            LogoutCommand = new AsyncRelayCommand(async _ => await _navigation.NavigateToAsync<LoginViewModel>());
+
+            //_ = LoadStatsAsync();
         }
 
         public int TotalUsers { get => _totalUsers; set => SetProperty(ref _totalUsers, value); }
@@ -91,51 +102,61 @@ namespace CryptoPuzzles.ViewModels
         {
             try
             {
-                var users = await _userApi.GetAllAsync();
-                TotalUsers = users.Count;
-                NewUsersToday = users.Count(u => u.CreatedAt?.Date == DateTime.Today);
-                ActiveUsers = users.Count;
+                if (_userApi != null)
+                {
+                    var users = await _userApi.GetAllAsync().ConfigureAwait(false);
+                    TotalUsers = users.Count;
+                    NewUsersToday = users.Count(u => u.CreatedAt?.Date == DateTime.Today);
+                    ActiveUsers = users.Count;
+                }
 
-                var admins = await _adminApi.GetAllAsync();
-                TotalAdmins = admins.Count;
+                if (_adminApi != null)
+                {
+                    var admins = await _adminApi.GetAllAsync();
+                    TotalAdmins = admins.Count;
+                }
 
-                var methods = await _methodApi.GetAllAsync();
-                TotalMethods = methods.Count;
+                if (_methodApi != null)
+                {
+                    var methods = await _methodApi.GetAllAsync();
+                    TotalMethods = methods.Count;
+                }
 
-                var puzzles = await _puzzleApi.GetAllAsync();
-                TotalPuzzles = puzzles.Count;
-                ActivePuzzles = puzzles.Count;
+                if (_puzzleApi != null)
+                {
+                    var puzzles = await _puzzleApi.GetAllAsync();
+                    TotalPuzzles = puzzles.Count;
+                    ActivePuzzles = puzzles.Count;
+                }
+
+                if (_hintApi != null)
+                {
+                    var hints = await _hintApi.GetAllAsync();
+                    TotalHints = hints.Count;
+                }
+
+                if (_sessionApi != null)
+                {
+                    var sessions = await _sessionApi.GetAllAsync();
+                    ActiveSessions = sessions.Count(s => s.CompletedAt == null);
+                    AvgScore = sessions.Any() ? sessions.Average(s => s.Score) : 0;
+                    TotalSolved = sessions.Count(s => s.CompletedAt != null);
+                    SolvedToday = sessions.Count(s => s.CompletedAt?.Date == DateTime.Today);
+                }
+
+                if (_tutorialApi != null)
+                {
+                    var tutorials = await _tutorialApi.GetAllAsync();
+                    TotalTutorials = tutorials.Count;
+                }
+
                 DraftPuzzles = 0;
-
-                var hints = await _hintApi.GetAllAsync();
-                TotalHints = hints.Count;
-
-                var sessions = await _sessionApi.GetAllAsync();
-                ActiveSessions = sessions.Count(s => s.CompletedAt == null);
-                AvgScore = sessions.Any() ? sessions.Average(s => s.Score) : 0;
-
-                var tutorials = await _tutorialApi.GetAllAsync();
-                TotalTutorials = tutorials.Count;
-
-                TotalSolved = sessions.Count(s => s.CompletedAt != null);
-                SolvedToday = sessions.Count(s => s.CompletedAt?.Date == DateTime.Today);
-
-                RecentActions = new ObservableCollection<RecentAction>();
+                RecentActions = [];
             }
             catch (Exception ex)
             {
-                DialogService.ShowError("Ошибка загрузки статистики: " + ex.Message);
+                Application.Current.Dispatcher.Invoke(() => DialogService.ShowError("Ошибка загрузки статистики: " + ex.Message));
             }
-        }
-
-        private void ToggleTheme()
-        {
-            ThemeHelper.ToggleTheme();
-        }
-
-        private async Task LogoutAsync()
-        {
-            await _navigation.NavigateToAsync<LoginViewModel>();
         }
     }
 

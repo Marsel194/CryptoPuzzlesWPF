@@ -35,19 +35,15 @@ namespace CryptoPuzzles.Server.Controllers
                 {
                     if (Argon2PasswordActions.VerifyPassword(request.Password, admin.PasswordHash))
                     {
-                        // Формируем имя для админа
                         string username = $"{admin.LastName} {admin.FirstName[0]}.";
                         if (!string.IsNullOrEmpty(admin.MiddleName))
-                        {
                             username += $" {admin.MiddleName[0]}.";
-                        }
 
                         var response = new UALoginResponse(admin.Login, "", username, true);
                         return Ok(response);
                     }
                 }
 
-                // Неудачная попытка входа
                 return Unauthorized(new UAErrorResponse("Неверный логин или пароль", null));
             }
             catch (Exception ex)
@@ -57,31 +53,24 @@ namespace CryptoPuzzles.Server.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] UARegisterRequest request)  // используем общий DTO
+        public async Task<IActionResult> Register([FromBody] UARegisterRequest request)
         {
             try
             {
-                // Проверяем, не занят ли логин
                 var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Login == request.Login);
                 if (existingUser != null)
-                {
                     return Conflict(new UAErrorResponse("Пользователь с таким логином уже существует", null));
-                }
 
-                // Проверяем, не занят ли email
                 var existingEmail = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
                 if (existingEmail != null)
-                {
                     return Conflict(new UAErrorResponse("Пользователь с таким email уже существует", null));
-                }
 
-                // Создаём нового пользователя (нужно будет добавить хеширование пароля)
                 var newUser = new User
                 {
                     Login = request.Login,
                     Username = request.Username,
                     Email = request.Email,
-                    PasswordHash = Argon2PasswordActions.HashPassword(request.Password), // если такой метод есть
+                    PasswordHash = Argon2PasswordActions.HashPassword(request.Password),
                     CreatedAt = DateTime.UtcNow
                 };
 

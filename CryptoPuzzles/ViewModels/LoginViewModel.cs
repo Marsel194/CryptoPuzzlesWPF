@@ -48,6 +48,7 @@ namespace CryptoPuzzles.ViewModels
                 var response = await _apiService.LoginAsync(Login, password);
                 if (response == null)
                     return;
+
                 if (response.IsAdmin){
                     DialogService.ShowMessage($"Добро пожаловать, {response.Username}!");
                     await _navigationService.NavigateToAsync<AdminViewModel>();

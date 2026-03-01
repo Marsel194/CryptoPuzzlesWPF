@@ -21,6 +21,7 @@
                         <ColumnDefinition Width="3*"/>
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBox Grid.Column="0" Text="{Binding NewItem.Title, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Название" Margin="4"/>
@@ -28,7 +29,9 @@
                     <TextBox Grid.Column="2" Text="{Binding NewItem.Answer, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Ответ" Margin="4"/>
                     <ComboBox Grid.Column="3" ItemsSource="{Binding Difficulties}" SelectedValuePath="Id" DisplayMemberPath="DifficultyName" 
                               SelectedValue="{Binding NewItem.DifficultyId}" materialDesign:HintAssist.Hint="Сложность" Margin="4"/>
-                    <Button Grid.Column="4" Command="{Binding AddCommand}" Content="Добавить" Style="{StaticResource PrimaryButton}" Margin="4,0"/>
+                    <ComboBox Grid.Column="4" ItemsSource="{Binding Methods}" SelectedValuePath="Id" DisplayMemberPath="Name" 
+                              SelectedValue="{Binding NewItem.MethodId}" materialDesign:HintAssist.Hint="Метод" Margin="4"/>
+                    <Button Grid.Column="5" Command="{Binding AddCommand}" Content="Добавить" Style="{StaticResource PrimaryButton}" Margin="4,0"/>
                 </Grid>
             </StackPanel>
         </Border>
@@ -44,6 +47,7 @@
                 <DataGridTextColumn Header="Содержание" Binding="{Binding Content}" Width="200"/>
                 <DataGridTextColumn Header="Ответ" Binding="{Binding Answer}" Width="100"/>
                 <DataGridTextColumn Header="Макс. балл" Binding="{Binding MaxScore}" Width="80"/>
+                <!-- Сложность: редактирование через ComboBox -->
                 <DataGridTemplateColumn Header="Сложность" Width="120">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -54,10 +58,11 @@
                         <DataTemplate>
                             <ComboBox ItemsSource="{Binding DataContext.Difficulties, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                       SelectedValuePath="Id" DisplayMemberPath="DifficultyName"
-                                      SelectedValue="{Binding DifficultyId}"/>
+                                      SelectedValue="{Binding DifficultyId, UpdateSourceTrigger=PropertyChanged}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
+                <!-- Метод: редактирование через ComboBox -->
                 <DataGridTemplateColumn Header="Метод" Width="120">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -68,13 +73,13 @@
                         <DataTemplate>
                             <ComboBox ItemsSource="{Binding DataContext.Methods, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                       SelectedValuePath="Id" DisplayMemberPath="Name"
-                                      SelectedValue="{Binding MethodId}"/>
+                                      SelectedValue="{Binding MethodId, UpdateSourceTrigger=PropertyChanged}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
                 <DataGridCheckBoxColumn Header="Обучение" Binding="{Binding IsTraining}"/>
                 <DataGridTextColumn Header="Порядок" Binding="{Binding TutorialOrder}"/>
-                <DataGridTemplateColumn Header="Действия" Width="80">
+                <DataGridTemplateColumn Header="Действия" Width="100">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 

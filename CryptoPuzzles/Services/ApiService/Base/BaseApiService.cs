@@ -20,8 +20,8 @@ namespace CryptoPuzzles.Services.Api.Base
         {
             try
             {
-                var response = await action();
-                var content = await response.Content.ReadAsStringAsync();
+                var response = await action().ConfigureAwait(false);
+                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 if (response.IsSuccessStatusCode)
                 {

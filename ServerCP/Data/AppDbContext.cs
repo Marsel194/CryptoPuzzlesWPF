@@ -58,6 +58,15 @@ namespace CryptoPuzzles.Server.Data
                 entity.Property(a => a.PasswordHash)
                       .HasColumnName("password_hash");
 
+                entity.Property(a => a.FirstName)
+                      .HasColumnName("first_name");
+
+                entity.Property(a => a.LastName)
+                      .HasColumnName("last_name");
+
+                entity.Property(a => a.MiddleName)
+                      .HasColumnName("middle_name");
+
                 entity.Property(a => a.IsDeleted)
                       .HasColumnName("is_deleted");
 

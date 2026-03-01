@@ -26,6 +26,8 @@ namespace CryptoPuzzles
             services.AddSingleton<DialogService>();
             services.AddSingleton<NavigationService>();
 
+            services.AddSingleton<AdminNavigationService>();
+
             services.AddTransient<MainViewModel>();
             services.AddTransient<LoginViewModel>();
             services.AddTransient<AdminsViewModel>();
@@ -38,6 +40,7 @@ namespace CryptoPuzzles
             services.AddTransient<TutorialsViewModel>();
             services.AddTransient<UsersViewModel>();
             services.AddTransient<UserViewModel>();
+            services.AddTransient<AdminLayoutViewModel>();
 
             services.AddSingleton<UserApiService>();
             services.AddSingleton<DifficultyApiService>();
@@ -48,7 +51,6 @@ namespace CryptoPuzzles
             services.AddSingleton<TutorialApiService>();
 
             services.AddSingleton(httpClient);
-            //services.AddSingleton<UserApiService>();
             services.AddSingleton<AdminApiService>();
             services.AddSingleton<AuthApiService>();
 
