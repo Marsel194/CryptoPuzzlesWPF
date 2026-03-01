@@ -42,9 +42,9 @@ try
 
     Console.WriteLine("\nХэш для базы данных:");
     Console.WriteLine(hash);
-    Console.WriteLine("\nСкопируй это значение в базу данных!");
 }
 catch (Exception ex)
 {
     Console.WriteLine($"Ошибка при хешировании: {ex.Message}");
 }
+Console.ReadKey();

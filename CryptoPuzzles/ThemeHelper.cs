@@ -4,7 +4,7 @@ namespace CryptoPuzzles
 {
     internal class ThemeHelper
     {
-        public static void ToggleTheme()
+        public static async Task ToggleTheme()
         {
             var paletteHelper = new PaletteHelper();
             var theme = paletteHelper.GetTheme();

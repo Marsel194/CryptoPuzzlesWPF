@@ -22,14 +22,13 @@ namespace CryptoPuzzles.Server.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Конфигурация User
             modelBuilder.Entity<User>(entity =>
             {
-                entity.ToTable("users"); // В SQL таблица users (маленькими буквами)
+                entity.ToTable("users");
                 entity.HasKey(u => u.Id);
 
                 entity.Property(u => u.CreatedAt)
-                      .HasColumnName("created_at") // КРИТИЧНО: указываем точное имя из SQL
+                      .HasColumnName("created_at")
                       .HasColumnType("datetime")
                       .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
@@ -46,17 +45,30 @@ namespace CryptoPuzzles.Server.Data
                 entity.HasIndex(u => u.Email).IsUnique().HasDatabaseName("idx_users_email");
             });
 
-            // Конфигурация Admin
             modelBuilder.Entity<Admin>(entity =>
             {
+                entity.ToTable("admins");
+                entity.HasKey(a => a.Id);
+
                 entity.Property(a => a.CreatedAt)
                       .HasColumnName("created_at")
                       .HasColumnType("datetime")
                       .HasDefaultValueSql("CURRENT_TIMESTAMP");
-                entity.HasIndex(a => a.Login).IsUnique().HasDatabaseName("idx_admins_login");
+
+                entity.Property(a => a.PasswordHash)
+                      .HasColumnName("password_hash");
+
+                entity.Property(a => a.IsDeleted)
+                      .HasColumnName("is_deleted");
+
+                entity.Property(a => a.DeletedAt)
+                      .HasColumnName("deleted_at");
+
+                entity.HasIndex(a => a.Login)
+                      .IsUnique()
+                      .HasDatabaseName("idx_admins_login");
             });
 
-            // Конфигурация GameSession
             modelBuilder.Entity<GameSession>(entity =>
             {
                 entity.Property(g => g.SessionStartTime)
@@ -66,7 +78,6 @@ namespace CryptoPuzzles.Server.Data
                 entity.HasIndex(g => new { g.UserId, g.SessionStartTime }).HasDatabaseName("idx_game_sessions_user");
             });
 
-            // Конфигурация Tutorial (CreatedAt + UpdatedAt)
             modelBuilder.Entity<Tutorial>(entity =>
             {
                 entity.Property(t => t.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
@@ -75,7 +86,6 @@ namespace CryptoPuzzles.Server.Data
                       .HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
             });
 
-            // Связи (Relations) - здесь у тебя всё было почти верно, я лишь закрепил:
             modelBuilder.Entity<Puzzle>()
                 .HasOne(p => p.Difficulty)
                 .WithMany(d => d.Puzzles)

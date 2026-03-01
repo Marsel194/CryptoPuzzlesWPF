@@ -1,12 +1,8 @@
-﻿using CryptoPuzzles.SharedDTO;
+﻿using Microsoft.AspNetCore.Mvc;
+using CryptoPuzzles.Server.Data;
 using CryptoPuzzles.Server.Models;
-using CryptoPuzzles.Server.Repositories;
-using Konscious.Security.Cryptography;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Cryptography;
-using System.Text;
-
-using CryptoPuzzles.Server.Helpers;
+using CryptoPuzzles.SharedDTO;
+using Microsoft.EntityFrameworkCore;
 
 namespace CryptoPuzzles.Server.Controllers
 {
@@ -14,116 +10,76 @@ namespace CryptoPuzzles.Server.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
+        private readonly AppDbContext _context;
 
-        public UsersController(IUserRepository userRepository)
+        public UsersController(AppDbContext context)
         {
-            _userRepository = userRepository;
+            _context = context;
         }
 
-        [HttpPost("register")]
-        public async Task<ActionResult<UARegisterResponse>> RegisterAsync([FromBody] UARegisterRequest request)
-        {
-            {
-                if (string.IsNullOrWhiteSpace(request.Login) || string.IsNullOrWhiteSpace(request.Username) ||
-                    string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
-                {
-                    return BadRequest(new UAErrorResponse("Все поля обязательны", null));
-                }
-
-                if (!request.Email.Contains('@'))
-                    return BadRequest(new UAErrorResponse("Некорректный email", null));
-
-                var existingUser = await _userRepository.GetByLoginAsync(request.Login);
-                if (existingUser != null)
-                    return BadRequest(new UAErrorResponse("Логин уже занят", null));
-
-                var user = new User
-                {
-                    Login = request.Login,
-                    Username = request.Username,
-                    Email = request.Email,
-                    PasswordHash = Argon2PasswordActions.HashPassword(request.Password)
-                };
-
-                var createdUser = await _userRepository.CreateAsync(user);
-
-                return Ok(new UARegisterResponse(
-                    createdUser.Id,
-                    createdUser.Login,
-                    createdUser.Username,
-                    createdUser.Email));
-            }
-        }
-
-        // GET: api/users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UUser>>> GetAll()
+        public async Task<ActionResult<IEnumerable<AUser>>> GetAll()
         {
-            var users = await _userRepository.GetAllAsync();
+            var users = await _context.Users
+                .Where(u => !u.IsDeleted)
+                .Select(u => new AUser(u.Id, u.Login, u.Username, u.Email, u.CreatedAt))
+                .ToListAsync();
             return Ok(users);
         }
 
-        // GET: api/users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<UUser>> Get(int id)
+        public async Task<ActionResult<AUser>> Get(int id)
         {
-            var user = await _userRepository.GetByIdAsync(id);
-            if (user == null)
-                return NotFound();
-
+            var user = await _context.Users
+                .Where(u => u.Id == id && !u.IsDeleted)
+                .Select(u => new AUser(u.Id, u.Login, u.Username, u.Email, u.CreatedAt))
+                .FirstOrDefaultAsync();
+            if (user == null) return NotFound();
             return Ok(user);
         }
 
-        // PUT: api/users/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, User user)
+        [HttpPost]
+        public async Task<ActionResult<AUser>> Create(AUserUpdate dto)
         {
-            if (id != user.Id)
-                return BadRequest();
-
-            if (!await _userRepository.ExistsAsync(id))
-                return NotFound();
-
-            // Если пароль пришёл, возможно, его нужно захэшировать заново
-            // Лучше принимать DTO, но пока упростим
-            if (!string.IsNullOrEmpty(user.PasswordHash))
+            var user = new User
             {
-                user.PasswordHash = Argon2PasswordActions.HashPassword(user.PasswordHash);
-            }
-            else
-            {
-                // Если пароль не передан, оставляем старый — нужно получить текущего пользователя
-                var existing = await _userRepository.GetByIdAsync(id);
-                if (existing != null)
-                    user.PasswordHash = existing.PasswordHash;
-            }
+                Login = dto.Login,
+                Username = dto.Username,
+                Email = dto.Email,
+                PasswordHash = "temporary",
+                CreatedAt = DateTime.UtcNow
+            };
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction(nameof(Get), new { id = user.Id },
+                new AUser(user.Id, user.Login, user.Username, user.Email, user.CreatedAt));
+        }
 
-            await _userRepository.UpdateAsync(user);
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, AUserUpdate dto)
+        {
+            if (id != dto.Id) return BadRequest();
+            var user = await _context.Users.FindAsync(id);
+            if (user == null || user.IsDeleted) return NotFound();
+
+            user.Login = dto.Login;
+            user.Username = dto.Username;
+            user.Email = dto.Email;
+
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 
-        // DELETE: api/users/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            if (!await _userRepository.ExistsAsync(id))
-                return NotFound();
+            var user = await _context.Users.FindAsync(id);
+            if (user == null || user.IsDeleted) return NotFound();
 
-            await _userRepository.DeleteAsync(id);
+            user.IsDeleted = true;
+            user.DeletedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
             return NoContent();
-        }
-
-        // Дополнительный метод: поиск по логину (если понадобится)
-        [HttpGet("by-login/{login}")]
-        public async Task<ActionResult<User>> GetByLogin(string login)
-        {
-            var user = await _userRepository.GetByLoginAsync(login);
-            if (user == null)
-                return NotFound();
-
-            user.PasswordHash = string.Empty;
-            return Ok(user);
         }
     }
 }

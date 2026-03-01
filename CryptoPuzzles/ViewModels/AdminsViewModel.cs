@@ -1,48 +1,29 @@
-﻿using CryptoPuzzles.Services;
-using CryptoPuzzles.Services.ApiService;
+﻿using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.SharedDTO;
-using CryptoPuzzles.ViewModels.Base;
-using Microsoft.Extensions.DependencyInjection;
-using System.Collections.ObjectModel;
 
 namespace CryptoPuzzles.ViewModels
 {
-    internal class AdminsViewModel : ViewModelBase
+    public class AdminsViewModel : EntityViewModelBase<AAdmin, AAdminCreate, AAdminUpdate>
     {
-        private readonly AdminApiService _apiService;
-
-        private ObservableCollection<AAdmin>? _admins;
-        public ObservableCollection<AAdmin>? Admins
+        public AdminsViewModel(AdminApiService apiService) : base(apiService)
         {
-            get => _admins;
-            set
-            {
-                _admins = value;
-                OnPropertyChanged();
-            }
         }
 
-        public AdminsViewModel()
+        protected override AAdmin CreateNewItem()
         {
-            _apiService = App.Services.GetService<AdminApiService>()
-                ?? throw new Exception("ApiService not registered");
-
-            Admins = [];
-
-            _ = LoadAdminsAsync();
+            return new AAdmin(0, "", "", "", null, DateTime.Now);
         }
 
-        private async Task LoadAdminsAsync()
+        protected override AAdminCreate MapToCreateDto(AAdmin item)
         {
-            try
-            {
-                var adminsList = await _apiService.GetAdminsAsync();
-                Admins = new ObservableCollection<AAdmin>(adminsList);
-            }
-            catch (Exception ex)
-            {
-                DialogService.ShowError("Ошибка обработки запроса: " + ex.Message);
-            }
+            return new AAdminCreate(item.Login, "", item.FirstName, item.LastName, item.MiddleName);
         }
+
+        protected override AAdminUpdate MapToUpdateDto(AAdmin item)
+        {
+            return new AAdminUpdate(item.Id, item.Login, item.FirstName, item.LastName, item.MiddleName, null);
+        }
+
+        protected override int GetId(AAdmin item) => item.Id;
     }
 }

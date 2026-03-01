@@ -45,6 +45,7 @@
                 <!-- Кнопки темы / выхода -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
                     <Button Foreground="White"
+                            Command="{Binding ToggleThemeCommand}" 
                             Cursor="Hand"
                             Style="{StaticResource MaterialDesignFlatButton}">
                         <StackPanel Orientation="Horizontal">
@@ -350,10 +351,6 @@
                                 materialDesign:ButtonAssist.CornerRadius="8"/>
                     </StackPanel>
                 </Border>
-
-                <!-- 10. НАСТРОЙКИ -->
-
-                <!-- 11. БЫСТРОЕ ДОБАВЛЕНИЕ (заглушка) -->
             </WrapPanel>
         </ScrollViewer>
     </Grid>
