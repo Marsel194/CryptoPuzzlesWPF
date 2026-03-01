@@ -82,6 +82,12 @@ namespace CryptoPuzzles.ViewModels
                 return;
             }
 
+            if (!Email.Contains('@'))
+            {
+                DialogService.ShowError("Email введен неккоректно");
+                return;
+            }
+
             if (Password != ConfirmPassword)
             {
                 DialogService.ShowError("Пароли не совпадают!");
@@ -91,7 +97,7 @@ namespace CryptoPuzzles.ViewModels
             try
             {
                 var registerRequest = new UARegisterRequest(Login, Username, Email, Password);
-                var registeredUser = await _apiService.RegisterAsync(registerRequest);  // Now passes request with password
+                var registeredUser = await _apiService.RegisterAsync(registerRequest);
 
                 if (registeredUser != null)
                     DialogService.ShowMessage($"Регистрация успешна! Добро пожаловать, {registeredUser.Username}");

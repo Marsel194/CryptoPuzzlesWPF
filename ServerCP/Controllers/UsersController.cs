@@ -24,7 +24,7 @@ namespace CryptoPuzzles.Server.Controllers
 
         // Пример: регистрация с проверкой логина через репозиторий
         [HttpPost("register")]
-        public async Task<ActionResult<AUser>> Register([FromBody] UARegisterRequest request)  // Изменить на DTO
+        public async Task<ActionResult<AUser>> RegisterAsync([FromBody] UARegisterRequest request)  // Изменить на DTO
         {
             if (string.IsNullOrWhiteSpace(request.Login) || string.IsNullOrWhiteSpace(request.Username) ||
                 string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
@@ -32,8 +32,7 @@ namespace CryptoPuzzles.Server.Controllers
                 return BadRequest(new UAErrorResponse("Все поля обязательны", null));
             }
 
-            // Проверка email (простая)
-            if (!request.Email.Contains("@"))  // Или используй EmailAddressAttribute
+            if (!request.Email.Contains('@'))
                 return BadRequest(new UAErrorResponse("Некорректный email", null));
 
             var existingUser = await _userRepository.GetByLoginAsync(request.Login);

@@ -32,12 +32,12 @@ namespace CryptoPuzzles.Services
             }
         }
 
-        public async Task<AUser> RegisterAsync(UARegisterRequest request)  // Изменить сигнатуру
+        public async Task<AUser> RegisterAsync(UARegisterRequest request)
         {
             try
             {
                 var response = await _httpClient.PostAsJsonAsync("api/users/register", request);
-                var content = await response.Content.ReadAsStringAsync();  // Сначала читаем как string
+                var content = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -48,7 +48,7 @@ namespace CryptoPuzzles.Services
                     try
                     {
                         var error = JsonSerializer.Deserialize<UAErrorResponse>(content);
-                        throw new Exception(error?.Message ?? "Ошибка регистрации");
+                        throw new Exception(error?.Message ?? content);
                     }
                     catch (JsonException)
                     {
