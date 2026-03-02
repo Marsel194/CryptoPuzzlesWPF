@@ -1,6 +1,5 @@
 ﻿using CryptoPuzzles.SharedDTO;
 using System.Net.Http;
-using System.Security.Cryptography.Xml;
 
 namespace CryptoPuzzles.Services.ApiService
 {

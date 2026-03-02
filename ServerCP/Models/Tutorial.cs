@@ -13,7 +13,6 @@ namespace CryptoPuzzles.Server.Models
         public required string TheoryContent { get; set; }
 
         public int SortOrder { get; set; } = 0;
-        public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public bool IsDeleted { get; set; }

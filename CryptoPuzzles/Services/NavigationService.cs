@@ -1,12 +1,11 @@
 ﻿using CryptoPuzzles.ViewModels.Base;
 using Microsoft.Extensions.DependencyInjection;
-using System.Windows;
 
 namespace CryptoPuzzles.Services
 {
     public class NavigationService
     {
-        private ViewModelBase _currentView;
+        private ViewModelBase? _currentView;
 
         public event Action<ViewModelBase> OnViewChanged;
 
@@ -22,9 +21,7 @@ namespace CryptoPuzzles.Services
             }
             catch (Exception ex)
             {
-                // Дополнительный перехват
-                System.Diagnostics.Debug.WriteLine($"Ошибка в NavigateToAsync: {ex}");
-                MessageBox.Show($"Общая ошибка навигации: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                DialogService.ShowError($"Общая ошибка навигации: {ex.Message}");
                 throw;
             }
             await Task.CompletedTask;

@@ -1,5 +1,4 @@
 ﻿using CryptoPuzzles.Services;
-using CryptoPuzzles.Services.Api;
 using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.ViewModels;
 using CryptoPuzzles.Views;

@@ -1,4 +1,5 @@
-﻿using CryptoPuzzles.Services.ApiService;
+﻿using CryptoPuzzles.Services;
+using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.SharedDTO;
 
 namespace CryptoPuzzles.ViewModels
@@ -23,5 +24,47 @@ namespace CryptoPuzzles.ViewModels
         }
 
         protected override int GetId(AEncryptionMethod item) => item.Id;
+
+        protected override async Task AddAsync()
+        {
+            if (string.IsNullOrWhiteSpace(NewItem?.Name))
+            {
+                DialogService.ShowError("Название метода не может быть пустым!");
+                return;
+            }
+
+            var itemToAdd = new AEncryptionMethod(0, NewItem.Name);
+
+            Items.Add(itemToAdd);
+            _addedItems.Add(itemToAdd);
+
+            NewItem = CreateNewItem();
+            HasChanges = true;
+
+            await Task.CompletedTask;
+        }
+
+        protected override async Task SaveAsync()
+        {
+            foreach (var item in _addedItems)
+            {
+                if (string.IsNullOrWhiteSpace(item.Name))
+                {
+                    DialogService.ShowError("Название метода не может быть пустым!");
+                    return;
+                }
+            }
+
+            foreach (var item in Items.Except(_addedItems))
+            {
+                if (string.IsNullOrWhiteSpace(item.Name))
+                {
+                    DialogService.ShowError("Название метода не может быть пустым!");
+                    return;
+                }
+            }
+
+            await base.SaveAsync();
+        }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using CryptoPuzzles.Services;
 using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.ViewModels.Base;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
@@ -21,7 +19,6 @@ namespace CryptoPuzzles.ViewModels
         private readonly HintApiService? _hintApi;
         private readonly GameSessionApiService? _sessionApi;
         private readonly TutorialApiService? _tutorialApi;
-        private readonly AdminLayoutViewModel _layout;
 
         private int _totalUsers;
         private int _newUsersToday;

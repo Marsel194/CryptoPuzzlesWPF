@@ -198,7 +198,7 @@
                 <Setter Property="AlternatingRowBackground" Value="{DynamicResource MaterialDesignPaper}"/>
                 <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
                 <Setter Property="BorderThickness" Value="1"/>
-                <!-- <Setter Property="CornerRadius" Value="26"/> -->
+                <Setter Property="materialDesign:DataGridAssist.CornerRadius" Value="26"/>
                 <Setter Property="Margin" Value="0,8,0,0"/>
             </Style>
         </ResourceDictionary>

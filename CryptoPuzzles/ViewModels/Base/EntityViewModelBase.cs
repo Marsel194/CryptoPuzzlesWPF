@@ -16,14 +16,14 @@ namespace CryptoPuzzles.ViewModels
         private T _newItem;
         private bool _hasChanges;
 
-        private List<T> _addedItems = new();
-        private List<T> _removedItems = new();
-        private Dictionary<int, T> _originalItems = new();
+        protected List<T> _addedItems = [];
+        protected List<T> _removedItems = [];
+        protected Dictionary<int, T> _originalItems = [];
 
         protected EntityViewModelBase(IEntityApiService<T, TCreate, TUpdate> apiService)
         {
             _apiService = apiService;
-            _items = new ObservableCollection<T>();
+            _items = [];
             _newItem = CreateNewItem();
 
             AddCommand = new AsyncRelayCommand(async _ => await AddAsync());
@@ -61,8 +61,7 @@ namespace CryptoPuzzles.ViewModels
             }
             catch (Exception ex)
             {
-                // Используйте ваш сервис диалогов
-                System.Diagnostics.Debug.WriteLine($"Ошибка загрузки: {ex.Message}");
+                DialogService.ShowError($"Ошибка загрузки: {ex.Message}");
             }
         }
 
@@ -77,16 +76,18 @@ namespace CryptoPuzzles.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Ошибка добавления: {ex.Message}");
+                DialogService.ShowError($"Ошибка добавления: {ex.Message}");
             }
         }
 
         protected virtual async Task DeleteAsync(int? id)
         {
-            if (!id.HasValue) return;
-            // Здесь можно вызвать диалог подтверждения
+            if (!id.HasValue)
+                return;
+
             var item = Items.FirstOrDefault(x => GetId(x) == id.Value);
-            if (item == null) return;
+            if (item == null)
+                return;
 
             if (id.Value < 0)
             {
@@ -106,11 +107,9 @@ namespace CryptoPuzzles.ViewModels
         {
             try
             {
-                // Удаление
                 foreach (var item in _removedItems)
                     await _apiService.DeleteAsync(GetId(item));
 
-                // Добавление
                 foreach (var tempItem in _addedItems.ToList())
                 {
                     var dto = MapToCreateDto(tempItem);
@@ -123,7 +122,6 @@ namespace CryptoPuzzles.ViewModels
                     }
                 }
 
-                // Обновление изменённых
                 foreach (var item in Items.Except(_addedItems))
                 {
                     var id = GetId(item);
@@ -138,11 +136,10 @@ namespace CryptoPuzzles.ViewModels
                 }
 
                 await LoadDataAsync();
-                // Уведомление об успехе
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Ошибка сохранения: {ex.Message}");
+                DialogService.ShowError($"Ошибка сохранения: {ex.Message}");
             }
         }
 

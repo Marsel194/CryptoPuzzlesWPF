@@ -63,17 +63,11 @@ namespace CryptoPuzzles.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<AGameSession>> Create([FromBody] AGameSessionUpdate dto)
+        public async Task<ActionResult<AGameSession>> Create([FromBody] AGameSessionCreate dto)
         {
-            // Создание сессии обычно происходит через игровой процесс,
-            // но для админки можно добавить ручное создание.
             var session = new GameSession
             {
-                UserId = dto.Id, // Внимание: в AGameSessionUpdate нет UserId, нужно исправить DTO!
-                // Предполагается, что у нас есть отдельное DTO для создания с UserId.
-                // Пока используем dto.Id как временное решение – это неверно.
-                // Рекомендую создать AGameSessionCreate с UserId.
-                // Но для примера оставим как есть.
+                UserId = dto.UserId,
                 Score = dto.Score,
                 CurrentPuzzleId = dto.CurrentPuzzleId,
                 TrainingCompleted = dto.TrainingCompleted,
@@ -111,10 +105,14 @@ namespace CryptoPuzzles.Server.Controllers
                 .FirstOrDefaultAsync();
             if (session == null) return NotFound();
 
-            session.Score = dto.Score;
-            session.CurrentPuzzleId = dto.CurrentPuzzleId;
-            session.TrainingCompleted = dto.TrainingCompleted;
-            session.HintsUsed = dto.HintsUsed;
+            if (dto.Score.HasValue)
+                session.Score = dto.Score.Value;
+            if (dto.CurrentPuzzleId.HasValue)
+                session.CurrentPuzzleId = dto.CurrentPuzzleId.Value;
+            if (dto.TrainingCompleted.HasValue)
+                session.TrainingCompleted = dto.TrainingCompleted.Value;
+            if (dto.HintsUsed.HasValue)
+                session.HintsUsed = dto.HintsUsed.Value;
             session.CompletedAt = dto.CompletedAt;
 
             await _context.SaveChangesAsync();

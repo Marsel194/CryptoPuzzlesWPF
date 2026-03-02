@@ -30,7 +30,6 @@ namespace CryptoPuzzles.Server.Controllers
                     t.TheoryTitle,
                     t.TheoryContent,
                     t.SortOrder,
-                    t.IsActive,
                     t.CreatedAt,
                     t.UpdatedAt))
                 .ToListAsync();
@@ -50,7 +49,6 @@ namespace CryptoPuzzles.Server.Controllers
                     t.TheoryTitle,
                     t.TheoryContent,
                     t.SortOrder,
-                    t.IsActive,
                     t.CreatedAt,
                     t.UpdatedAt))
                 .FirstOrDefaultAsync();
@@ -67,7 +65,6 @@ namespace CryptoPuzzles.Server.Controllers
                 TheoryTitle = dto.TheoryTitle,
                 TheoryContent = dto.TheoryContent,
                 SortOrder = dto.SortOrder,
-                IsActive = dto.IsActive,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
@@ -83,7 +80,6 @@ namespace CryptoPuzzles.Server.Controllers
                 tutorial.TheoryTitle,
                 tutorial.TheoryContent,
                 tutorial.SortOrder,
-                tutorial.IsActive,
                 tutorial.CreatedAt,
                 tutorial.UpdatedAt);
 
@@ -103,7 +99,6 @@ namespace CryptoPuzzles.Server.Controllers
             tutorial.TheoryTitle = dto.TheoryTitle;
             tutorial.TheoryContent = dto.TheoryContent;
             tutorial.SortOrder = dto.SortOrder;
-            tutorial.IsActive = dto.IsActive;
             tutorial.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();

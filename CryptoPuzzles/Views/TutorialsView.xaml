@@ -19,30 +19,76 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="3*"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <ComboBox Grid.Column="0" ItemsSource="{Binding Methods}" SelectedValuePath="Id" DisplayMemberPath="Name" 
-                              SelectedValue="{Binding NewItem.MethodId}" materialDesign:HintAssist.Hint="Метод" Margin="4"/>
-                    <TextBox Grid.Column="1" Text="{Binding NewItem.TheoryTitle, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Заголовок" Margin="4"/>
-                    <TextBox Grid.Column="2" Text="{Binding NewItem.SortOrder, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Порядок" Margin="4"/>
-                    <Button Grid.Column="3" Command="{Binding AddCommand}" Content="Добавить" Style="{StaticResource PrimaryButton}" Margin="4,0"/>
+                    <ComboBox Grid.Column="0" 
+                              ItemsSource="{Binding Methods}" 
+                              SelectedValuePath="Id" 
+                              DisplayMemberPath="Name" 
+                              SelectedValue="{Binding NewItem.MethodId}" 
+                              materialDesign:HintAssist.Hint="Метод" 
+                              Margin="4"/>
+                    <TextBox Grid.Column="1" 
+                             Text="{Binding NewItem.TheoryTitle, UpdateSourceTrigger=PropertyChanged}" 
+                             materialDesign:HintAssist.Hint="Заголовок" 
+                             Margin="4"/>
+                    <TextBox Grid.Column="2" 
+                             Text="{Binding NewItem.TheoryContent, UpdateSourceTrigger=PropertyChanged}" 
+                             materialDesign:HintAssist.Hint="Содержание" 
+                             AcceptsReturn="True" 
+                             TextWrapping="Wrap" 
+                             VerticalScrollBarVisibility="Auto"
+                             MinHeight="60"
+                             Margin="4"/>
+                    <TextBox Grid.Column="3" 
+                             Text="{Binding NewItem.SortOrder, UpdateSourceTrigger=PropertyChanged}" 
+                             materialDesign:HintAssist.Hint="Порядок" 
+                             Margin="4"/>
+                    <Button Grid.Column="4" 
+                            Command="{Binding AddCommand}" 
+                            Content="Добавить" 
+                            Style="{StaticResource PrimaryButton}" 
+                            Margin="4,0"/>
                 </Grid>
             </StackPanel>
         </Border>
 
-        <!-- DataGrid -->
-        <DataGrid Grid.Row="2" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" 
-                  AutoGenerateColumns="False" IsReadOnly="False" CanUserAddRows="False"
+        <DataGrid Grid.Row="2" 
+                  ItemsSource="{Binding Items}" 
+                  SelectedItem="{Binding SelectedItem}" 
+                  AutoGenerateColumns="False" 
+                  IsReadOnly="False" 
+                  CanUserAddRows="False"
                   materialDesign:DataGridAssist.CellPadding="13 8 8 8"
-                  materialDesign:DataGridAssist.ColumnHeaderPadding="8">
+                  materialDesign:DataGridAssist.ColumnHeaderPadding="8"
+                  MinRowHeight="30" Cursor="">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="50"/>
                 <DataGridTextColumn Header="Метод" Binding="{Binding MethodName}" IsReadOnly="True" Width="120"/>
                 <DataGridTextColumn Header="Заголовок" Binding="{Binding TheoryTitle}" Width="200"/>
-                <DataGridTextColumn Header="Содержание" Binding="{Binding TheoryContent}" Width="300"/>
+
+                <!-- Колонка "Содержание" с переносом текста -->
+                <DataGridTemplateColumn Header="Содержание" Width="300">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding TheoryContent}" 
+                                       TextWrapping="Wrap" 
+                                       VerticalAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding TheoryContent, UpdateSourceTrigger=PropertyChanged}" 
+                                     AcceptsReturn="True" 
+                                     TextWrapping="Wrap"
+                                     VerticalScrollBarVisibility="Auto"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+
                 <DataGridTextColumn Header="Порядок" Binding="{Binding SortOrder}" Width="80"/>
-                <DataGridCheckBoxColumn Header="Активен" Binding="{Binding IsActive}"/>
                 <DataGridTextColumn Header="Создан" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="150"/>
                 <DataGridTextColumn Header="Обновлён" Binding="{Binding UpdatedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="150"/>
                 <DataGridTemplateColumn Header="Действия" Width="100">

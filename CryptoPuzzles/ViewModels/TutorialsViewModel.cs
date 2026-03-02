@@ -1,4 +1,5 @@
-﻿using CryptoPuzzles.Services.ApiService;
+﻿using CryptoPuzzles.Services;
+using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.SharedDTO;
 using System.Collections.ObjectModel;
 
@@ -12,7 +13,7 @@ namespace CryptoPuzzles.ViewModels
         public TutorialsViewModel(TutorialApiService tutorialApi, EncryptionMethodApiService methodApi) : base(tutorialApi)
         {
             _methodApi = methodApi;
-            LoadMethodsAsync();
+            _ = LoadMethodsAsync();
         }
 
         public ObservableCollection<AEncryptionMethod> Methods { get => _methods; set => SetProperty(ref _methods, value); }
@@ -24,19 +25,78 @@ namespace CryptoPuzzles.ViewModels
 
         protected override ATutorial CreateNewItem()
         {
-            return new ATutorial(0, 0, "", "", "", 0, true, DateTime.Now, DateTime.Now);
+            return new ATutorial(0, 0, "", "", "", 0, DateTime.Now, DateTime.Now);
         }
 
         protected override ATutorialCreate MapToCreateDto(ATutorial item)
         {
-            return new ATutorialCreate(item.MethodId, item.TheoryTitle, item.TheoryContent, item.SortOrder, item.IsActive);
+            return new ATutorialCreate(item.MethodId, item.TheoryTitle, item.TheoryContent, item.SortOrder);
         }
 
         protected override ATutorialUpdate MapToUpdateDto(ATutorial item)
         {
-            return new ATutorialUpdate(item.Id, item.MethodId, item.TheoryTitle, item.TheoryContent, item.SortOrder, item.IsActive);
+            return new ATutorialUpdate(item.Id, item.MethodId, item.TheoryTitle, item.TheoryContent, item.SortOrder);
         }
 
         protected override int GetId(ATutorial item) => item.Id;
+
+        protected override async Task AddAsync()
+        {
+            if (NewItem.MethodId <= 0)
+            {
+                DialogService.ShowError("Выберите метод!");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(NewItem.TheoryTitle))
+            {
+                DialogService.ShowError("Заголовок не может быть пустым!");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(NewItem.TheoryContent))
+            {
+                DialogService.ShowError("Содержание не может быть пустым!");
+                return;
+            }
+
+            var itemToAdd = new ATutorial(0, NewItem.MethodId, "", NewItem.TheoryTitle, NewItem.TheoryContent,
+                 NewItem.SortOrder, DateTime.Now, DateTime.Now);
+            Items.Add(itemToAdd);
+            _addedItems.Add(itemToAdd);
+
+            NewItem = CreateNewItem();
+            HasChanges = true;
+            await Task.CompletedTask;
+        }
+
+        protected override async Task SaveAsync()
+        {
+            foreach (var item in _addedItems)
+            {
+                if (item.MethodId <= 0 || string.IsNullOrWhiteSpace(item.TheoryTitle) || string.IsNullOrWhiteSpace(item.TheoryContent))
+                {
+                    DialogService.ShowError("Заполните все обязательные поля!");
+                    return;
+                }
+            }
+            foreach (var item in Items.Except(_addedItems))
+            {
+                if (item.MethodId <= 0 || string.IsNullOrWhiteSpace(item.TheoryTitle) || string.IsNullOrWhiteSpace(item.TheoryContent))
+                {
+                    DialogService.ShowError("Заполните все обязательные поля!");
+                    return;
+                }
+            }
+
+            await base.SaveAsync();
+        }
+
+        protected override bool IsEqual(ATutorial x, ATutorial y)
+        {
+            return x.Id == y.Id &&
+                   x.MethodId == y.MethodId &&
+                   x.TheoryTitle == y.TheoryTitle &&
+                   x.TheoryContent == y.TheoryContent &&
+                   x.SortOrder == y.SortOrder;
+        }
     }
 }

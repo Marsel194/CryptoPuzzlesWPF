@@ -1,6 +1,5 @@
 ﻿using CryptoPuzzles.Services;
 using CryptoPuzzles.ViewModels.Base;
-using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Input;
 
 namespace CryptoPuzzles.ViewModels

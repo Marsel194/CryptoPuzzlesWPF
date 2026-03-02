@@ -170,7 +170,6 @@ namespace CryptoPuzzles.Server.Data
                 entity.Property(t => t.TheoryTitle).HasColumnName("theory_title").IsRequired();
                 entity.Property(t => t.TheoryContent).HasColumnName("theory_content").IsRequired();
                 entity.Property(t => t.SortOrder).HasColumnName("sort_order");
-                entity.Property(t => t.IsActive).HasColumnName("is_active");
                 entity.Property(t => t.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.Property(t => t.UpdatedAt).HasColumnName("updated_at").ValueGeneratedOnAddOrUpdate().HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
                 entity.Property(t => t.IsDeleted).HasColumnName("is_deleted");

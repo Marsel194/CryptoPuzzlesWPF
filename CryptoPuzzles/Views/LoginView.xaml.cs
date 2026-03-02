@@ -1,6 +1,4 @@
-﻿using CryptoPuzzles.ViewModels;
-using System.Windows.Controls;
-using Microsoft.Extensions.DependencyInjection;
+﻿using System.Windows.Controls;
 
 namespace CryptoPuzzles.Views
 {
@@ -9,7 +7,6 @@ namespace CryptoPuzzles.Views
         public LoginView()
         {
             InitializeComponent();
-            //DataContext = App.Services.GetRequiredService<LoginViewModel>();
         }
     }
 }

@@ -11,23 +11,6 @@
 
         <TextBlock Grid.Row="0" Text="Игровые сессии" FontSize="24" FontWeight="Bold" Margin="0,0,0,16"/>
 
-        <!-- Панель добавления (может отсутствовать, если не нужно создавать сессии вручную, но для единообразия оставим) -->
-        <Border Grid.Row="1" Style="{StaticResource InputContainer}" Margin="0,0,0,16">
-            <StackPanel>
-                <TextBlock Text="Новая сессия" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" Text="{Binding NewItem.UserId}" materialDesign:HintAssist.Hint="ID пользователя" Margin="4"/>
-                    <TextBox Grid.Column="1" Text="{Binding NewItem.Score}" materialDesign:HintAssist.Hint="Счёт" Margin="4"/>
-                    <Button Grid.Column="2" Command="{Binding AddCommand}" Content="Добавить" Style="{StaticResource PrimaryButton}" Margin="4,0"/>
-                </Grid>
-            </StackPanel>
-        </Border>
-
         <!-- DataGrid -->
         <DataGrid Grid.Row="2" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" 
                   AutoGenerateColumns="False" IsReadOnly="False" CanUserAddRows="False"

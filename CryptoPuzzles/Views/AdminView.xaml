@@ -26,7 +26,7 @@
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="ShieldCrown" 
                                              Width="32" Height="32" 
-                                             Foreground="White"/>
+                                             Foreground="{DynamicResource MaterialDesignBody}"/>
                     <TextBlock Text="CryptoPuzzles Admin"
                                Foreground="{DynamicResource MaterialDesignBody}"
                                FontSize="22" FontWeight="Bold"

@@ -32,19 +32,19 @@
     // GameSession
     public record AGameSession(int Id, int UserId, string UserLogin, int Score, DateTime SessionStartTime,
         int? CurrentPuzzleId, string? CurrentPuzzleTitle, bool TrainingCompleted, int HintsUsed, DateTime? CompletedAt);
-    public record AGameSessionUpdate(int Id, int Score, int? CurrentPuzzleId, bool TrainingCompleted, int HintsUsed, DateTime? CompletedAt);
     public record AGameSessionCreate(int UserId, int Score, int? CurrentPuzzleId, bool TrainingCompleted, int HintsUsed, DateTime? CompletedAt);
+    public record AGameSessionUpdate(int Id, int? Score, int? CurrentPuzzleId, bool? TrainingCompleted, int? HintsUsed, DateTime? CompletedAt);
 
     // Tutorial
     public record ATutorial(int Id, int MethodId, string MethodName, string TheoryTitle,
-        string TheoryContent, int SortOrder, bool IsActive, DateTime CreatedAt, DateTime UpdatedAt);
-    public record ATutorialCreate(int MethodId, string TheoryTitle, string TheoryContent, int SortOrder, bool IsActive);
-    public record ATutorialUpdate(int Id, int MethodId, string TheoryTitle, string TheoryContent, int SortOrder, bool IsActive);
+        string TheoryContent, int SortOrder, DateTime CreatedAt, DateTime UpdatedAt);
+    public record ATutorialCreate(int MethodId, string TheoryTitle, string TheoryContent, int SortOrder);
+    public record ATutorialUpdate(int Id, int MethodId, string TheoryTitle, string TheoryContent, int SortOrder);
 
     // User
     public record AUser(int Id, string Login, string Username, string Email, DateTime? CreatedAt);
-    public record AUserUpdate(int Id, string Login, string Username, string Email);
     public record AUserCreate(string Login, string Password, string Username, string Email);
+    public record AUserUpdate(int Id, string Login, string Username, string Email, string? Password = null);
 
     // Auth / Common
     public record UAErrorResponse(string Message, string? Details);

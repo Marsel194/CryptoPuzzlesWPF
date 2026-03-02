@@ -15,18 +15,18 @@
 
         <!-- Верхняя панель навигации -->
         <Border Background="{DynamicResource PrimaryHueMidBrush}" Padding="16">
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Cursor="">
                 <Button Command="{Binding NavigateBackCommand}" IsEnabled="{Binding CanGoBack}"
                         ToolTip="Назад" Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon Kind="ArrowLeft" Foreground="White"/>
+                    <materialDesign:PackIcon Kind="ArrowLeft" Foreground="{DynamicResource MaterialDesignBody}"/>
                 </Button>
                 <Button Command="{Binding NavigateForwardCommand}" IsEnabled="{Binding CanGoForward}"
                         ToolTip="Вперёд" Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon Kind="ArrowRight" Foreground="White"/>
+                    <materialDesign:PackIcon Kind="ArrowRight" Foreground="{DynamicResource MaterialDesignBody}"/>
                 </Button>
                 <Button Command="{Binding NavigateHomeCommand}" ToolTip="На главную"
                         Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon Kind="Home" Foreground="White"/>
+                    <materialDesign:PackIcon Kind="Home" Foreground="{DynamicResource MaterialDesignBody}"/>
                 </Button>
                 <!-- Тема и выход (можно вынести в отдельную ViewModel или добавить сюда) -->
             </StackPanel>

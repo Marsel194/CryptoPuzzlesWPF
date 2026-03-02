@@ -51,7 +51,7 @@ namespace CryptoPuzzles.ViewModels
 
                 if (response.IsAdmin){
                     DialogService.ShowMessage($"Добро пожаловать, {response.Username}!");
-                    await _navigationService.NavigateToAsync<AdminViewModel>();
+                    await _navigationService.NavigateToAsync<AdminLayoutViewModel>();
                 }
                 else
                 {
