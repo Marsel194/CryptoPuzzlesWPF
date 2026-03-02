@@ -1,6 +1,7 @@
 ﻿using CryptoPuzzles.Services;
 using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.SharedDTO;
+using CryptoPuzzles.ViewModels.Base;
 
 namespace CryptoPuzzles.ViewModels
 {
@@ -29,7 +30,7 @@ namespace CryptoPuzzles.ViewModels
         {
             if (string.IsNullOrWhiteSpace(NewItem?.Name))
             {
-                DialogService.ShowError("Название метода не может быть пустым!");
+                await DialogService.ShowError("Название метода не может быть пустым!");
                 return;
             }
 
@@ -50,7 +51,7 @@ namespace CryptoPuzzles.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(item.Name))
                 {
-                    DialogService.ShowError("Название метода не может быть пустым!");
+                    await DialogService.ShowError("Название метода не может быть пустым!");
                     return;
                 }
             }
@@ -59,7 +60,7 @@ namespace CryptoPuzzles.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(item.Name))
                 {
-                    DialogService.ShowError("Название метода не может быть пустым!");
+                    await DialogService.ShowError("Название метода не может быть пустым!");
                     return;
                 }
             }

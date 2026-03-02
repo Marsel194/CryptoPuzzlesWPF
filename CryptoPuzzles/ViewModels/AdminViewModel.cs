@@ -3,26 +3,16 @@ using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.ViewModels.Base;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
-using System.Windows;
 using System.Windows.Input;
-using System.Windows.Navigation;
-using NavigationService = CryptoPuzzles.Services.NavigationService;
 
 namespace CryptoPuzzles.ViewModels
 {
     public class AdminViewModel : ViewModelBase
     {
-        private readonly AdminNavigationService _adminNavigation;
         private readonly NavigationService _navigationService;
+        private readonly AdminStatsService _statsService;
 
-        private readonly UserApiService? _userApi;
-        private readonly AdminApiService? _adminApi;
-        private readonly EncryptionMethodApiService? _methodApi;
-        private readonly PuzzleApiService? _puzzleApi;
-        private readonly HintApiService? _hintApi;
-        private readonly GameSessionApiService? _sessionApi;
-        private readonly TutorialApiService? _tutorialApi;
-
+        // Отдельные поля для каждого значения статистики
         private int _totalUsers;
         private int _newUsersToday;
         private int _activeUsers;
@@ -30,50 +20,41 @@ namespace CryptoPuzzles.ViewModels
         private int _totalMethods;
         private int _totalPuzzles;
         private int _activePuzzles;
-        private int _draftPuzzles;
         private int _totalHints;
         private int _activeSessions;
         private double _avgScore;
         private int _totalTutorials;
         private int _totalSolved;
         private int _solvedToday;
-        private ObservableCollection<RecentAction> _recentActions;
+        private int _totalDifficulties;
+        private ObservableCollection<RecentAction> _recentActions = new();
 
-        public AdminViewModel(AdminNavigationService adminNavigation)
+        public AdminViewModel()
         {
-            _adminNavigation = adminNavigation;
+            _statsService = App.Services.GetRequiredService<AdminStatsService>();
             _navigationService = App.Services.GetRequiredService<NavigationService>();
 
-            NavigateToUsersCommand = new AsyncRelayCommand(_ => { _adminNavigation.NavigateTo<UsersViewModel>(); return Task.CompletedTask; });
-            NavigateToAdminsCommand = new AsyncRelayCommand(_ => { _adminNavigation.NavigateTo<AdminsViewModel>(); return Task.CompletedTask; });
-            NavigateToMethodsCommand = new AsyncRelayCommand(_ => { _adminNavigation.NavigateTo<MethodsViewModel>(); return Task.CompletedTask; });
-            NavigateToPuzzlesCommand = new AsyncRelayCommand(_ => { _adminNavigation.NavigateTo<PuzzlesViewModel>(); return Task.CompletedTask; });
-            NavigateToHintsCommand = new AsyncRelayCommand(_ => { _adminNavigation.NavigateTo<HintsViewModel>(); return Task.CompletedTask; });
-            NavigateToSessionsCommand = new AsyncRelayCommand(_ => { _adminNavigation.NavigateTo<SessionsViewModel>(); return Task.CompletedTask; });
-            NavigateToTutorialsCommand = new AsyncRelayCommand(_ => { _adminNavigation.NavigateTo<TutorialsViewModel>(); return Task.CompletedTask; });
-            NavigateToStatisticsCommand = new AsyncRelayCommand(_ => { _adminNavigation.NavigateTo<StatisticsViewModel>(); return Task.CompletedTask; });
+            // Навигационные команды
+            NavigateToUsersCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<UsersViewModel>());
+            NavigateToAdminsCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<AdminsViewModel>());
+            NavigateToMethodsCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<MethodsViewModel>());
+            NavigateToPuzzlesCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<PuzzlesViewModel>());
+            NavigateToHintsCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<HintsViewModel>());
+            NavigateToSessionsCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<SessionsViewModel>());
+            NavigateToTutorialsCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<TutorialsViewModel>());
+            NavigateToStatisticsCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<StatisticsViewModel>());
+            NavigateToDifficultiesCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<DifficultiesViewModel>());
+
+            // Системные команды
             ToggleThemeCommand = new AsyncRelayCommand(async _ => await ThemeHelper.ToggleTheme());
             LogoutCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<LoginViewModel>());
+            LoadStatsCommand = new AsyncRelayCommand(async _ => await LoadStatsAsync());
 
+            // Загружаем статистику
             _ = LoadStatsAsync();
         }
 
-        public int TotalUsers { get => _totalUsers; set => SetProperty(ref _totalUsers, value); }
-        public int NewUsersToday { get => _newUsersToday; set => SetProperty(ref _newUsersToday, value); }
-        public int ActiveUsers { get => _activeUsers; set => SetProperty(ref _activeUsers, value); }
-        public int TotalAdmins { get => _totalAdmins; set => SetProperty(ref _totalAdmins, value); }
-        public int TotalMethods { get => _totalMethods; set => SetProperty(ref _totalMethods, value); }
-        public int TotalPuzzles { get => _totalPuzzles; set => SetProperty(ref _totalPuzzles, value); }
-        public int ActivePuzzles { get => _activePuzzles; set => SetProperty(ref _activePuzzles, value); }
-        public int DraftPuzzles { get => _draftPuzzles; set => SetProperty(ref _draftPuzzles, value); }
-        public int TotalHints { get => _totalHints; set => SetProperty(ref _totalHints, value); }
-        public int ActiveSessions { get => _activeSessions; set => SetProperty(ref _activeSessions, value); }
-        public double AvgScore { get => _avgScore; set => SetProperty(ref _avgScore, value); }
-        public int TotalTutorials { get => _totalTutorials; set => SetProperty(ref _totalTutorials, value); }
-        public int TotalSolved { get => _totalSolved; set => SetProperty(ref _totalSolved, value); }
-        public int SolvedToday { get => _solvedToday; set => SetProperty(ref _solvedToday, value); }
-        public ObservableCollection<RecentAction> RecentActions { get => _recentActions; set => SetProperty(ref _recentActions, value); }
-
+        // Команды
         public ICommand NavigateToUsersCommand { get; }
         public ICommand NavigateToAdminsCommand { get; }
         public ICommand NavigateToMethodsCommand { get; }
@@ -82,67 +63,61 @@ namespace CryptoPuzzles.ViewModels
         public ICommand NavigateToSessionsCommand { get; }
         public ICommand NavigateToTutorialsCommand { get; }
         public ICommand NavigateToStatisticsCommand { get; }
+        public ICommand NavigateToDifficultiesCommand { get; }
         public ICommand ToggleThemeCommand { get; }
         public ICommand LogoutCommand { get; }
+        public ICommand LoadStatsCommand { get; }
+
+        // Свойства статистики (используем backing fields)
+        public int TotalUsers { get => _totalUsers; set => SetProperty(ref _totalUsers, value); }
+        public int NewUsersToday { get => _newUsersToday; set => SetProperty(ref _newUsersToday, value); }
+        public int ActiveUsers { get => _activeUsers; set => SetProperty(ref _activeUsers, value); }
+        public int TotalAdmins { get => _totalAdmins; set => SetProperty(ref _totalAdmins, value); }
+        public int TotalMethods { get => _totalMethods; set => SetProperty(ref _totalMethods, value); }
+        public int TotalPuzzles { get => _totalPuzzles; set => SetProperty(ref _totalPuzzles, value); }
+        public int ActivePuzzles { get => _activePuzzles; set => SetProperty(ref _activePuzzles, value); }
+        public int TotalHints { get => _totalHints; set => SetProperty(ref _totalHints, value); }
+        public int ActiveSessions { get => _activeSessions; set => SetProperty(ref _activeSessions, value); }
+        public double AvgScore { get => _avgScore; set => SetProperty(ref _avgScore, value); }
+        public int TotalTutorials { get => _totalTutorials; set => SetProperty(ref _totalTutorials, value); }
+        public int TotalSolved { get => _totalSolved; set => SetProperty(ref _totalSolved, value); }
+        public int SolvedToday { get => _solvedToday; set => SetProperty(ref _solvedToday, value); }
+        public int TotalDifficulties { get => _totalDifficulties; set => SetProperty(ref _totalDifficulties, value); }
+
+        public ObservableCollection<RecentAction> RecentActions
+        {
+            get => _recentActions;
+            set => SetProperty(ref _recentActions, value);
+        }
 
         private async Task LoadStatsAsync()
         {
             try
             {
-                if (_userApi != null)
-                {
-                    var users = await _userApi.GetAllAsync().ConfigureAwait(false);
-                    TotalUsers = users.Count;
-                    NewUsersToday = users.Count(u => u.CreatedAt?.Date == DateTime.Today);
-                    ActiveUsers = users.Count;
-                }
+                var stats = await _statsService.LoadStatsAsync();
 
-                if (_adminApi != null)
-                {
-                    var admins = await _adminApi.GetAllAsync();
-                    TotalAdmins = admins.Count;
-                }
+                // Присваиваем значения полям через свойства (вызовут SetProperty)
+                TotalUsers = stats.TotalUsers;
+                NewUsersToday = stats.NewUsersToday;
+                ActiveUsers = stats.ActiveUsers;
+                TotalAdmins = stats.TotalAdmins;
+                TotalMethods = stats.TotalMethods;
+                TotalPuzzles = stats.TotalPuzzles;
+                ActivePuzzles = stats.ActivePuzzles;
+                TotalHints = stats.TotalHints;
+                ActiveSessions = stats.ActiveSessions;
+                AvgScore = stats.AvgScore;
+                TotalTutorials = stats.TotalTutorials;
+                TotalSolved = stats.TotalSolved;
+                SolvedToday = stats.SolvedToday;
+                TotalDifficulties = stats.TotalDifficulties;
 
-                if (_methodApi != null)
-                {
-                    var methods = await _methodApi.GetAllAsync();
-                    TotalMethods = methods.Count;
-                }
-
-                if (_puzzleApi != null)
-                {
-                    var puzzles = await _puzzleApi.GetAllAsync();
-                    TotalPuzzles = puzzles.Count;
-                    ActivePuzzles = puzzles.Count;
-                }
-
-                if (_hintApi != null)
-                {
-                    var hints = await _hintApi.GetAllAsync();
-                    TotalHints = hints.Count;
-                }
-
-                if (_sessionApi != null)
-                {
-                    var sessions = await _sessionApi.GetAllAsync();
-                    ActiveSessions = sessions.Count(s => s.CompletedAt == null);
-                    AvgScore = sessions.Count != 0 ? sessions.Average(s => s.Score) : 0;
-                    TotalSolved = sessions.Count(s => s.CompletedAt != null);
-                    SolvedToday = sessions.Count(s => s.CompletedAt?.Date == DateTime.Today);
-                }
-
-                if (_tutorialApi != null)
-                {
-                    var tutorials = await _tutorialApi.GetAllAsync();
-                    TotalTutorials = tutorials.Count;
-                }
-
-                DraftPuzzles = 0;
-                RecentActions = [];
+                if (!string.IsNullOrEmpty(stats.ErrorMessage))
+                    await DialogService.ShowError(stats.ErrorMessage);
             }
             catch (Exception ex)
             {
-                Application.Current.Dispatcher.Invoke(() => DialogService.ShowError("Ошибка загрузки статистики: " + ex.Message));
+                await DialogService.ShowError($"Ошибка загрузки статистики: {ex.Message}");
             }
         }
     }

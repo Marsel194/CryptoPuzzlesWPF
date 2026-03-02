@@ -5,22 +5,22 @@ namespace CryptoPuzzles.Services
 {
     public class DialogService
     {
-        public static void ShowMessage(string message)
+        public static async Task ShowMessage(string message)
         {
             MessageBox.Show(message, "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        public static void ShowWarning(string message)
+        public static async Task ShowWarning(string message)
         {
             MessageBox.Show(message, "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
-        public static void ShowError(string message)
+        public static async Task ShowError(string message)
         {
             MessageBox.Show(message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
-        public static bool ShowConfirmation(string message)
+        public static async Task<bool> ShowConfirmation(string message)
         {
             return MessageBox.Show(message, "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question)
                    == MessageBoxResult.Yes;

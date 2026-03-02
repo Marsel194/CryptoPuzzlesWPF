@@ -1,6 +1,7 @@
 ﻿using CryptoPuzzles.Services;
 using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.SharedDTO;
+using CryptoPuzzles.ViewModels.Base;
 
 namespace CryptoPuzzles.ViewModels
 {
@@ -38,22 +39,22 @@ namespace CryptoPuzzles.ViewModels
         {
             if (string.IsNullOrWhiteSpace(NewItem?.Login))
             {
-                DialogService.ShowError("Логин не может быть пустым!");
+                await DialogService.ShowError("Логин не может быть пустым!");
                 return;
             }
             if (string.IsNullOrWhiteSpace(NewItem?.FirstName))
             {
-                DialogService.ShowError("Имя не может быть пустым!");
+                await DialogService.ShowError("Имя не может быть пустым!");
                 return;
             }
             if (string.IsNullOrWhiteSpace(NewItem?.LastName))
             {
-                DialogService.ShowError("Фамилия не может быть пустой!");
+                await DialogService.ShowError("Фамилия не может быть пустой!");
                 return;
             }
             if (string.IsNullOrWhiteSpace(NewPassword))
             {
-                DialogService.ShowError("Пароль обязателен при создании!");
+                await DialogService.ShowError("Пароль обязателен при создании!");
                 return;
             }
 
@@ -76,7 +77,7 @@ namespace CryptoPuzzles.ViewModels
                     string.IsNullOrWhiteSpace(item.FirstName) ||
                     string.IsNullOrWhiteSpace(item.LastName))
                 {
-                    DialogService.ShowError("Заполните все обязательные поля (логин, имя, фамилия)!");
+                    await DialogService.ShowError("Заполните все обязательные поля (логин, имя, фамилия)!");
                     return;
                 }
             }
@@ -87,7 +88,7 @@ namespace CryptoPuzzles.ViewModels
                     string.IsNullOrWhiteSpace(item.FirstName) ||
                     string.IsNullOrWhiteSpace(item.LastName))
                 {
-                    DialogService.ShowError("Заполните все обязательные поля (логин, имя, фамилия)!");
+                    await DialogService.ShowError("Заполните все обязательные поля (логин, имя, фамилия)!");
                     return;
                 }
             }

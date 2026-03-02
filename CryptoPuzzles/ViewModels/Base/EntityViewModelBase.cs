@@ -1,14 +1,14 @@
 ﻿using CryptoPuzzles.Services;
 using CryptoPuzzles.Services.ApiService;
-using CryptoPuzzles.ViewModels.Base;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
-namespace CryptoPuzzles.ViewModels
+namespace CryptoPuzzles.ViewModels.Base
 {
-    public abstract class EntityViewModelBase<T, TCreate, TUpdate> : ViewModelBase
-        where T : class
+    public abstract class EntityViewModelBase<T, TCreate, TUpdate> : ViewModelBase where T : class
     {
+        private readonly NavigationService _navigationService;
         protected readonly IEntityApiService<T, TCreate, TUpdate> _apiService;
 
         private ObservableCollection<T> _items;
@@ -22,6 +22,7 @@ namespace CryptoPuzzles.ViewModels
 
         protected EntityViewModelBase(IEntityApiService<T, TCreate, TUpdate> apiService)
         {
+            _navigationService = App.Services.GetRequiredService<NavigationService>();
             _apiService = apiService;
             _items = [];
             _newItem = CreateNewItem();
@@ -30,6 +31,16 @@ namespace CryptoPuzzles.ViewModels
             SaveCommand = new AsyncRelayCommand(async _ => await SaveAsync(), _ => HasChanges);
             DeleteCommand = new AsyncRelayCommand(async id => await DeleteAsync(id as int?), id => id is int i && i > 0);
 
+            BackCommand = new AsyncRelayCommand(async _ =>
+            {
+                if (HasChanges)
+                {
+                    var result = await DialogService.ShowConfirmation(
+                        "У вас есть несохранённые изменения. Выйти без сохранения?");
+                    if (!result) return;
+                }
+                await _navigationService.NavigateToAsync<AdminViewModel>();
+            });
             _ = LoadDataAsync();
         }
 
@@ -41,6 +52,7 @@ namespace CryptoPuzzles.ViewModels
         public ICommand AddCommand { get; }
         public ICommand SaveCommand { get; }
         public ICommand DeleteCommand { get; }
+        public ICommand BackCommand { get; }
 
         protected abstract T CreateNewItem();
         protected abstract TCreate MapToCreateDto(T item);
@@ -61,7 +73,7 @@ namespace CryptoPuzzles.ViewModels
             }
             catch (Exception ex)
             {
-                DialogService.ShowError($"Ошибка загрузки: {ex.Message}");
+                await DialogService.ShowError($"Ошибка загрузки: {ex.Message}");
             }
         }
 
@@ -76,7 +88,7 @@ namespace CryptoPuzzles.ViewModels
             }
             catch (Exception ex)
             {
-                DialogService.ShowError($"Ошибка добавления: {ex.Message}");
+                await DialogService.ShowError($"Ошибка добавления: {ex.Message}");
             }
         }
 
@@ -139,7 +151,7 @@ namespace CryptoPuzzles.ViewModels
             }
             catch (Exception ex)
             {
-                DialogService.ShowError($"Ошибка сохранения: {ex.Message}");
+                await DialogService.ShowError($"Ошибка сохранения: {ex.Message}");
             }
         }
 

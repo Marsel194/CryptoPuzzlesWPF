@@ -60,8 +60,8 @@
                 <v:SessionsView/>
             </DataTemplate>
 
-            <DataTemplate DataType="{x:Type vm:AdminLayoutViewModel}">
-                <v:AdminLayoutView/>
+            <DataTemplate DataType="{x:Type vm:HintsViewModel}">
+                <v:HintsView/>
             </DataTemplate>
             
             <Style x:Key="BackgroundCircle" TargetType="Ellipse">

@@ -1,6 +1,7 @@
 ﻿using CryptoPuzzles.Services;
 using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.SharedDTO;
+using CryptoPuzzles.ViewModels.Base;
 using System.Collections.ObjectModel;
 
 namespace CryptoPuzzles.ViewModels
@@ -44,17 +45,17 @@ namespace CryptoPuzzles.ViewModels
         {
             if (NewItem.PuzzleId <= 0)
             {
-                DialogService.ShowError("Выберите головоломку!");
+                await DialogService.ShowError("Выберите головоломку!");
                 return;
             }
             if (string.IsNullOrWhiteSpace(NewItem.HintText))
             {
-                DialogService.ShowError("Текст подсказки не может быть пустым!");
+                await DialogService.ShowError("Текст подсказки не может быть пустым!");
                 return;
             }
             if (NewItem.HintOrder <= 0)
             {
-                DialogService.ShowError("Порядок должен быть положительным числом!");
+                await DialogService.ShowError("Порядок должен быть положительным числом!");
                 return;
             }
 
@@ -75,7 +76,7 @@ namespace CryptoPuzzles.ViewModels
             {
                 if (item.PuzzleId <= 0 || string.IsNullOrWhiteSpace(item.HintText) || item.HintOrder <= 0)
                 {
-                    DialogService.ShowError("Заполните все поля корректно!");
+                    await DialogService.ShowError("Заполните все поля корректно!");
                     return;
                 }
             }
@@ -83,7 +84,7 @@ namespace CryptoPuzzles.ViewModels
             {
                 if (item.PuzzleId <= 0 || string.IsNullOrWhiteSpace(item.HintText) || item.HintOrder <= 0)
                 {
-                    DialogService.ShowError("Заполните все поля корректно!");
+                    await DialogService.ShowError("Заполните все поля корректно!");
                     return;
                 }
             }

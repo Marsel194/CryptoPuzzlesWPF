@@ -74,19 +74,19 @@ namespace CryptoPuzzles.ViewModels
             if (string.IsNullOrWhiteSpace(Login) || string.IsNullOrWhiteSpace(Password) ||
                 string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email))
             {
-                DialogService.ShowError("Заполните все поля!");
+                await DialogService.ShowError("Заполните все поля!");
                 return;
             }
 
             if (!Email.Contains('@'))
             {
-                DialogService.ShowError("Email введен неккоректно");
+                await DialogService.ShowError("Email введен неккоректно");
                 return;
             }
 
             if (Password != ConfirmPassword)
             {
-                DialogService.ShowError("Пароли не совпадают!");
+                await DialogService.ShowError("Пароли не совпадают!");
                 return;
             }
 
@@ -97,13 +97,13 @@ namespace CryptoPuzzles.ViewModels
 
                 if (registeredUser != null)
                 {
-                    DialogService.ShowMessage($"Регистрация успешна! Добро пожаловать, {registeredUser.Username}");
+                    await DialogService.ShowMessage($"Регистрация успешна! Добро пожаловать, {registeredUser.Username}");
                     await _navigationService.NavigateToAsync<LoginViewModel>();
                 }
             }
             catch (Exception ex)
             {
-                DialogService.ShowError($"Ошибка регистрации: {ex.Message}");
+                await DialogService.ShowError($"Ошибка регистрации: {ex.Message}");
             }
         }
     }

@@ -7,9 +7,42 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="Головоломки" FontSize="24" FontWeight="Bold" Margin="0,0,0,16"/>
+        <!-- Верхняя панель с заголовком и кнопкой назад -->
+        <Grid Grid.Row="0" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Кнопка назад -->
+            <Button Grid.Column="0" 
+                    Command="{Binding BackCommand}"
+                    Style="{StaticResource MaterialDesignFlatButton}"
+                    ToolTip="Вернуться в админ-панель"
+                    Margin="0,0,16,0">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="ArrowLeft" 
+                                            Width="24" 
+                                            Height="24"
+                                            Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                    <TextBlock Text="Назад" 
+                              FontSize="16"
+                              VerticalAlignment="Center"
+                              Margin="8,0,0,0"
+                              Foreground="{DynamicResource MaterialDesignBody}"/>
+                </StackPanel>
+            </Button>
+
+            <!-- Заголовок -->
+            <TextBlock Grid.Column="1" 
+                       Text="Головоломки" 
+                       FontSize="28" 
+                       FontWeight="Bold"
+                       VerticalAlignment="Center"/>
+        </Grid>
 
         <!-- Панель добавления -->
         <Border Grid.Row="1" Style="{StaticResource InputContainer}" Margin="0,0,0,16">
@@ -24,19 +57,22 @@
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" Text="{Binding NewItem.Title, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Название" Margin="4"/>
-                    <TextBox Grid.Column="1" Text="{Binding NewItem.Content, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Содержание" Margin="4"/>
-                    <TextBox Grid.Column="2" Text="{Binding NewItem.Answer, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Ответ" Margin="4"/>
+                    <TextBox Grid.Column="0" Text="{Binding NewItem.Title, UpdateSourceTrigger=PropertyChanged}" 
+                             materialDesign:HintAssist.Hint="Название" Margin="4"/>
+                    <TextBox Grid.Column="1" Text="{Binding NewItem.Content, UpdateSourceTrigger=PropertyChanged}" 
+                             materialDesign:HintAssist.Hint="Содержание" Margin="4"/>
+                    <TextBox Grid.Column="2" Text="{Binding NewItem.Answer, UpdateSourceTrigger=PropertyChanged}" 
+                             materialDesign:HintAssist.Hint="Ответ" Margin="4"/>
                     <ComboBox Grid.Column="3" ItemsSource="{Binding Difficulties}" SelectedValuePath="Id" DisplayMemberPath="DifficultyName" 
                               SelectedValue="{Binding NewItem.DifficultyId}" materialDesign:HintAssist.Hint="Сложность" Margin="4"/>
                     <ComboBox Grid.Column="4" ItemsSource="{Binding Methods}" SelectedValuePath="Id" DisplayMemberPath="Name" 
                               SelectedValue="{Binding NewItem.MethodId}" materialDesign:HintAssist.Hint="Метод" Margin="4"/>
-                    <Button Grid.Column="5" Command="{Binding AddCommand}" Content="Добавить" Style="{StaticResource PrimaryButton}" Margin="4,0"/>
+                    <Button Grid.Column="5" Command="{Binding AddCommand}" Content="Добавить" 
+                            Style="{StaticResource PrimaryButton}" Margin="4,0"/>
                 </Grid>
             </StackPanel>
         </Border>
 
-        <!-- DataGrid -->
         <DataGrid Grid.Row="2" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" 
                   AutoGenerateColumns="False" IsReadOnly="False" CanUserAddRows="False"
                   materialDesign:DataGridAssist.CellPadding="13 8 8 8"
@@ -47,6 +83,7 @@
                 <DataGridTextColumn Header="Содержание" Binding="{Binding Content}" Width="200"/>
                 <DataGridTextColumn Header="Ответ" Binding="{Binding Answer}" Width="100"/>
                 <DataGridTextColumn Header="Макс. балл" Binding="{Binding MaxScore}" Width="80"/>
+
                 <!-- Сложность: редактирование через ComboBox -->
                 <DataGridTemplateColumn Header="Сложность" Width="120">
                     <DataGridTemplateColumn.CellTemplate>
@@ -62,6 +99,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
+
                 <!-- Метод: редактирование через ComboBox -->
                 <DataGridTemplateColumn Header="Метод" Width="120">
                     <DataGridTemplateColumn.CellTemplate>
@@ -77,8 +115,10 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
+
                 <DataGridCheckBoxColumn Header="Обучение" Binding="{Binding IsTraining}"/>
                 <DataGridTextColumn Header="Порядок" Binding="{Binding TutorialOrder}"/>
+
                 <DataGridTemplateColumn Header="Действия" Width="100">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -94,8 +134,8 @@
         </DataGrid>
 
         <!-- Кнопка Сохранить -->
-        <Button Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" 
+        <Button Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Center" 
                 Command="{Binding SaveCommand}" Content="Сохранить изменения" 
-                Style="{StaticResource PrimaryButton}" Margin="0,16,0,16" Width="200"/>
+                Style="{StaticResource PrimaryButton}" Margin="0,16,0,0" Width="200"/>
     </Grid>
 </UserControl>

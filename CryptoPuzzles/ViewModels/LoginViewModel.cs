@@ -39,7 +39,7 @@ namespace CryptoPuzzles.ViewModels
 
             if (string.IsNullOrWhiteSpace(Login) || string.IsNullOrWhiteSpace(password))
             {
-                DialogService.ShowError("Введите логин и пароль!");
+                await DialogService.ShowError("Введите логин и пароль!");
                 return;
             }
 
@@ -50,18 +50,18 @@ namespace CryptoPuzzles.ViewModels
                     return;
 
                 if (response.IsAdmin){
-                    DialogService.ShowMessage($"Добро пожаловать, {response.Username}!");
-                    await _navigationService.NavigateToAsync<AdminLayoutViewModel>();
+                    await DialogService.ShowMessage($"Добро пожаловать, {response.Username}!");
+                    await _navigationService.NavigateToAsync<AdminViewModel>();
                 }
                 else
                 {
-                    DialogService.ShowMessage($"Добро пожаловать, {response.Username}!");
+                    await DialogService.ShowMessage($"Добро пожаловать, {response.Username}!");
                     await _navigationService.NavigateToAsync<UserViewModel>();
                 }
             }
             catch (Exception ex)
             {
-                DialogService.ShowError($"Ошибка входа: {ex.Message}");
+                await DialogService.ShowError($"Ошибка входа: {ex.Message}");
             }
         }
     }

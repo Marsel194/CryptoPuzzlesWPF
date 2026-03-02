@@ -1,6 +1,7 @@
 ﻿using CryptoPuzzles.Services;
 using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.SharedDTO;
+using CryptoPuzzles.ViewModels.Base;
 
 namespace CryptoPuzzles.ViewModels
 {
@@ -28,7 +29,6 @@ namespace CryptoPuzzles.ViewModels
 
         protected override AUserUpdate MapToUpdateDto(AUser item)
         {
-            // Если NewPassword не пуст, передаём его, иначе null (не меняем)
             return new AUserUpdate(item.Id, item.Login, item.Username, item.Email,
                 string.IsNullOrWhiteSpace(NewPassword) ? null : NewPassword);
         }
@@ -39,22 +39,22 @@ namespace CryptoPuzzles.ViewModels
         {
             if (string.IsNullOrWhiteSpace(NewItem?.Login))
             {
-                DialogService.ShowError("Логин не может быть пустым!");
+                await DialogService.ShowError("Логин не может быть пустым!");
                 return;
             }
             if (string.IsNullOrWhiteSpace(NewItem?.Username))
             {
-                DialogService.ShowError("Имя пользователя не может быть пустым!");
+                await DialogService.ShowError("Имя пользователя не может быть пустым!");
                 return;
             }
             if (string.IsNullOrWhiteSpace(NewItem?.Email))
             {
-                DialogService.ShowError("Email не может быть пустым!");
+                await DialogService.ShowError("Email не может быть пустым!");
                 return;
             }
             if (string.IsNullOrWhiteSpace(NewPassword))
             {
-                DialogService.ShowError("Пароль обязателен при создании!");
+                await DialogService.ShowError("Пароль обязателен при создании!");
                 return;
             }
 
@@ -63,7 +63,7 @@ namespace CryptoPuzzles.ViewModels
             _addedItems.Add(itemToAdd);
 
             NewItem = CreateNewItem();
-            NewPassword = string.Empty; // сброс пароля
+            NewPassword = string.Empty;
             HasChanges = true;
             await Task.CompletedTask;
         }
@@ -77,10 +77,9 @@ namespace CryptoPuzzles.ViewModels
                     string.IsNullOrWhiteSpace(item.Username) ||
                     string.IsNullOrWhiteSpace(item.Email))
                 {
-                    DialogService.ShowError("Все поля должны быть заполнены!");
+                    await DialogService.ShowError("Все поля должны быть заполнены!");
                     return;
                 }
-                // Пароль уже проверен при добавлении, но можно перепроверить
             }
 
             // Проверка изменённых
@@ -90,13 +89,12 @@ namespace CryptoPuzzles.ViewModels
                     string.IsNullOrWhiteSpace(item.Username) ||
                     string.IsNullOrWhiteSpace(item.Email))
                 {
-                    DialogService.ShowError("Все поля должны быть заполнены!");
+                    await DialogService.ShowError("Все поля должны быть заполнены!");
                     return;
                 }
             }
 
             await base.SaveAsync();
-            // После успешного сохранения сбрасываем пароль (если он был введён для редактирования)
             NewPassword = string.Empty;
         }
 

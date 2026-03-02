@@ -9,7 +9,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- ========== ВЕРХНЯЯ ПАНЕЛЬ ========== -->
+        <!-- Верхняя панель (без изменений) -->
         <Border Grid.Row="0"
                 Background="{DynamicResource PrimaryHueMidBrush}"
                 CornerRadius="0 0 30 30"
@@ -22,43 +22,26 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Логотип + название -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="ShieldCrown" 
-                                             Width="32" Height="32" 
-                                             Foreground="{DynamicResource MaterialDesignBody}"/>
-                    <TextBlock Text="CryptoPuzzles Admin"
-                               Foreground="{DynamicResource MaterialDesignBody}"
-                               FontSize="22" FontWeight="Bold"
-                               Margin="8,0,0,0"
-                               VerticalAlignment="Center"/>
+                    <materialDesign:PackIcon Kind="ShieldCrown" Width="32" Height="32" Foreground="{DynamicResource MaterialDesignBody}"/>
+                    <TextBlock Text="CryptoPuzzles Admin" Foreground="{DynamicResource MaterialDesignBody}" FontSize="22" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
                 </StackPanel>
 
-                <!-- Заголовок страницы -->
-                <TextBlock Grid.Column="1"
-                           Text="Панель администратора"
-                           Foreground="{DynamicResource MaterialDesignBody}"
-                           FontSize="18" FontWeight="SemiBold"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Text="Панель администратора" Foreground="{DynamicResource MaterialDesignBody}" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-                <!-- Кнопки темы / выхода -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <Button Foreground="White"
-                            Command="{Binding ToggleThemeCommand}" 
-                            Cursor="Hand"
-                            Style="{StaticResource MaterialDesignFlatButton}">
+                    <Button Command="{Binding LoadStatsCommand}" ToolTip="Обновить статистику" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="Refresh" Width="20" Height="20" Foreground="{DynamicResource MaterialDesignBody}"/>
+                    </Button>
+                    <Button Command="{Binding ToggleThemeCommand}" Cursor="Hand" Style="{StaticResource MaterialDesignFlatButton}">
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="ThemeLightDark" Width="20" Height="20"/>
+                            <materialDesign:PackIcon Kind="ThemeLightDark" Width="20" Height="20" Foreground="{DynamicResource MaterialDesignBody}"/>
                             <TextBlock Text="Тема" Foreground="{DynamicResource MaterialDesignBody}" Margin="5,0,0,0"/>
                         </StackPanel>
                     </Button>
-                    <Button Command="{Binding LogoutCommand}"
-                            Foreground="White"
-                            Cursor="Hand"
-                            Style="{StaticResource MaterialDesignFlatButton}">
+                    <Button Command="{Binding LogoutCommand}" Style="{StaticResource MaterialDesignFlatButton}">
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="Logout" Width="20" Height="20"/>
+                            <materialDesign:PackIcon Kind="Logout" Width="20" Height="20" Foreground="{DynamicResource MaterialDesignBody}"/>
                             <TextBlock Text="Выход" Foreground="{DynamicResource MaterialDesignBody}" Margin="5,0,0,0"/>
                         </StackPanel>
                     </Button>
@@ -66,14 +49,11 @@
             </Grid>
         </Border>
 
-        <!-- ========== ОСНОВНАЯ ОБЛАСТЬ С КАРТОЧКАМИ ========== -->
-        <ScrollViewer Grid.Row="1"
-                      VerticalScrollBarVisibility="Auto"
-                      HorizontalScrollBarVisibility="Auto"
-                      Margin="24">
-            <!-- Сетка для двух рядов по четыре карточки -->
+        <!-- Основная область: 3 ряда по 3 карточки -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="24">
             <Grid>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
@@ -81,22 +61,119 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Ряд 1: Пользователи, Администраторы, Методы шифрования, Головоломки -->
                 <!-- 1. ПОЛЬЗОВАТЕЛИ -->
-                <Border Grid.Row="0" Grid.Column="0"
-                        Style="{StaticResource AdminCardStyle}"
-                        Width="280" HorizontalAlignment="Center" Margin="8">
+                <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource AdminCardStyle}" Width="280" HorizontalAlignment="Center" Margin="8">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                            <materialDesign:PackIcon Kind="AccountGroup" Width="32" Height="32"
-                                                     Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                            <TextBlock Text="Пользователи" Foreground="{DynamicResource MaterialDesignBody}" Style="{StaticResource CardTitleStyle}"/>
+                            <materialDesign:PackIcon Kind="AccountGroup" Width="32" Height="32" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                            <TextBlock Text="Пользователи" Style="{StaticResource CardTitleStyle}"/>
                         </StackPanel>
-                        <Grid Margin="0,0,0,12" Height="33">
+                        <Grid Margin="0,0,0,12">
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Всего:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding TotalUsers}" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Новых сегодня:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding NewUsersToday}" FontWeight="Bold" Foreground="ForestGreen"/>
+                        </Grid>
+                        <Button Content="Управление" Command="{Binding NavigateToUsersCommand}" Style="{StaticResource AdminActionButton}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 2. АДМИНИСТРАТОРЫ -->
+                <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource AdminCardStyle}" Width="280" HorizontalAlignment="Center" Margin="8">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <materialDesign:PackIcon Kind="ShieldAccount" Width="32" Height="32" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                            <TextBlock Text="Администраторы" Style="{StaticResource CardTitleStyle}"/>
+                        </StackPanel>
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Всего:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                            <TextBlock Grid.Column="1" Text="{Binding TotalAdmins}" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                        </Grid>
+                        <Button Content="Управление" Command="{Binding NavigateToAdminsCommand}" Style="{StaticResource AdminActionButton}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 3. МЕТОДЫ ШИФРОВАНИЯ -->
+                <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource AdminCardStyle}" Width="280" HorizontalAlignment="Center" Margin="8">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <materialDesign:PackIcon Kind="Lock" Width="32" Height="32" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                            <TextBlock Text="Методы шифрования" Style="{StaticResource CardTitleStyle}"/>
+                        </StackPanel>
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Всего:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                            <TextBlock Grid.Column="1" Text="{Binding TotalMethods}" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                        </Grid>
+                        <Button Content="Управление" Command="{Binding NavigateToMethodsCommand}" Style="{StaticResource AdminActionButton}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 4. ГОЛОВОЛОМКИ -->
+                <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource AdminCardStyle}" Width="280" HorizontalAlignment="Center" Margin="8">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <materialDesign:PackIcon Kind="Puzzle" Width="32" Height="32" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                            <TextBlock Text="Головоломки" Style="{StaticResource CardTitleStyle}"/>
+                        </StackPanel>
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Всего:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                            <TextBlock Grid.Column="1" Text="{Binding TotalPuzzles}" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                        </Grid>
+                        <Button Content="Управление" Command="{Binding NavigateToPuzzlesCommand}" Style="{StaticResource AdminActionButton}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 5. ПОДСКАЗКИ -->
+                <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource AdminCardStyle}" Width="280" HorizontalAlignment="Center" Margin="8">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <materialDesign:PackIcon Kind="LightbulbOn" Width="32" Height="32" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                            <TextBlock Text="Подсказки" Style="{StaticResource CardTitleStyle}"/>
+                        </StackPanel>
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Всего:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                            <TextBlock Grid.Column="1" Text="{Binding TotalHints}" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                        </Grid>
+                        <Button Content="Управление" Command="{Binding NavigateToHintsCommand}" Style="{StaticResource AdminActionButton}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 6. ИГРОВЫЕ СЕССИИ -->
+                <Border Grid.Row="1" Grid.Column="2" Style="{StaticResource AdminCardStyle}" Width="280" HorizontalAlignment="Center" Margin="8">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <materialDesign:PackIcon Kind="Gamepad" Width="32" Height="32" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                            <TextBlock Text="Игровые сессии" Style="{StaticResource CardTitleStyle}"/>
+                        </StackPanel>
+                        <Grid Margin="0,0,0,12">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
@@ -105,165 +182,75 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Всего:"/>
-                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding TotalUsers}" FontWeight="Bold"/>
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Новых сегодня:"/>
-                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding NewUsersToday}" FontWeight="Bold" Foreground="Green"/>
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Активных:"/>
-                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding ActiveUsers}" FontWeight="Bold"/>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Активных:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ActiveSessions}" FontWeight="Bold" Foreground="ForestGreen"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Решено всего:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding TotalSolved}" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Решено сегодня:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SolvedToday}" FontWeight="Bold" Foreground="DodgerBlue"/>
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Ср. балл:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding AvgScore}" FontWeight="Bold" Foreground="Goldenrod"/>
                         </Grid>
-                        <Button Content="Управление"
-                                Command="{Binding NavigateToUsersCommand}"
-                                Style="{StaticResource MaterialDesignRaisedButton}"
-                                Background="{DynamicResource PrimaryHueMidBrush}"
-                                Foreground="{DynamicResource MaterialDesignBody}"
-                                materialDesign:ButtonAssist.CornerRadius="8"
-                                Height="34"/>
-                    </StackPanel>
-                </Border>
-
-                <!-- 2. АДМИНИСТРАТОРЫ -->
-                <Border Grid.Row="0" Grid.Column="1"
-                        Style="{StaticResource AdminCardStyle}"
-                        Width="280" HorizontalAlignment="Center" Margin="8">
-                    <StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                            <materialDesign:PackIcon Kind="ShieldAccount" Width="32" Height="32"
-                                                     Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                            <TextBlock Text="Администраторы" Foreground="{DynamicResource MaterialDesignBody}" Style="{StaticResource CardTitleStyle}"/>
-                        </StackPanel>
-                        <Button Content="Управление"
-                                Command="{Binding NavigateToAdminsCommand}"
-                                Style="{StaticResource MaterialDesignRaisedButton}"
-                                Background="{DynamicResource PrimaryHueMidBrush}"
-                                Foreground="{DynamicResource MaterialDesignBody}"
-                                materialDesign:ButtonAssist.CornerRadius="8"
-                                Height="34"/>
-                    </StackPanel>
-                </Border>
-
-                <!-- 3. МЕТОДЫ ШИФРОВАНИЯ -->
-                <Border Grid.Row="0" Grid.Column="2"
-                        Style="{StaticResource AdminCardStyle}"
-                        Width="280" HorizontalAlignment="Center" Margin="8">
-                    <StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                            <materialDesign:PackIcon Kind="Lock" Width="32" Height="32"
-                                                     Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                            <TextBlock Text="Методы шифрования" Foreground="{DynamicResource MaterialDesignBody}" Style="{StaticResource CardTitleStyle}"/>
-                        </StackPanel>
-                        <Button Content="Управление"
-                                Command="{Binding NavigateToMethodsCommand}"
-                                Style="{StaticResource MaterialDesignRaisedButton}"
-                                Background="{DynamicResource PrimaryHueMidBrush}"
-                                Foreground="{DynamicResource MaterialDesignBody}"
-                                materialDesign:ButtonAssist.CornerRadius="8"
-                                Height="34"/>
-                    </StackPanel>
-                </Border>
-
-                <!-- 4. ГОЛОВОЛОМКИ -->
-                <Border Grid.Row="0" Grid.Column="3"
-                        Style="{StaticResource AdminCardStyle}"
-                        Width="280" HorizontalAlignment="Center" Margin="8">
-                    <StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                            <materialDesign:PackIcon Kind="Puzzle" Width="32" Height="32"
-                                                     Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                            <TextBlock Text="Головоломки" Style="{StaticResource CardTitleStyle}" Foreground="{DynamicResource MaterialDesignBody}"/>
-                        </StackPanel>
-                        <Button Content="Управление"
-                                Command="{Binding NavigateToPuzzlesCommand}"
-                                Style="{StaticResource MaterialDesignRaisedButton}"
-                                Background="{DynamicResource PrimaryHueMidBrush}"
-                                Foreground="{DynamicResource MaterialDesignBody}"
-                                materialDesign:ButtonAssist.CornerRadius="8"
-                                Height="34"/>
-                    </StackPanel>
-                </Border>
-
-                <!-- Ряд 2: Подсказки, Игровые сессии, Туториалы, Настройки -->
-                <!-- 5. ПОДСКАЗКИ -->
-                <Border Grid.Row="1" Grid.Column="0"
-                        Style="{StaticResource AdminCardStyle}"
-                        Width="280" HorizontalAlignment="Center" Margin="8">
-                    <StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                            <materialDesign:PackIcon Kind="LightbulbOn" Width="32" Height="32"
-                                                     Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                            <TextBlock Text="Подсказки" Style="{StaticResource CardTitleStyle}" Foreground="{DynamicResource MaterialDesignBody}"/>
-                        </StackPanel>
-                        <Button Content="Управление"
-                                Command="{Binding NavigateToHintsCommand}"
-                                Style="{StaticResource MaterialDesignRaisedButton}"
-                                Background="{DynamicResource PrimaryHueMidBrush}"
-                                Foreground="{DynamicResource MaterialDesignBody}"
-                                materialDesign:ButtonAssist.CornerRadius="8"
-                                Height="34"/>
-                    </StackPanel>
-                </Border>
-
-                <!-- 6. ИГРОВЫЕ СЕССИИ -->
-                <Border Grid.Row="1" Grid.Column="1"
-                        Style="{StaticResource AdminCardStyle}"
-                        Width="280" HorizontalAlignment="Center" Margin="8">
-                    <StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                            <materialDesign:PackIcon Kind="Gamepad" Width="32" Height="32"
-                                                     Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                            <TextBlock Text="Игровые сессии" Style="{StaticResource CardTitleStyle}" Foreground="{DynamicResource MaterialDesignBody}"/>
-                        </StackPanel>
-                        <Button Content="Управление"
-                                Command="{Binding NavigateToSessionsCommand}"
-                                Style="{StaticResource MaterialDesignRaisedButton}"
-                                Background="{DynamicResource PrimaryHueMidBrush}"
-                                Foreground="{DynamicResource MaterialDesignBody}"
-                                materialDesign:ButtonAssist.CornerRadius="8"
-                                Height="34"/>
+                        <Button Content="Управление" Command="{Binding NavigateToSessionsCommand}" Style="{StaticResource AdminActionButton}"/>
                     </StackPanel>
                 </Border>
 
                 <!-- 7. ТУТОРИАЛЫ -->
-                <Border Grid.Row="1" Grid.Column="2"
-                        Style="{StaticResource AdminCardStyle}"
-                        Width="280" HorizontalAlignment="Center" Margin="8">
+                <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource AdminCardStyle}" Width="280" HorizontalAlignment="Center" Margin="8">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                            <materialDesign:PackIcon Kind="School" Width="32" Height="32"
-                                                     Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                            <TextBlock Text="Туториалы" Style="{StaticResource CardTitleStyle}" Foreground="{DynamicResource MaterialDesignBody}"/>
+                            <materialDesign:PackIcon Kind="School" Width="32" Height="32" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                            <TextBlock Text="Туториалы" Style="{StaticResource CardTitleStyle}"/>
                         </StackPanel>
-                        <Button Content="Управление"
-                                Command="{Binding NavigateToTutorialsCommand}"
-                                Style="{StaticResource MaterialDesignRaisedButton}"
-                                Background="{DynamicResource PrimaryHueMidBrush}"
-                                Foreground="{DynamicResource MaterialDesignBody}"
-                                materialDesign:ButtonAssist.CornerRadius="8"
-                                Height="34"/>
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Всего:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                            <TextBlock Grid.Column="1" Text="{Binding TotalTutorials}" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                        </Grid>
+                        <Button Content="Управление" Command="{Binding NavigateToTutorialsCommand}" Style="{StaticResource AdminActionButton}"/>
                     </StackPanel>
                 </Border>
 
-                <!-- 8. НАСТРОЙКИ -->
-                <Border Grid.Row="1" Grid.Column="3"
-                        Style="{StaticResource AdminCardStyle}"
-                        Width="280" HorizontalAlignment="Center" Margin="8">
+                <!-- 8. СЛОЖНОСТИ -->
+                <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource AdminCardStyle}" Width="280" HorizontalAlignment="Center" Margin="8">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                            <materialDesign:PackIcon Kind="Cog" Width="32" Height="32"
-                                                     Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                            <TextBlock Text="Настройки" Style="{StaticResource CardTitleStyle}" Foreground="{DynamicResource MaterialDesignBody}"/>
+                            <materialDesign:PackIcon Kind="Speedometer" Width="32" Height="32" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                            <TextBlock Text="Сложности" Style="{StaticResource CardTitleStyle}"/>
                         </StackPanel>
-                        <ComboBox Margin="0,8,0,0"
-                                  materialDesign:HintAssist.Hint="Язык"
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Всего:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                            <TextBlock Grid.Column="1" Text="{Binding TotalDifficulties}" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                        </Grid>
+                        <Button Content="Управление" Command="{Binding NavigateToDifficultiesCommand}" Style="{StaticResource AdminActionButton}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 9. НАСТРОЙКИ (без статистики) -->
+                <Border Grid.Row="2" Grid.Column="2" Style="{StaticResource AdminCardStyle}" Width="280" HorizontalAlignment="Center" Margin="8">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <materialDesign:PackIcon Kind="Cog" Width="32" Height="32" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                            <TextBlock Text="Настройки" Style="{StaticResource CardTitleStyle}"/>
+                        </StackPanel>
+                        <ComboBox Margin="0,8,0,8"
+                                  materialDesign:HintAssist.Hint="Язык интерфейса"
                                   SelectedIndex="0">
-                            <ComboBoxItem Content="Русский"/>
-                            <ComboBoxItem Content="English"/>
+                            <ComboBoxItem Content="Русский" Foreground="{DynamicResource MaterialDesignBody}"/>
+                            <ComboBoxItem Content="English" Foreground="{DynamicResource MaterialDesignBody}"/>
                         </ComboBox>
                         <Button Content="Сохранить"
                                 Style="{StaticResource MaterialDesignFlatButton}"
                                 Background="{DynamicResource PrimaryHueMidBrush}"
                                 Foreground="{DynamicResource MaterialDesignBody}"
-                                Margin="0,16,0,0"
+                                Margin="0,8,0,0"
                                 materialDesign:ButtonAssist.CornerRadius="8"
                                 Height="34"/>
                     </StackPanel>

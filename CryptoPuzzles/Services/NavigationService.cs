@@ -15,13 +15,13 @@ namespace CryptoPuzzles.Services
             {
                 var viewModel = App.Services.GetService<T>()
                      ?? throw new InvalidOperationException($"ViewModel {typeof(T).Name} не зарегистрирован в DI");
-
+                    
                 _currentView = viewModel;
                 OnViewChanged?.Invoke(viewModel);
             }
             catch (Exception ex)
             {
-                DialogService.ShowError($"Общая ошибка навигации: {ex.Message}");
+                await DialogService.ShowError($"Общая ошибка навигации: {ex.Message}");
                 throw;
             }
             await Task.CompletedTask;

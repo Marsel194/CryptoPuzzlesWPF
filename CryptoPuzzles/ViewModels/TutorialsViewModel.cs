@@ -1,6 +1,7 @@
 ﻿using CryptoPuzzles.Services;
 using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.SharedDTO;
+using CryptoPuzzles.ViewModels.Base;
 using System.Collections.ObjectModel;
 
 namespace CryptoPuzzles.ViewModels
@@ -44,17 +45,17 @@ namespace CryptoPuzzles.ViewModels
         {
             if (NewItem.MethodId <= 0)
             {
-                DialogService.ShowError("Выберите метод!");
+                await DialogService.ShowError("Выберите метод!");
                 return;
             }
             if (string.IsNullOrWhiteSpace(NewItem.TheoryTitle))
             {
-                DialogService.ShowError("Заголовок не может быть пустым!");
+                await DialogService.ShowError("Заголовок не может быть пустым!");
                 return;
             }
             if (string.IsNullOrWhiteSpace(NewItem.TheoryContent))
             {
-                DialogService.ShowError("Содержание не может быть пустым!");
+                await DialogService.ShowError("Содержание не может быть пустым!");
                 return;
             }
 
@@ -74,7 +75,7 @@ namespace CryptoPuzzles.ViewModels
             {
                 if (item.MethodId <= 0 || string.IsNullOrWhiteSpace(item.TheoryTitle) || string.IsNullOrWhiteSpace(item.TheoryContent))
                 {
-                    DialogService.ShowError("Заполните все обязательные поля!");
+                    await DialogService.ShowError("Заполните все обязательные поля!");
                     return;
                 }
             }
@@ -82,7 +83,7 @@ namespace CryptoPuzzles.ViewModels
             {
                 if (item.MethodId <= 0 || string.IsNullOrWhiteSpace(item.TheoryTitle) || string.IsNullOrWhiteSpace(item.TheoryContent))
                 {
-                    DialogService.ShowError("Заполните все обязательные поля!");
+                    await DialogService.ShowError("Заполните все обязательные поля!");
                     return;
                 }
             }

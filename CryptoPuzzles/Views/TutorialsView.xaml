@@ -5,14 +5,53 @@
     <Grid Margin="24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <!-- 0: Верхняя панель с заголовком и кнопкой -->
             <RowDefinition Height="Auto"/>
+            <!-- 1: Панель добавления -->
             <RowDefinition Height="*"/>
+            <!-- 2: DataGrid -->
+            <RowDefinition Height="Auto"/>
+            <!-- 3: Кнопка сохранить -->
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="Туториалы" FontSize="24" FontWeight="Bold" Margin="0,0,0,16"/>
+        <!-- Верхняя панель с заголовком и кнопкой назад (Row 0) -->
+        <Grid Grid.Row="0" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-        <!-- Панель добавления -->
-        <Border Grid.Row="1" Style="{StaticResource InputContainer}" Margin="0,0,0,16">
+            <!-- Кнопка назад -->
+            <Button Grid.Column="0" 
+                    Command="{Binding BackCommand}"
+                    Style="{StaticResource MaterialDesignFlatButton}"
+                    ToolTip="Вернуться в админ-панель"
+                    Margin="0,0,16,0">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="ArrowLeft" 
+                                            Width="24" 
+                                            Height="24"
+                                            Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                    <TextBlock Text="Назад" 
+                              FontSize="16"
+                              VerticalAlignment="Center"
+                              Margin="8,0,0,0"
+                              Foreground="{DynamicResource MaterialDesignBody}"/>
+                </StackPanel>
+            </Button>
+
+            <!-- Заголовок -->
+            <TextBlock Grid.Column="1" 
+                       Text="Туториалы" 
+                       FontSize="28" 
+                       FontWeight="Bold"
+                       VerticalAlignment="Center"/>
+        </Grid>
+
+        <!-- Панель добавления (Row 1) -->
+        <Border Grid.Row="1" 
+                Style="{StaticResource InputContainer}" 
+                Margin="0,0,0,16">
             <StackPanel>
                 <TextBlock Text="Новый урок" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
                 <Grid>
@@ -23,6 +62,7 @@
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
+
                     <ComboBox Grid.Column="0" 
                               ItemsSource="{Binding Methods}" 
                               SelectedValuePath="Id" 
@@ -30,10 +70,12 @@
                               SelectedValue="{Binding NewItem.MethodId}" 
                               materialDesign:HintAssist.Hint="Метод" 
                               Margin="4"/>
+
                     <TextBox Grid.Column="1" 
                              Text="{Binding NewItem.TheoryTitle, UpdateSourceTrigger=PropertyChanged}" 
                              materialDesign:HintAssist.Hint="Заголовок" 
                              Margin="4"/>
+
                     <TextBox Grid.Column="2" 
                              Text="{Binding NewItem.TheoryContent, UpdateSourceTrigger=PropertyChanged}" 
                              materialDesign:HintAssist.Hint="Содержание" 
@@ -42,10 +84,12 @@
                              VerticalScrollBarVisibility="Auto"
                              MinHeight="60"
                              Margin="4"/>
+
                     <TextBox Grid.Column="3" 
                              Text="{Binding NewItem.SortOrder, UpdateSourceTrigger=PropertyChanged}" 
                              materialDesign:HintAssist.Hint="Порядок" 
                              Margin="4"/>
+
                     <Button Grid.Column="4" 
                             Command="{Binding AddCommand}" 
                             Content="Добавить" 
@@ -55,6 +99,7 @@
             </StackPanel>
         </Border>
 
+        <!-- DataGrid (Row 2) -->
         <DataGrid Grid.Row="2" 
                   ItemsSource="{Binding Items}" 
                   SelectedItem="{Binding SelectedItem}" 
@@ -63,24 +108,24 @@
                   CanUserAddRows="False"
                   materialDesign:DataGridAssist.CellPadding="13 8 8 8"
                   materialDesign:DataGridAssist.ColumnHeaderPadding="8"
-                  MinRowHeight="30" Cursor="">
+                  MinRowHeight="30">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="50"/>
                 <DataGridTextColumn Header="Метод" Binding="{Binding MethodName}" IsReadOnly="True" Width="120"/>
                 <DataGridTextColumn Header="Заголовок" Binding="{Binding TheoryTitle}" Width="200"/>
 
-                <!-- Колонка "Содержание" с переносом текста -->
                 <DataGridTemplateColumn Header="Содержание" Width="300">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding TheoryContent}" 
                                        TextWrapping="Wrap" 
-                                       VerticalAlignment="Center"/>
+                                       VerticalAlignment="Center"
+                                       MaxHeight="60"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
-                            <TextBox Text="{Binding TheoryContent, UpdateSourceTrigger=PropertyChanged}" 
+                            <TextBox Text="{Binding TheoryContent, UpdateSourceTrigger=LostFocus}" 
                                      AcceptsReturn="True" 
                                      TextWrapping="Wrap"
                                      VerticalScrollBarVisibility="Auto"/>
@@ -91,6 +136,7 @@
                 <DataGridTextColumn Header="Порядок" Binding="{Binding SortOrder}" Width="80"/>
                 <DataGridTextColumn Header="Создан" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="150"/>
                 <DataGridTextColumn Header="Обновлён" Binding="{Binding UpdatedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="150"/>
+
                 <DataGridTemplateColumn Header="Действия" Width="100">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -105,9 +151,14 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <!-- Кнопка Сохранить -->
-        <Button Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" 
-                Command="{Binding SaveCommand}" Content="Сохранить изменения" 
-                Style="{StaticResource PrimaryButton}" Margin="0,16,0,16" Width="200"/>
+        <!-- Кнопка Сохранить (Row 3) -->
+        <Button Grid.Row="3" 
+                HorizontalAlignment="Right" 
+                VerticalAlignment="Center" 
+                Command="{Binding SaveCommand}" 
+                Content="Сохранить изменения" 
+                Style="{StaticResource PrimaryButton}" 
+                Margin="0,16,0,0" 
+                Width="200"/>
     </Grid>
 </UserControl>

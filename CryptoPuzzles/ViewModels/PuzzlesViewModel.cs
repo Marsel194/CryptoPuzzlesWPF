@@ -1,6 +1,7 @@
 ﻿using CryptoPuzzles.Services;
 using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.SharedDTO;
+using CryptoPuzzles.ViewModels.Base;
 using System.Collections.ObjectModel;
 
 namespace CryptoPuzzles.ViewModels
@@ -17,7 +18,7 @@ namespace CryptoPuzzles.ViewModels
         {
             _difficultyApi = difficultyApi;
             _methodApi = methodApi;
-            LoadLookupsAsync();
+            _ = LoadLookupsAsync();
         }
 
         public ObservableCollection<ADifficulty> Difficulties { get => _difficulties; set => SetProperty(ref _difficulties, value); }
@@ -52,34 +53,29 @@ namespace CryptoPuzzles.ViewModels
         {
             if (string.IsNullOrWhiteSpace(NewItem?.Title))
             {
-                DialogService.ShowError("Название не может быть пустым!");
+                await DialogService.ShowError("Название не может быть пустым!");
                 return;
             }
             if (string.IsNullOrWhiteSpace(NewItem?.Content))
             {
-                DialogService.ShowError("Содержание не может быть пустым!");
+                await DialogService.ShowError("Содержание не может быть пустым!");
                 return;
             }
             if (string.IsNullOrWhiteSpace(NewItem?.Answer))
             {
-                DialogService.ShowError("Ответ не может быть пустым!");
+                await DialogService.ShowError("Ответ не может быть пустым!");
                 return;
             }
             if (NewItem.DifficultyId <= 0)
             {
-                DialogService.ShowError("Выберите сложность!");
+                await DialogService.ShowError("Выберите сложность!");
                 return;
             }
-            // methodId может быть null, это допустимо
 
             var itemToAdd = new APuzzle(0, NewItem.Title, NewItem.Content, NewItem.Answer,
                 NewItem.MaxScore, NewItem.DifficultyId,
-                NewItem.MethodId.HasValue ? NewItem.MethodId.Value.ToString() : null, // поле MethodName? В конструкторе APuzzle, возможно, нужно корректно заполнить все поля.
+                NewItem.MethodId.HasValue ? NewItem.MethodId.Value.ToString() : null,
                 null, null, NewItem.IsTraining, NewItem.TutorialOrder, null, DateTime.Now);
-
-            // Уточните конструктор APuzzle. Если он не позволяет задать MethodName и т.п., можно создать через копирование свойств.
-            // Проще: использовать автоматическое копирование через рефлексию или присвоить поля вручную.
-            // Для примера допустим, что у APuzzle есть все сеттеры.
 
             Items.Add(itemToAdd);
             _addedItems.Add(itemToAdd);
@@ -95,7 +91,7 @@ namespace CryptoPuzzles.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(item.Title) || string.IsNullOrWhiteSpace(item.Content) || string.IsNullOrWhiteSpace(item.Answer))
                 {
-                    DialogService.ShowError("Заполните все обязательные поля!");
+                    await DialogService.ShowError("Заполните все обязательные поля!");
                     return;
                 }
             }
@@ -103,7 +99,7 @@ namespace CryptoPuzzles.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(item.Title) || string.IsNullOrWhiteSpace(item.Content) || string.IsNullOrWhiteSpace(item.Answer))
                 {
-                    DialogService.ShowError("Заполните все обязательные поля!");
+                    await DialogService.ShowError("Заполните все обязательные поля!");
                     return;
                 }
             }
