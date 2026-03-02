@@ -1,16 +1,19 @@
 ﻿using CryptoPuzzles.Services;
 using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.ViewModels.Base;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Navigation;
+using NavigationService = CryptoPuzzles.Services.NavigationService;
 
 namespace CryptoPuzzles.ViewModels
 {
     public class AdminViewModel : ViewModelBase
     {
         private readonly AdminNavigationService _adminNavigation;
-        private readonly NavigationService _navigation;
+        private readonly NavigationService _navigationService;
 
         private readonly UserApiService? _userApi;
         private readonly AdminApiService? _adminApi;
@@ -39,6 +42,7 @@ namespace CryptoPuzzles.ViewModels
         public AdminViewModel(AdminNavigationService adminNavigation)
         {
             _adminNavigation = adminNavigation;
+            _navigationService = App.Services.GetRequiredService<NavigationService>();
 
             NavigateToUsersCommand = new AsyncRelayCommand(_ => { _adminNavigation.NavigateTo<UsersViewModel>(); return Task.CompletedTask; });
             NavigateToAdminsCommand = new AsyncRelayCommand(_ => { _adminNavigation.NavigateTo<AdminsViewModel>(); return Task.CompletedTask; });
@@ -49,7 +53,7 @@ namespace CryptoPuzzles.ViewModels
             NavigateToTutorialsCommand = new AsyncRelayCommand(_ => { _adminNavigation.NavigateTo<TutorialsViewModel>(); return Task.CompletedTask; });
             NavigateToStatisticsCommand = new AsyncRelayCommand(_ => { _adminNavigation.NavigateTo<StatisticsViewModel>(); return Task.CompletedTask; });
             ToggleThemeCommand = new AsyncRelayCommand(async _ => await ThemeHelper.ToggleTheme());
-            //LogoutCommand = new AsyncRelayCommand(async _ => );
+            LogoutCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<LoginViewModel>());
 
             _ = LoadStatsAsync();
         }
@@ -122,7 +126,7 @@ namespace CryptoPuzzles.ViewModels
                 {
                     var sessions = await _sessionApi.GetAllAsync();
                     ActiveSessions = sessions.Count(s => s.CompletedAt == null);
-                    AvgScore = sessions.Any() ? sessions.Average(s => s.Score) : 0;
+                    AvgScore = sessions.Count != 0 ? sessions.Average(s => s.Score) : 0;
                     TotalSolved = sessions.Count(s => s.CompletedAt != null);
                     SolvedToday = sessions.Count(s => s.CompletedAt?.Date == DateTime.Today);
                 }
