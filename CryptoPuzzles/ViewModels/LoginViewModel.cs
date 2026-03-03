@@ -13,10 +13,11 @@ namespace CryptoPuzzles.ViewModels
         private readonly NavigationService _navigationService;
 
         private string _login = string.Empty;
+        private bool _isBusy;
 
-        public ICommand LoginCommand { get; }
+        public AsyncRelayCommand LoginCommand { get; }
         public ICommand ShowRegisterCommand { get; }
-        public ICommand KeyDownCommand { get; }
+        public AsyncRelayCommand<KeyEventArgs> KeyDownCommand { get; }
 
         public string Login
         {
@@ -24,18 +25,34 @@ namespace CryptoPuzzles.ViewModels
             set { _login = value ?? string.Empty; OnPropertyChanged(); }
         }
 
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set
+            {
+                if (_isBusy != value)
+                {
+                    _isBusy = value;
+                    OnPropertyChanged();
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
+        }
+
         public LoginViewModel()
         {
             _apiService = App.Services.GetService<AuthApiService>() ?? throw new Exception("ApiService not registered");
             _navigationService = App.Services.GetService<NavigationService>() ?? throw new Exception("NavigationService not registered");
 
-            LoginCommand = new AsyncRelayCommand(OnLoginAsync);
+            LoginCommand = new AsyncRelayCommand(OnLoginAsync, _ => !IsBusy);
             ShowRegisterCommand = new AsyncRelayCommand(_ => _navigationService.NavigateToAsync<RegisterViewModel>());
-            KeyDownCommand = new AsyncRelayCommand<KeyEventArgs>(OnKeyDownAsync);
+            KeyDownCommand = new AsyncRelayCommand<KeyEventArgs>(OnKeyDownAsync, _ => !IsBusy);
         }
 
         private async Task OnLoginAsync(object? parameter)
         {
+            if (IsBusy) return;
+
             var passwordBox = parameter as PasswordBox;
             string password = passwordBox?.Password ?? string.Empty;
 
@@ -47,11 +64,13 @@ namespace CryptoPuzzles.ViewModels
 
             try
             {
+                IsBusy = true;
                 var response = await _apiService.LoginAsync(Login, password);
                 if (response == null)
                     return;
 
-                if (response.IsAdmin){
+                if (response.IsAdmin)
+                {
                     await DialogService.ShowMessage($"Добро пожаловать, {response.Username}!");
                     await _navigationService.NavigateToAsync<AdminViewModel>();
                 }
@@ -65,31 +84,30 @@ namespace CryptoPuzzles.ViewModels
             {
                 await DialogService.ShowError($"Ошибка входа: {ex.Message}");
             }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         private async Task OnKeyDownAsync(KeyEventArgs e)
         {
+            if (IsBusy) return;
+
             if (e.Key == Key.Enter)
             {
-                // Получаем элемент, который вызвал событие
                 var element = e.OriginalSource as System.Windows.UIElement;
 
                 if (element != null)
                 {
-                    // Перемещаем фокус на следующий элемент
                     element.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
 
-                    // Если это был последний элемент (PasswordBox), выполняем вход
-                    if (element is PasswordBox)
+                    if (element is PasswordBox passwordBox)
                     {
-                        // Небольшая задержка, чтобы фокус успел переместиться
                         await Task.Delay(50);
-
-                        // Выполняем вход, передавая PasswordBox как параметр
-                        await OnLoginAsync(element);
+                        await OnLoginAsync(passwordBox);
                     }
                 }
-
                 e.Handled = true;
             }
         }
