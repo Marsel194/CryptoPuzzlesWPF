@@ -11,7 +11,8 @@
         <Ellipse Width="250" Height="250" Style="{StaticResource BackgroundCircle}"
                  HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,50,100,0"/>
 
-        <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="650">
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+            HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Margin="40,20">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -19,9 +20,9 @@
                 </Grid.RowDefinitions>
 
                 <Border Grid.Row="0" Style="{StaticResource LogoCircle}" 
-                        Width="90" Height="90" CornerRadius="45" Margin="0,0,0,-30">
+                        Width="90" Height="90" CornerRadius="45" Margin="0,0,0,-30" Cursor="">
                     <Viewbox Width="45" Height="45">
-                        <materialDesign:PackIcon Kind="AccountPlus" Foreground="White"/>
+                        <materialDesign:PackIcon Kind="AccountPlus" Foreground="{DynamicResource MaterialDesignBody}"/>
                     </Viewbox>
                 </Border>
 
@@ -161,9 +162,11 @@
 
                         <Button Content="Войти в существующий аккаунт"
                               Command="{Binding ShowLoginCommand}"
-                              Foreground="{DynamicResource PrimaryHueMidBrush}"
-                              FontWeight="SemiBold" Cursor="Hand"
-                              Style="{StaticResource MaterialDesignFlatButton}"/>
+                          Foreground="{DynamicResource PrimaryHueMidBrush}"
+                          BorderBrush="{DynamicResource PrimaryHueMidBrush}"
+                          BorderThickness="2" Height="48" FontSize="15" FontWeight="SemiBold"
+                          materialDesign:ButtonAssist.CornerRadius="26" Cursor="Hand"
+                          Style="{StaticResource RoundedOutlinedButton}"/>
                     </StackPanel>
                 </Border>
             </Grid>

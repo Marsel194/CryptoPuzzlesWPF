@@ -118,12 +118,18 @@
                 <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="26"/>
             </Style>
 
+            <Style x:Key="RoundedOutlinedButton" 
+                TargetType="Button" 
+                BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+                <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="26"/>
+            </Style>
+            
             <Style x:Key="Divider" TargetType="Border">
                 <Setter Property="Height" Value="1"/>
                 <Setter Property="Background" Value="{DynamicResource MaterialDesignDivider}"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
-
+           
             <Style x:Key="DividerText" TargetType="TextBlock">
                 <Setter Property="Margin" Value="16,0"/>
                 <Setter Property="FontSize" Value="13"/>
@@ -140,7 +146,7 @@
             <Style x:Key="AdminCardStyle" TargetType="Border">
                 <Setter Property="Background" Value="{DynamicResource MaterialDesignPaper}"/>
                 <Setter Property="Width" Value="300"/>
-                <Setter Property="Height" Value="280"/>
+                <Setter Property="Height" Value="200"/>
                 <Setter Property="CornerRadius" Value="20"/>
                 <Setter Property="Margin" Value="12"/>
                 <Setter Property="Padding" Value="16"/>

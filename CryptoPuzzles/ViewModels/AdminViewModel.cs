@@ -35,22 +35,21 @@ namespace CryptoPuzzles.ViewModels
             _navigationService = App.Services.GetRequiredService<NavigationService>();
 
             // Навигационные команды
-            NavigateToUsersCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<UsersViewModel>());
-            NavigateToAdminsCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<AdminsViewModel>());
-            NavigateToMethodsCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<MethodsViewModel>());
-            NavigateToPuzzlesCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<PuzzlesViewModel>());
-            NavigateToHintsCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<HintsViewModel>());
-            NavigateToSessionsCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<SessionsViewModel>());
-            NavigateToTutorialsCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<TutorialsViewModel>());
-            NavigateToStatisticsCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<StatisticsViewModel>());
-            NavigateToDifficultiesCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<DifficultiesViewModel>());
+            NavigateToUsersCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<UsersViewModel>());
+            NavigateToAdminsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<AdminsViewModel>());
+            NavigateToMethodsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<MethodsViewModel>());
+            NavigateToPuzzlesCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<PuzzlesViewModel>());
+            NavigateToHintsCommand = new AsyncRelayCommand(async() => await _navigationService.NavigateToAsync<HintsViewModel>());
+            NavigateToSessionsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<SessionsViewModel>());
+            NavigateToTutorialsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<TutorialsViewModel>());
+            NavigateToStatisticsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<StatisticsViewModel>());
+            NavigateToDifficultiesCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<DifficultiesViewModel>());
 
             // Системные команды
             ToggleThemeCommand = new AsyncRelayCommand(async _ => await ThemeHelper.ToggleTheme());
-            LogoutCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<LoginViewModel>());
+            LogoutCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<LoginViewModel>());
             LoadStatsCommand = new AsyncRelayCommand(async _ => await LoadStatsAsync());
 
-            // Загружаем статистику
             _ = LoadStatsAsync();
         }
 
@@ -68,7 +67,6 @@ namespace CryptoPuzzles.ViewModels
         public ICommand LogoutCommand { get; }
         public ICommand LoadStatsCommand { get; }
 
-        // Свойства статистики (используем backing fields)
         public int TotalUsers { get => _totalUsers; set => SetProperty(ref _totalUsers, value); }
         public int NewUsersToday { get => _newUsersToday; set => SetProperty(ref _newUsersToday, value); }
         public int ActiveUsers { get => _activeUsers; set => SetProperty(ref _activeUsers, value); }
@@ -96,7 +94,6 @@ namespace CryptoPuzzles.ViewModels
             {
                 var stats = await _statsService.LoadStatsAsync();
 
-                // Присваиваем значения полям через свойства (вызовут SetProperty)
                 TotalUsers = stats.TotalUsers;
                 NewUsersToday = stats.NewUsersToday;
                 ActiveUsers = stats.ActiveUsers;

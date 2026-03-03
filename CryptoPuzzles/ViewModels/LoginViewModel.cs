@@ -16,6 +16,7 @@ namespace CryptoPuzzles.ViewModels
 
         public ICommand LoginCommand { get; }
         public ICommand ShowRegisterCommand { get; }
+        public ICommand KeyDownCommand { get; }
 
         public string Login
         {
@@ -30,6 +31,7 @@ namespace CryptoPuzzles.ViewModels
 
             LoginCommand = new AsyncRelayCommand(OnLoginAsync);
             ShowRegisterCommand = new AsyncRelayCommand(_ => _navigationService.NavigateToAsync<RegisterViewModel>());
+            KeyDownCommand = new AsyncRelayCommand<KeyEventArgs>(OnKeyDownAsync);
         }
 
         private async Task OnLoginAsync(object? parameter)
@@ -62,6 +64,33 @@ namespace CryptoPuzzles.ViewModels
             catch (Exception ex)
             {
                 await DialogService.ShowError($"Ошибка входа: {ex.Message}");
+            }
+        }
+
+        private async Task OnKeyDownAsync(KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                // Получаем элемент, который вызвал событие
+                var element = e.OriginalSource as System.Windows.UIElement;
+
+                if (element != null)
+                {
+                    // Перемещаем фокус на следующий элемент
+                    element.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+
+                    // Если это был последний элемент (PasswordBox), выполняем вход
+                    if (element is PasswordBox)
+                    {
+                        // Небольшая задержка, чтобы фокус успел переместиться
+                        await Task.Delay(50);
+
+                        // Выполняем вход, передавая PasswordBox как параметр
+                        await OnLoginAsync(element);
+                    }
+                }
+
+                e.Handled = true;
             }
         }
     }
