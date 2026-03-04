@@ -30,8 +30,7 @@ namespace CryptoPuzzles.Server.Controllers
                     t.TheoryTitle,
                     t.TheoryContent,
                     t.SortOrder,
-                    t.CreatedAt,
-                    t.UpdatedAt))
+                    t.CreatedAt))
                 .ToListAsync();
             return Ok(tutorials);
         }
@@ -49,8 +48,7 @@ namespace CryptoPuzzles.Server.Controllers
                     t.TheoryTitle,
                     t.TheoryContent,
                     t.SortOrder,
-                    t.CreatedAt,
-                    t.UpdatedAt))
+                    t.CreatedAt))
                 .FirstOrDefaultAsync();
             if (tutorial == null) return NotFound();
             return Ok(tutorial);
@@ -64,9 +62,7 @@ namespace CryptoPuzzles.Server.Controllers
                 MethodId = dto.MethodId,
                 TheoryTitle = dto.TheoryTitle,
                 TheoryContent = dto.TheoryContent,
-                SortOrder = dto.SortOrder,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                SortOrder = dto.SortOrder
             };
             _context.Tutorials.Add(tutorial);
             await _context.SaveChangesAsync();
@@ -80,8 +76,7 @@ namespace CryptoPuzzles.Server.Controllers
                 tutorial.TheoryTitle,
                 tutorial.TheoryContent,
                 tutorial.SortOrder,
-                tutorial.CreatedAt,
-                tutorial.UpdatedAt);
+                tutorial.CreatedAt);
 
             return CreatedAtAction(nameof(Get), new { id = tutorial.Id }, result);
         }
@@ -99,7 +94,6 @@ namespace CryptoPuzzles.Server.Controllers
             tutorial.TheoryTitle = dto.TheoryTitle;
             tutorial.TheoryContent = dto.TheoryContent;
             tutorial.SortOrder = dto.SortOrder;
-            tutorial.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
             return NoContent();

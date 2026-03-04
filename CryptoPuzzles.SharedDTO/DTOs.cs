@@ -37,7 +37,7 @@
 
     // Tutorial
     public record ATutorial(int Id, int MethodId, string MethodName, string TheoryTitle,
-        string TheoryContent, int SortOrder, DateTime CreatedAt, DateTime UpdatedAt);
+        string TheoryContent, int SortOrder, DateTime CreatedAt);
     public record ATutorialCreate(int MethodId, string TheoryTitle, string TheoryContent, int SortOrder);
     public record ATutorialUpdate(int Id, int MethodId, string TheoryTitle, string TheoryContent, int SortOrder);
 

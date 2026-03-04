@@ -26,7 +26,7 @@ namespace CryptoPuzzles.ViewModels
 
         protected override ATutorial CreateNewItem()
         {
-            return new ATutorial(0, 0, "", "", "", 0, DateTime.Now, DateTime.Now);
+            return new ATutorial(0, 0, "", "", "", 0, DateTime.Now);
         }
 
         protected override ATutorialCreate MapToCreateDto(ATutorial item)
@@ -60,7 +60,7 @@ namespace CryptoPuzzles.ViewModels
             }
 
             var itemToAdd = new ATutorial(0, NewItem.MethodId, "", NewItem.TheoryTitle, NewItem.TheoryContent,
-                 NewItem.SortOrder, DateTime.Now, DateTime.Now);
+                 NewItem.SortOrder, DateTime.Now);
             Items.Add(itemToAdd);
             _addedItems.Add(itemToAdd);
 
