@@ -70,6 +70,8 @@ namespace CryptoPuzzles.ViewModels.Base
                 _removedItems.Clear();
                 NewItem = CreateNewItem();
                 HasChanges = false;
+
+                OnPropertyChanged(nameof(Items));
             }
             catch (Exception ex)
             {

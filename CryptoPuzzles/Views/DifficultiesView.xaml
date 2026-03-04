@@ -53,8 +53,8 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" Text="{Binding NewItem.Name, UpdateSourceTrigger=PropertyChanged}" 
-                             materialDesign:HintAssist.Hint="Название" Margin="4"/>
+                    <TextBox Grid.Column="0" Text="{Binding NewItem.DifficultyName, UpdateSourceTrigger=PropertyChanged}" 
+                         materialDesign:HintAssist.Hint="Название" Margin="4" Cursor=""/>
                     <Button Grid.Column="1" Command="{Binding AddCommand}" Content="Добавить" 
                             Style="{StaticResource PrimaryButton}" Margin="4,0"/>
                 </Grid>
@@ -67,7 +67,7 @@
                   materialDesign:DataGridAssist.ColumnHeaderPadding="8">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="50"/>
-                <DataGridTextColumn Header="Название" Binding="{Binding Name}" Width="*"/>
+                <DataGridTextColumn Header="Название" Binding="{Binding DifficultyName}" Width="*"/>
                 <DataGridTemplateColumn Header="Действия" Width="100">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>

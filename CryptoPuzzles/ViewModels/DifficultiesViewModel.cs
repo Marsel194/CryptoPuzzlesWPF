@@ -11,7 +11,7 @@ namespace CryptoPuzzles.ViewModels
 
         protected override ADifficulty CreateNewItem()
         {
-            return new ADifficulty(0, "");
+            return new ADifficulty(0, string.Empty);
         }
 
         protected override ADifficultyCreate MapToCreateDto(ADifficulty item)
