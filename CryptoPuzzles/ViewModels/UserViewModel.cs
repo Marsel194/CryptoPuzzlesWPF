@@ -1,98 +1,70 @@
-﻿using CryptoPuzzles.ViewModels.Base;
+﻿using CryptoPuzzles.Services;
+using CryptoPuzzles.Services.ApiService;
+using CryptoPuzzles.SharedDTO;
+using CryptoPuzzles.ViewModels.Base;
+using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Input;
 
 namespace CryptoPuzzles.ViewModels
 {
     public class UserViewModel : ViewModelBase
     {
-        // Свойства пользователя
-        private string _username = "Алексей";
-        public string Username
+        private readonly UserApiService _userApiService;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly NavigationService _navigationService;
+        private readonly int _userId = 1; // заглушка, потом брать из сессии
+
+        private ViewModelBase? _currentSection;
+        public ViewModelBase? CurrentSection
         {
-            get => _username;
-            set { _username = value; OnPropertyChanged(); }
+            get => _currentSection;
+            set => SetProperty(ref _currentSection, value);
         }
 
-        private string _login = "alexey";
-        public string Login
-        {
-            get => _login;
-            set { _login = value; OnPropertyChanged(); }
-        }
+        public int SolvedCount { get; set; } = 12;
+        public int Score { get; set; } = 1250;
 
-        private string _email = "alexey@example.com";
-        public string Email
-        {
-            get => _email;
-            set { _email = value; OnPropertyChanged(); }
-        }
-
-        // Прогресс (в процентах)
-        private int _trainingProgress = 65; // 65%
-        public int TrainingProgress
-        {
-            get => _trainingProgress;
-            set { _trainingProgress = value; OnPropertyChanged(); }
-        }
-
-        private int _practiceProgress = 42; // 42%
-        public int PracticeProgress
-        {
-            get => _practiceProgress;
-            set { _practiceProgress = value; OnPropertyChanged(); }
-        }
-
-        // Состояние профиля и редактирования
-        private bool _isProfileOpen;
-        public bool IsProfileOpen
-        {
-            get => _isProfileOpen;
-            set { _isProfileOpen = value; OnPropertyChanged(); }
-        }
-
-        private bool _isEditMode;
-        public bool IsEditMode
-        {
-            get => _isEditMode;
-            set { _isEditMode = value; OnPropertyChanged(); }
-        }
-
-        // Команды
         public ICommand LogoutCommand { get; }
         public ICommand ToggleThemeCommand { get; }
         public ICommand OpenProfileCommand { get; }
-        public ICommand CloseProfileCommand { get; }
         public ICommand StartTrainingCommand { get; }
         public ICommand StartPracticeCommand { get; }
-        public ICommand EditCommand { get; }
-        public ICommand SaveCommand { get; }
-        public ICommand CancelCommand { get; }
+        public ICommand GoBackCommand { get; }
 
-        public UserViewModel()
+        public UserViewModel(UserApiService userApiService, IServiceProvider serviceProvider)
         {
-            LogoutCommand = new AsyncRelayCommand(async _ => await Logout());
-            ToggleThemeCommand = new AsyncRelayCommand(async _ => await ToggleTheme());
-            OpenProfileCommand = new AsyncRelayCommand(async _ => await OpenProfile());
-            CloseProfileCommand = new AsyncRelayCommand(async _ => await CloseProfile());
-            StartTrainingCommand = new AsyncRelayCommand(async _ => await StartTraining());
-            StartPracticeCommand = new AsyncRelayCommand(async _ => await StartPractice());
-            EditCommand = new AsyncRelayCommand(async _ => await Edit());
-            SaveCommand = new AsyncRelayCommand(async _ => await Save());
-            CancelCommand = new AsyncRelayCommand(async _ => await Cancel());
+            _userApiService = userApiService;
+            _serviceProvider = serviceProvider;
+            _navigationService = App.Services.GetRequiredService<NavigationService>();
+            LogoutCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<LoginViewModel>());
+            ToggleThemeCommand = new AsyncRelayCommand(async _ => await ThemeHelper.ToggleTheme());
+            OpenProfileCommand = new AsyncRelayCommand(OpenProfileAsync);
+            StartTrainingCommand = new AsyncRelayCommand(StartTrainingAsync);
+            StartPracticeCommand = new AsyncRelayCommand(StartPracticeAsync);
+            GoBackCommand = new AsyncRelayCommand(GoBackAsync);
         }
 
-        private async Task Logout() { /* заглушка */ }
-        private async Task ToggleTheme() { /* заглушка */ }
-        private async Task OpenProfile() => IsProfileOpen = true;
-        private async Task CloseProfile() => IsProfileOpen = false;
-        private async Task StartTraining() { /* заглушка */ }
-        private async Task StartPractice() { /* заглушка */ }
-        private async Task Edit() => IsEditMode = true;
-        private async Task Save()
+        private async Task OpenProfileAsync()
         {
-            // здесь логика сохранения
-            IsEditMode = false;
+            var user = await _userApiService.GetByIdAsync(_userId);
+            if (user == null) return;
+
+            var profileVM = ActivatorUtilities.CreateInstance<UserProfileViewModel>(
+                _serviceProvider,
+                user,
+                (Action)(() => CurrentSection = null)
+            );
+
+            CurrentSection = profileVM;
         }
-        private async Task Cancel() => IsEditMode = false;
+
+        private Task GoBackAsync()
+        {
+            CurrentSection = null;
+            return Task.CompletedTask;
+        }
+
+        private Task StartTrainingAsync() { /* ... */ return Task.CompletedTask; }
+        private Task StartPracticeAsync() { /* ... */ return Task.CompletedTask; }
     }
 }

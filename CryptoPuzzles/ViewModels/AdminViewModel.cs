@@ -12,7 +12,6 @@ namespace CryptoPuzzles.ViewModels
         private readonly NavigationService _navigationService;
         private readonly AdminStatsService _statsService;
 
-        // Отдельные поля для каждого значения статистики
         private int _totalUsers;
         private int _newUsersToday;
         private int _activeUsers;
@@ -34,7 +33,6 @@ namespace CryptoPuzzles.ViewModels
             _statsService = App.Services.GetRequiredService<AdminStatsService>();
             _navigationService = App.Services.GetRequiredService<NavigationService>();
 
-            // Навигационные команды
             NavigateToUsersCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<UsersViewModel>());
             NavigateToAdminsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<AdminsViewModel>());
             NavigateToMethodsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<MethodsViewModel>());
@@ -45,7 +43,6 @@ namespace CryptoPuzzles.ViewModels
             NavigateToStatisticsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<StatisticsViewModel>());
             NavigateToDifficultiesCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<DifficultiesViewModel>());
 
-            // Системные команды
             ToggleThemeCommand = new AsyncRelayCommand(async _ => await ThemeHelper.ToggleTheme());
             LogoutCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<LoginViewModel>());
             LoadStatsCommand = new AsyncRelayCommand(async _ => await LoadStatsAsync());
@@ -53,7 +50,6 @@ namespace CryptoPuzzles.ViewModels
             _ = LoadStatsAsync();
         }
 
-        // Команды
         public ICommand NavigateToUsersCommand { get; }
         public ICommand NavigateToAdminsCommand { get; }
         public ICommand NavigateToMethodsCommand { get; }

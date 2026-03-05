@@ -38,6 +38,7 @@ namespace CryptoPuzzles
             services.AddTransient<TutorialsViewModel>();
             services.AddTransient<UsersViewModel>();
             services.AddTransient<UserViewModel>();
+            services.AddTransient<UserProfileViewModel>();
             services.AddTransient<DifficultiesViewModel>();
             
             services.AddSingleton<UserApiService>();
