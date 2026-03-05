@@ -64,7 +64,6 @@ namespace CryptoPuzzles.ViewModels
 
             NewItem = CreateNewItem();
             NewPassword = string.Empty;
-            HasChanges = true;
             await Task.CompletedTask;
         }
 
@@ -104,6 +103,15 @@ namespace CryptoPuzzles.ViewModels
                    x.Login == y.Login &&
                    x.Username == y.Username &&
                    x.Email == y.Email;
+        }
+
+        protected override bool FilterPredicate(AUser item)
+        {
+            if (string.IsNullOrWhiteSpace(FilterText)) return true;
+            var f = FilterText.ToLower();
+            return item.Login.ToLower().Contains(f) ||
+                   item.Username.ToLower().Contains(f) ||
+                   item.Email.ToLower().Contains(f);
         }
     }
 }

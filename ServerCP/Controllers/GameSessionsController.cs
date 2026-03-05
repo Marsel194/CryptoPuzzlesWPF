@@ -24,6 +24,7 @@ namespace CryptoPuzzles.Server.Controllers
                 .Include(s => s.User)
                 .Include(s => s.CurrentPuzzle)
                 .Where(s => !s.IsDeleted)
+                .OrderBy(s => s.Id)
                 .Select(s => new AGameSession(
                     s.Id,
                     s.UserId,

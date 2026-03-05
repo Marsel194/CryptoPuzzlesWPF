@@ -8,60 +8,61 @@ namespace CryptoPuzzles.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EncryptionMethodsController : ControllerBase
+    public class DifficultiesController : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        public EncryptionMethodsController(AppDbContext context)
+        public DifficultiesController(AppDbContext context)
         {
             _context = context;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AEncryptionMethod>>> GetAll()
+        public async Task<ActionResult<IEnumerable<ADifficulty>>> GetAll()
         {
-            var methods = await _context.EncryptionMethods
-                .Where(m => !m.IsDeleted)
-                .Select(m => new AEncryptionMethod(m.Id, m.Name))
+            var difficulties = await _context.Difficulties
+                .Where(d => !d.IsDeleted)
+                .OrderBy(d => d.Id)
+                .Select(d => new ADifficulty(d.Id, d.DifficultyName))
                 .ToListAsync();
-            return Ok(methods);
+            return Ok(difficulties);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<AEncryptionMethod>> Get(int id)
+        public async Task<ActionResult<ADifficulty>> Get(int id)
         {
-            var method = await _context.EncryptionMethods
-                .Where(m => m.Id == id && !m.IsDeleted)
-                .Select(m => new AEncryptionMethod(m.Id, m.Name))
+            var difficulty = await _context.Difficulties
+                .Where(d => d.Id == id && !d.IsDeleted)
+                .Select(d => new ADifficulty(d.Id, d.DifficultyName))
                 .FirstOrDefaultAsync();
-            if (method == null) return NotFound();
-            return Ok(method);
+            if (difficulty == null) return NotFound();
+            return Ok(difficulty);
         }
 
         [HttpPost]
-        public async Task<ActionResult<AEncryptionMethod>> Create([FromBody] AEncryptionMethodCreate dto)
+        public async Task<ActionResult<ADifficulty>> Create([FromBody] ADifficultyCreate dto)
         {
-            var method = new EncryptionMethod
+            var difficulty = new Difficulty
             {
-                Name = dto.Name
+                DifficultyName = dto.DifficultyName
             };
-            _context.EncryptionMethods.Add(method);
+            _context.Difficulties.Add(difficulty);
             await _context.SaveChangesAsync();
 
-            var result = new AEncryptionMethod(method.Id, method.Name);
-            return CreatedAtAction(nameof(Get), new { id = method.Id }, result);
+            var result = new ADifficulty(difficulty.Id, difficulty.DifficultyName);
+            return CreatedAtAction(nameof(Get), new { id = difficulty.Id }, result);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] AEncryptionMethodUpdate dto)
+        public async Task<IActionResult> Update(int id, [FromBody] ADifficultyUpdate dto)
         {
             if (id != dto.Id) return BadRequest();
-            var method = await _context.EncryptionMethods
-                .Where(m => m.Id == id && !m.IsDeleted)
+            var difficulty = await _context.Difficulties
+                .Where(d => d.Id == id && !d.IsDeleted)
                 .FirstOrDefaultAsync();
-            if (method == null) return NotFound();
+            if (difficulty == null) return NotFound();
 
-            method.Name = dto.Name;
+            difficulty.DifficultyName = dto.DifficultyName;
             await _context.SaveChangesAsync();
             return NoContent();
         }
@@ -69,11 +70,11 @@ namespace CryptoPuzzles.Server.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var method = await _context.EncryptionMethods.FindAsync(id);
-            if (method == null || method.IsDeleted) return NotFound();
+            var difficulty = await _context.Difficulties.FindAsync(id);
+            if (difficulty == null || difficulty.IsDeleted) return NotFound();
 
-            method.IsDeleted = true;
-            method.DeletedAt = DateTime.UtcNow;
+            difficulty.IsDeleted = true;
+            difficulty.DeletedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
             return NoContent();
         }

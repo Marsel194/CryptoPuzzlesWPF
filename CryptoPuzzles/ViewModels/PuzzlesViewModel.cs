@@ -81,7 +81,6 @@ namespace CryptoPuzzles.ViewModels
             _addedItems.Add(itemToAdd);
 
             NewItem = CreateNewItem();
-            HasChanges = true;
             await Task.CompletedTask;
         }
 
@@ -118,6 +117,15 @@ namespace CryptoPuzzles.ViewModels
                    x.MethodId == y.MethodId &&
                    x.IsTraining == y.IsTraining &&
                    x.TutorialOrder == y.TutorialOrder;
+        }
+
+        protected override bool FilterPredicate(APuzzle item)
+        {
+            if (string.IsNullOrWhiteSpace(FilterText)) return true;
+            var f = FilterText.ToLower();
+            return item.Title.ToLower().Contains(f) ||
+                   item.Content.ToLower().Contains(f) ||
+                   item.Answer.ToLower().Contains(f);
         }
     }
 }

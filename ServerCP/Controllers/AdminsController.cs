@@ -19,6 +19,7 @@ namespace CryptoPuzzles.Server.Controllers
         {
             var admins = await _context.Admins
                 .Where(a => !a.IsDeleted)
+                .OrderBy(a => a.Id)
                 .Select(a => new AAdmin(a.Id, a.Login, a.FirstName, a.LastName, a.MiddleName ?? "", a.CreatedAt))
                 .ToListAsync();
             return Ok(admins);

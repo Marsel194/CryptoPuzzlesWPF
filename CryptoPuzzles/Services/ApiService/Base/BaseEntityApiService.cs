@@ -30,12 +30,22 @@ namespace CryptoPuzzles.Services.ApiService
 
         public async Task UpdateAsync(int id, TUpdate dto)
         {
-            await SendAsync<object>(() => _httpClient.PutAsJsonAsync($"{_endpoint}/{id}", dto));
+            var response = await _httpClient.PutAsJsonAsync($"{_endpoint}/{id}", dto);
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Ошибка при обновлении: {response.StatusCode} - {errorContent}");
+            }
         }
 
         public async Task DeleteAsync(int id)
         {
-            await SendAsync<object>(() => _httpClient.DeleteAsync($"{_endpoint}/{id}"));
+            var response = await _httpClient.DeleteAsync($"{_endpoint}/{id}");
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Ошибка при удалении: {response.StatusCode} - {errorContent}");
+            }
         }
     }
 }

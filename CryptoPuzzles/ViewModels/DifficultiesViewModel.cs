@@ -39,7 +39,6 @@ namespace CryptoPuzzles.ViewModels
             _addedItems.Add(itemToAdd);
 
             NewItem = CreateNewItem();
-            HasChanges = true;
             await Task.CompletedTask;
         }
 
@@ -69,6 +68,12 @@ namespace CryptoPuzzles.ViewModels
         protected override bool IsEqual(ADifficulty x, ADifficulty y)
         {
             return x.Id == y.Id && x.DifficultyName == y.DifficultyName;
+        }
+
+        protected override bool FilterPredicate(ADifficulty item)
+        {
+            if (string.IsNullOrWhiteSpace(FilterText)) return true;
+            return item.DifficultyName.ToLower().Contains(FilterText.ToLower());
         }
     }
 }

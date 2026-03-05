@@ -9,7 +9,10 @@ namespace CryptoPuzzles.ViewModels
     {
         private string _newPassword = string.Empty;
 
-        public AdminsViewModel(AdminApiService apiService) : base(apiService) { }
+        public AdminsViewModel(AdminApiService apiService) : base(apiService)
+        {
+            // Команды инициализируются в базовом классе
+        }
 
         public string NewPassword
         {
@@ -17,22 +20,12 @@ namespace CryptoPuzzles.ViewModels
             set => SetProperty(ref _newPassword, value);
         }
 
-        protected override AAdmin CreateNewItem()
-        {
-            return new AAdmin(0, "", "", "", null, DateTime.Now);
-        }
-
-        protected override AAdminCreate MapToCreateDto(AAdmin item)
-        {
-            return new AAdminCreate(item.Login, NewPassword, item.FirstName, item.LastName, item.MiddleName);
-        }
-
-        protected override AAdminUpdate MapToUpdateDto(AAdmin item)
-        {
-            return new AAdminUpdate(item.Id, item.Login, item.FirstName, item.LastName, item.MiddleName,
+        protected override AAdmin CreateNewItem() => new(0, "", "", "", null, DateTime.Now);
+        protected override AAdminCreate MapToCreateDto(AAdmin item) =>
+            new(item.Login, NewPassword, item.FirstName, item.LastName, item.MiddleName);
+        protected override AAdminUpdate MapToUpdateDto(AAdmin item) =>
+            new(item.Id, item.Login, item.FirstName, item.LastName, item.MiddleName,
                 string.IsNullOrWhiteSpace(NewPassword) ? null : NewPassword);
-        }
-
         protected override int GetId(AAdmin item) => item.Id;
 
         protected override async Task AddAsync()
@@ -65,8 +58,17 @@ namespace CryptoPuzzles.ViewModels
 
             NewItem = CreateNewItem();
             NewPassword = string.Empty;
-            HasChanges = true;
             await Task.CompletedTask;
+        }
+
+        protected override async Task DeleteAsync(int? id)
+        {
+            if (!id.HasValue) return;
+
+            // TODO: добавить проверку на удаление самого себя после реализации ICurrentUserService
+            // if (id.Value == текущий_админ) { await DialogService.ShowError(...); return; }
+
+            await base.DeleteAsync(id);
         }
 
         protected override async Task SaveAsync()
@@ -104,6 +106,16 @@ namespace CryptoPuzzles.ViewModels
                    x.FirstName == y.FirstName &&
                    x.LastName == y.LastName &&
                    x.MiddleName == y.MiddleName;
+        }
+
+        protected override bool FilterPredicate(AAdmin item)
+        {
+            if (string.IsNullOrWhiteSpace(FilterText)) return true;
+            var f = FilterText.ToLower();
+            return item.Login.ToLower().Contains(f) ||
+                   item.FirstName.ToLower().Contains(f) ||
+                   item.LastName.ToLower().Contains(f) ||
+                   (item.MiddleName?.ToLower().Contains(f) ?? false);
         }
     }
 }

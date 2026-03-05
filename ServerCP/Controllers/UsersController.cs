@@ -23,6 +23,7 @@ namespace CryptoPuzzles.Server.Controllers
         {
             var users = await _context.Users
                 .Where(u => !u.IsDeleted)
+                .OrderBy(u => u.Id)
                 .Select(u => new AUser(u.Id, u.Login, u.Username, u.Email, u.CreatedAt))
                 .ToListAsync();
             return Ok(users);

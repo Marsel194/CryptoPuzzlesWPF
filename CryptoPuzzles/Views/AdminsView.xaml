@@ -7,6 +7,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -17,32 +18,13 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-
-            <!-- Кнопка назад -->
-            <Button Grid.Column="0" 
-                    Command="{Binding BackCommand}"
-                    Style="{StaticResource MaterialDesignFlatButton}"
-                    ToolTip="Вернуться в админ-панель"
-                    Margin="0,0,16,0">
+            <Button Grid.Column="0" Command="{Binding BackCommand}" Style="{StaticResource MaterialDesignFlatButton}" ToolTip="Вернуться в админ-панель" Margin="0,0,16,0">
                 <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="ArrowLeft" 
-                                            Width="24" 
-                                            Height="24"
-                                            Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                    <TextBlock Text="Назад" 
-                              FontSize="16"
-                              VerticalAlignment="Center"
-                              Margin="8,0,0,0"
-                              Foreground="{DynamicResource MaterialDesignBody}"/>
+                    <materialDesign:PackIcon Kind="ArrowLeft" Width="24" Height="24" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                    <TextBlock Text="Назад" FontSize="16" VerticalAlignment="Center" Margin="8,0,0,0" Foreground="{DynamicResource MaterialDesignBody}"/>
                 </StackPanel>
             </Button>
-
-            <!-- Заголовок -->
-            <TextBlock Grid.Column="1" 
-                       Text="Администраторы" 
-                       FontSize="28" 
-                       FontWeight="Bold"
-                       VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="1" Text="Администраторы" FontSize="28" FontWeight="Bold" VerticalAlignment="Center"/>
         </Grid>
 
         <!-- Панель добавления -->
@@ -58,44 +40,51 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" Text="{Binding NewItem.Login, UpdateSourceTrigger=PropertyChanged}" 
-                             materialDesign:HintAssist.Hint="Логин" Margin="4"/>
-                    <TextBox Grid.Column="1" Text="{Binding NewItem.FirstName, UpdateSourceTrigger=PropertyChanged}" 
-                             materialDesign:HintAssist.Hint="Имя" Margin="4"/>
-                    <TextBox Grid.Column="2" Text="{Binding NewItem.LastName, UpdateSourceTrigger=PropertyChanged}" 
-                             materialDesign:HintAssist.Hint="Фамилия" Margin="4"/>
-                    <TextBox Grid.Column="3" Text="{Binding NewItem.MiddleName, UpdateSourceTrigger=PropertyChanged}" 
-                             materialDesign:HintAssist.Hint="Отчество" Margin="4"/>
-                    <PasswordBox Grid.Column="4" 
-                                 helpers:PasswordHelper.Attach="True"
-                                 helpers:PasswordHelper.Password="{Binding NewPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 materialDesign:HintAssist.Hint="Пароль"
-                                 Margin="4"/>
-                    <Button Grid.Column="5" Command="{Binding AddCommand}" Content="Добавить" 
-                            Style="{StaticResource PrimaryButton}" Margin="4,0"/>
+                    <TextBox Grid.Column="0" Text="{Binding NewItem.Login, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Логин" Margin="4"/>
+                    <TextBox Grid.Column="1" Text="{Binding NewItem.FirstName, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Имя" Margin="4"/>
+                    <TextBox Grid.Column="2" Text="{Binding NewItem.LastName, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Фамилия" Margin="4"/>
+                    <TextBox Grid.Column="3" Text="{Binding NewItem.MiddleName, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Отчество" Margin="4"/>
+                    <PasswordBox Grid.Column="4" helpers:PasswordHelper.Attach="True" helpers:PasswordHelper.Password="{Binding NewPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Пароль" Margin="4"/>
+                    <Button Grid.Column="5" Command="{Binding AddCommand}" Content="Добавить" Style="{StaticResource PrimaryButton}" Margin="4,0"/>
                 </Grid>
             </StackPanel>
         </Border>
 
-        <DataGrid Grid.Row="2" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" 
-                  AutoGenerateColumns="False" IsReadOnly="False" CanUserAddRows="False"
+        <!-- Панель фильтрации и экспорта -->
+        <Grid Grid.Row="2" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Поиск:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <TextBox Grid.Column="1" Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Введите текст..." Padding="4"/>
+            <Button Grid.Column="2" Command="{Binding ClearFilterCommand}" Content="Очистить" Style="{StaticResource MaterialDesignFlatButton}" Margin="8,0,0,0"/>
+            <Button Grid.Column="3" Command="{Binding ExportToExcelCommand}" Content="Экспорт в Excel" Style="{StaticResource PrimaryButton}" Margin="8,0,0,0" Width="140"/>
+        </Grid>
+
+        <!-- DataGrid -->
+        <DataGrid Grid.Row="3" 
+                  ItemsSource="{Binding ItemsView}" 
+                  SelectedItem="{Binding SelectedItem}" 
+                  AutoGenerateColumns="False" 
+                  IsReadOnly="False" 
+                  CanUserAddRows="False"
                   materialDesign:DataGridAssist.CellPadding="13 8 8 8"
                   materialDesign:DataGridAssist.ColumnHeaderPadding="8">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="50"/>
-                <DataGridTextColumn Header="Логин" Binding="{Binding Login}" Width="120"/>
-                <DataGridTextColumn Header="Имя" Binding="{Binding FirstName}" Width="120"/>
-                <DataGridTextColumn Header="Фамилия" Binding="{Binding LastName}" Width="120"/>
-                <DataGridTextColumn Header="Отчество" Binding="{Binding MiddleName}" Width="120"/>
-                <DataGridTextColumn Header="Дата создания" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="150"/>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" Width="50"/>
+                <DataGridTextColumn Header="Логин" Binding="{Binding Login, UpdateSourceTrigger=PropertyChanged}" Width="120"/>
+                <DataGridTextColumn Header="Имя" Binding="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" Width="120"/>
+                <DataGridTextColumn Header="Фамилия" Binding="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" Width="120"/>
+                <DataGridTextColumn Header="Отчество" Binding="{Binding MiddleName, UpdateSourceTrigger=PropertyChanged}" Width="120"/>
+                <DataGridTextColumn Header="Дата создания" Binding="{Binding CreatedAt, UpdateSourceTrigger=PropertyChanged, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="150"/>
                 <DataGridTemplateColumn Header="Действия" Width="100">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
-                                    CommandParameter="{Binding Id}" 
-                                    Content="Удалить" 
-                                    Style="{StaticResource MaterialDesignFlatButton}"
-                                    Foreground="Red"/>
+                                    CommandParameter="{Binding Id}" Content="Удалить" Style="{StaticResource MaterialDesignFlatButton}" Foreground="Red"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -103,7 +92,7 @@
         </DataGrid>
 
         <!-- Кнопка Сохранить -->
-        <Button Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Center" 
+        <Button Grid.Row="4" HorizontalAlignment="Right" VerticalAlignment="Center" 
                 Command="{Binding SaveCommand}" Content="Сохранить изменения" 
                 Style="{StaticResource PrimaryButton}" Margin="0,16,0,0" Width="200"/>
     </Grid>

@@ -40,7 +40,6 @@ namespace CryptoPuzzles.ViewModels
             _addedItems.Add(itemToAdd);
 
             NewItem = CreateNewItem();
-            HasChanges = true;
 
             await Task.CompletedTask;
         }
@@ -66,6 +65,12 @@ namespace CryptoPuzzles.ViewModels
             }
 
             await base.SaveAsync();
+        }
+
+        protected override bool FilterPredicate(AEncryptionMethod item)
+        {
+            if (string.IsNullOrWhiteSpace(FilterText)) return true;
+            return item.Name.ToLower().Contains(FilterText.ToLower());
         }
     }
 }

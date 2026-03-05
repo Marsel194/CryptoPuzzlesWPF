@@ -1,47 +1,30 @@
 ﻿<UserControl x:Class="CryptoPuzzles.Views.PuzzlesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:helpers="clr-namespace:CryptoPuzzles.Helpers">
     <Grid Margin="24">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Верхняя панель с заголовком и кнопкой назад -->
+        <!-- Верхняя панель -->
         <Grid Grid.Row="0" Margin="0,0,0,16">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-
-            <!-- Кнопка назад -->
-            <Button Grid.Column="0" 
-                    Command="{Binding BackCommand}"
-                    Style="{StaticResource MaterialDesignFlatButton}"
-                    ToolTip="Вернуться в админ-панель"
-                    Margin="0,0,16,0">
+            <Button Grid.Column="0" Command="{Binding BackCommand}" Style="{StaticResource MaterialDesignFlatButton}" ToolTip="Вернуться в админ-панель" Margin="0,0,16,0">
                 <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="ArrowLeft" 
-                                            Width="24" 
-                                            Height="24"
-                                            Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                    <TextBlock Text="Назад" 
-                              FontSize="16"
-                              VerticalAlignment="Center"
-                              Margin="8,0,0,0"
-                              Foreground="{DynamicResource MaterialDesignBody}"/>
+                    <materialDesign:PackIcon Kind="ArrowLeft" Width="24" Height="24" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                    <TextBlock Text="Назад" FontSize="16" VerticalAlignment="Center" Margin="8,0,0,0" Foreground="{DynamicResource MaterialDesignBody}"/>
                 </StackPanel>
             </Button>
-
-            <!-- Заголовок -->
-            <TextBlock Grid.Column="1" 
-                       Text="Головоломки" 
-                       FontSize="28" 
-                       FontWeight="Bold"
-                       VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="1" Text="Головоломки" FontSize="28" FontWeight="Bold" VerticalAlignment="Center"/>
         </Grid>
 
         <!-- Панель добавления -->
@@ -57,34 +40,45 @@
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" Text="{Binding NewItem.Title, UpdateSourceTrigger=PropertyChanged}" 
-                             materialDesign:HintAssist.Hint="Название" Margin="4"/>
-                    <TextBox Grid.Column="1" Text="{Binding NewItem.Content, UpdateSourceTrigger=PropertyChanged}" 
-                             materialDesign:HintAssist.Hint="Содержание" Margin="4"/>
-                    <TextBox Grid.Column="2" Text="{Binding NewItem.Answer, UpdateSourceTrigger=PropertyChanged}" 
-                             materialDesign:HintAssist.Hint="Ответ" Margin="4"/>
+                    <TextBox Grid.Column="0" Text="{Binding NewItem.Title, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Название" Margin="4"/>
+                    <TextBox Grid.Column="1" Text="{Binding NewItem.Content, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Содержание" Margin="4"/>
+                    <TextBox Grid.Column="2" Text="{Binding NewItem.Answer, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Ответ" Margin="4"/>
                     <ComboBox Grid.Column="3" ItemsSource="{Binding Difficulties}" SelectedValuePath="Id" DisplayMemberPath="DifficultyName" 
                               SelectedValue="{Binding NewItem.DifficultyId}" materialDesign:HintAssist.Hint="Сложность" Margin="4"/>
                     <ComboBox Grid.Column="4" ItemsSource="{Binding Methods}" SelectedValuePath="Id" DisplayMemberPath="Name" 
                               SelectedValue="{Binding NewItem.MethodId}" materialDesign:HintAssist.Hint="Метод" Margin="4"/>
-                    <Button Grid.Column="5" Command="{Binding AddCommand}" Content="Добавить" 
-                            Style="{StaticResource PrimaryButton}" Margin="4,0"/>
+                    <Button Grid.Column="5" Command="{Binding AddCommand}" Content="Добавить" Style="{StaticResource PrimaryButton}" Margin="4,0"/>
                 </Grid>
             </StackPanel>
         </Border>
 
-        <DataGrid Grid.Row="2" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" 
+        <!-- Фильтр + экспорт -->
+        <Grid Grid.Row="2" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Поиск:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <TextBox Grid.Column="1" Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Введите текст..." Padding="4"/>
+            <Button Grid.Column="2" Command="{Binding ClearFilterCommand}" Content="Очистить" Style="{StaticResource MaterialDesignFlatButton}" Margin="8,0,0,0"/>
+            <Button Grid.Column="3" Command="{Binding ExportToExcelCommand}" Content="Экспорт в Excel" Style="{StaticResource PrimaryButton}" Margin="8,0,0,0" Width="140"/>
+        </Grid>
+
+        <!-- DataGrid -->
+        <DataGrid Grid.Row="3" ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
                   AutoGenerateColumns="False" IsReadOnly="False" CanUserAddRows="False"
                   materialDesign:DataGridAssist.CellPadding="13 8 8 8"
                   materialDesign:DataGridAssist.ColumnHeaderPadding="8">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="50"/>
-                <DataGridTextColumn Header="Название" Binding="{Binding Title}" Width="150"/>
-                <DataGridTextColumn Header="Содержание" Binding="{Binding Content}" Width="200"/>
-                <DataGridTextColumn Header="Ответ" Binding="{Binding Answer}" Width="100"/>
-                <DataGridTextColumn Header="Макс. балл" Binding="{Binding MaxScore}" Width="80"/>
+                <DataGridTextColumn Header="Название" Binding="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+                <DataGridTextColumn Header="Содержание" Binding="{Binding Content, UpdateSourceTrigger=PropertyChanged}" Width="200"/>
+                <DataGridTextColumn Header="Ответ" Binding="{Binding Answer, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
+                <DataGridTextColumn Header="Макс. балл" Binding="{Binding MaxScore, UpdateSourceTrigger=PropertyChanged}" Width="80"/>
+                <DataGridTextColumn Header="Порядок" Binding="{Binding TutorialOrder, UpdateSourceTrigger=PropertyChanged}"/>
 
-                <!-- Сложность: редактирование через ComboBox -->
+                <!-- Сложность: редактирование через ComboBox с автооткрытием -->
                 <DataGridTemplateColumn Header="Сложность" Width="120">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -95,12 +89,13 @@
                         <DataTemplate>
                             <ComboBox ItemsSource="{Binding DataContext.Difficulties, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                       SelectedValuePath="Id" DisplayMemberPath="DifficultyName"
-                                      SelectedValue="{Binding DifficultyId, UpdateSourceTrigger=PropertyChanged}"/>
+                                      SelectedValue="{Binding DifficultyId, UpdateSourceTrigger=PropertyChanged}"
+                                       />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
 
-                <!-- Метод: редактирование через ComboBox -->
+                <!-- Метод: редактирование через ComboBox с автооткрытием -->
                 <DataGridTemplateColumn Header="Метод" Width="120">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -111,7 +106,8 @@
                         <DataTemplate>
                             <ComboBox ItemsSource="{Binding DataContext.Methods, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                       SelectedValuePath="Id" DisplayMemberPath="Name"
-                                      SelectedValue="{Binding MethodId, UpdateSourceTrigger=PropertyChanged}"/>
+                                      SelectedValue="{Binding MethodId, UpdateSourceTrigger=PropertyChanged}"
+                                       />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
@@ -123,10 +119,7 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
-                                    CommandParameter="{Binding Id}" 
-                                    Content="Удалить" 
-                                    Style="{StaticResource MaterialDesignFlatButton}"
-                                    Foreground="Red"/>
+                                    CommandParameter="{Binding Id}" Content="Удалить" Style="{StaticResource MaterialDesignFlatButton}" Foreground="Red"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -134,7 +127,7 @@
         </DataGrid>
 
         <!-- Кнопка Сохранить -->
-        <Button Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Center" 
+        <Button Grid.Row="4" HorizontalAlignment="Right" VerticalAlignment="Center" 
                 Command="{Binding SaveCommand}" Content="Сохранить изменения" 
                 Style="{StaticResource PrimaryButton}" Margin="0,16,0,0" Width="200"/>
     </Grid>

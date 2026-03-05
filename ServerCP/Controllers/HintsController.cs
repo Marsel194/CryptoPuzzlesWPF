@@ -23,6 +23,7 @@ namespace CryptoPuzzles.Server.Controllers
             var hints = await _context.Hints
                 .Include(h => h.Puzzle)
                 .Where(h => !h.IsDeleted)
+                .OrderBy(h => h.Id)
                 .Select(h => new AHint(
                     h.Id,
                     h.PuzzleId,

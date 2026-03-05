@@ -1,12 +1,18 @@
-﻿using CryptoPuzzles.Services;
+﻿using ClosedXML.Excel;
+using CryptoPuzzles.Services;
 using CryptoPuzzles.Services.ApiService;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Win32;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Text.Json;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace CryptoPuzzles.ViewModels.Base
 {
-    public abstract class EntityViewModelBase<T, TCreate, TUpdate> : ViewModelBase where T : class
+    public abstract class EntityViewModelBase<T, TCreate, TUpdate> : ViewModelBase, IEntityViewModel where T : class
     {
         private readonly NavigationService _navigationService;
         protected readonly IEntityApiService<T, TCreate, TUpdate> _apiService;
@@ -14,50 +20,110 @@ namespace CryptoPuzzles.ViewModels.Base
         private ObservableCollection<T> _items;
         private T _selectedItem;
         private T _newItem;
-        private bool _hasChanges;
+        private ICollectionView _itemsView;
+        private string _filterText;
 
-        protected List<T> _addedItems = [];
-        protected List<T> _removedItems = [];
-        protected Dictionary<int, T> _originalItems = [];
+        protected List<T> _addedItems = new();
+        protected List<T> _removedItems = new();
+        protected Dictionary<int, T> _originalItems = new();
 
         protected EntityViewModelBase(IEntityApiService<T, TCreate, TUpdate> apiService)
         {
             _navigationService = App.Services.GetRequiredService<NavigationService>();
             _apiService = apiService;
-            _items = [];
+            _items = new ObservableCollection<T>();
             _newItem = CreateNewItem();
 
             AddCommand = new AsyncRelayCommand(async _ => await AddAsync());
             SaveCommand = new AsyncRelayCommand(async _ => await SaveAsync(), _ => HasChanges);
             DeleteCommand = new AsyncRelayCommand(async id => await DeleteAsync(id as int?), id => id is int i && i > 0);
-
             BackCommand = new AsyncRelayCommand(async _ =>
             {
                 if (HasChanges)
                 {
-                    var result = await DialogService.ShowConfirmation(
-                        "У вас есть несохранённые изменения. Выйти без сохранения?");
+                    var result = await DialogService.ShowConfirmation("У вас есть несохранённые изменения. Выйти без сохранения?");
                     if (!result) return;
                 }
                 await _navigationService.NavigateToAsync<AdminViewModel>();
             });
+            ClearFilterCommand = new AsyncRelayCommand(async _ => await ClearFilterAsync());
+            ExportToExcelCommand = new AsyncRelayCommand(async _ => await ExportToExcelAsync());
+
             _ = LoadDataAsync();
+
+            Items = new ObservableCollection<T>();
+            Items.CollectionChanged += Items_CollectionChanged;
         }
 
-        public ObservableCollection<T> Items { get => _items; set => SetProperty(ref _items, value); }
-        public T SelectedItem { get => _selectedItem; set => SetProperty(ref _selectedItem, value); }
-        public T NewItem { get => _newItem; set => SetProperty(ref _newItem, value); }
-        public bool HasChanges { get => _hasChanges; set => SetProperty(ref _hasChanges, value); }
+        public ObservableCollection<T> Items
+        {
+            get => _items;
+            set => SetProperty(ref _items, value);
+        }
+
+        public ICollectionView ItemsView
+        {
+            get => _itemsView;
+            set => SetProperty(ref _itemsView, value);
+        }
+
+        public T SelectedItem
+        {
+            get => _selectedItem;
+            set => SetProperty(ref _selectedItem, value);
+        }
+
+        public T NewItem
+        {
+            get => _newItem;
+            set => SetProperty(ref _newItem, value);
+        }
+
+        public bool HasChanges
+        {
+            get
+            {
+                // Добавленные / удалённые элементы
+                if (_addedItems.Any() || _removedItems.Any())
+                    return true;
+
+                // Изменённые существующие элементы
+                foreach (var item in Items.Where(x => !_addedItems.Contains(x)))
+                {
+                    var id = GetId(item);
+                    if (_originalItems.TryGetValue(id, out var original))
+                    {
+                        if (!IsEqual(original, item))
+                            return true;
+                    }
+                }
+                return false;
+            }
+        }
+
+        public string FilterText
+        {
+            get => _filterText;
+            set
+            {
+                if (SetProperty(ref _filterText, value))
+                    ApplyFilter();
+            }
+        }
 
         public ICommand AddCommand { get; }
         public ICommand SaveCommand { get; }
         public ICommand DeleteCommand { get; }
         public ICommand BackCommand { get; }
+        public ICommand ClearFilterCommand { get; }
+        public ICommand ExportToExcelCommand { get; }
+        bool IEntityViewModel.HasChanges { get => HasChanges; set => throw new NotImplementedException(); }
 
         protected abstract T CreateNewItem();
         protected abstract TCreate MapToCreateDto(T item);
         protected abstract TUpdate MapToUpdateDto(T item);
         protected abstract int GetId(T item);
+        protected abstract bool FilterPredicate(T item);
 
         protected virtual async Task LoadDataAsync()
         {
@@ -65,13 +131,16 @@ namespace CryptoPuzzles.ViewModels.Base
             {
                 var list = await _apiService.GetAllAsync();
                 Items = new ObservableCollection<T>(list);
-                _originalItems = list.ToDictionary(GetId, x => x);
+                _originalItems = list.ToDictionary(GetId, CloneItem);
                 _addedItems.Clear();
                 _removedItems.Clear();
                 NewItem = CreateNewItem();
-                HasChanges = false;
+                OnPropertyChanged(nameof(HasChanges));
 
-                OnPropertyChanged(nameof(Items));
+                RefreshView();
+
+                foreach (var item in Items)
+                    SubscribeItem(item);
             }
             catch (Exception ex)
             {
@@ -86,7 +155,11 @@ namespace CryptoPuzzles.ViewModels.Base
                 var newItem = CreateNewItem();
                 Items.Add(newItem);
                 _addedItems.Add(newItem);
-                HasChanges = true;
+                OnPropertyChanged(nameof(HasChanges));
+                RefreshView();
+                Items.Add(newItem);
+                SubscribeItem(newItem);
+                _addedItems.Add(newItem);
             }
             catch (Exception ex)
             {
@@ -94,14 +167,12 @@ namespace CryptoPuzzles.ViewModels.Base
             }
         }
 
+
         protected virtual async Task DeleteAsync(int? id)
         {
-            if (!id.HasValue)
-                return;
-
+            if (!id.HasValue) return;
             var item = Items.FirstOrDefault(x => GetId(x) == id.Value);
-            if (item == null)
-                return;
+            if (item == null) return;
 
             if (id.Value < 0)
             {
@@ -113,7 +184,8 @@ namespace CryptoPuzzles.ViewModels.Base
                 Items.Remove(item);
                 _removedItems.Add(item);
             }
-            HasChanges = true;
+            OnPropertyChanged(nameof(HasChanges));
+            RefreshView();
             await Task.CompletedTask;
         }
 
@@ -150,6 +222,7 @@ namespace CryptoPuzzles.ViewModels.Base
                 }
 
                 await LoadDataAsync();
+                OnPropertyChanged(nameof(HasChanges));
             }
             catch (Exception ex)
             {
@@ -158,5 +231,121 @@ namespace CryptoPuzzles.ViewModels.Base
         }
 
         protected virtual bool IsEqual(T x, T y) => x?.Equals(y) ?? false;
+
+        private void ApplyFilter()
+        {
+            if (ItemsView == null) return;
+            if (string.IsNullOrWhiteSpace(FilterText))
+                ItemsView.Filter = null;
+            else
+                ItemsView.Filter = item => FilterPredicate((T)item);
+        }
+
+        private void RefreshView()
+        {
+            if (Items != null)
+            {
+                ItemsView = CollectionViewSource.GetDefaultView(Items);
+                ItemsView.SortDescriptions.Clear();
+                ApplyFilter();
+            }
+        }
+
+        private async Task ClearFilterAsync()
+        {
+            FilterText = string.Empty;
+            await Task.CompletedTask;
+        }
+
+        private async Task ExportToExcelAsync()
+        {
+            try
+            {
+                var saveFileDialog = new SaveFileDialog
+                {
+                    Filter = "Excel files (*.xlsx)|*.xlsx",
+                    DefaultExt = "xlsx",
+                    FileName = $"{GetType().Name.Replace("ViewModel", "")}_export.xlsx"
+                };
+
+                if (saveFileDialog.ShowDialog() != true)
+                    return;
+
+                var data = ItemsView?.Cast<T>().ToList() ?? Items.ToList();
+                if (!data.Any())
+                {
+                    await DialogService.ShowMessage("Нет данных для экспорта.");
+                    return;
+                }
+
+                using var workbook = new XLWorkbook();
+                var worksheet = workbook.Worksheets.Add("Data");
+
+                var properties = typeof(T).GetProperties()
+                    .Where(p => p.CanRead && (p.PropertyType.IsValueType || p.PropertyType == typeof(string) || p.PropertyType == typeof(DateTime?)))
+                    .ToList();
+
+                for (int i = 0; i < properties.Count; i++)
+                    worksheet.Cell(1, i + 1).Value = properties[i].Name;
+
+                for (int row = 0; row < data.Count; row++)
+                {
+                    var item = data[row];
+                    for (int col = 0; col < properties.Count; col++)
+                    {
+                        var value = properties[col].GetValue(item);
+                        worksheet.Cell(row + 2, col + 1).Value = value?.ToString() ?? "";
+                    }
+                }
+
+                worksheet.Columns().AdjustToContents();
+                workbook.SaveAs(saveFileDialog.FileName);
+
+                await DialogService.ShowMessage($"Экспорт завершён:\n{saveFileDialog.FileName}");
+            }
+            catch (Exception ex)
+            {
+                await DialogService.ShowError($"Ошибка экспорта: {ex.Message}");
+            }
+        }
+        protected virtual T CloneItem(T item)
+        {
+            var json = JsonSerializer.Serialize(item);
+            return JsonSerializer.Deserialize<T>(json);
+        }
+
+        private void Items_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+                foreach (T item in e.NewItems)
+                    SubscribeItem(item);
+
+            if (e.OldItems != null)
+                foreach (T item in e.OldItems)
+                    UnsubscribeItem(item);
+
+            OnPropertyChanged(nameof(HasChanges));
+        }
+
+        private void SubscribeItem(T item)
+        {
+            if (item is INotifyPropertyChanged notify)
+            {
+                notify.PropertyChanged += Item_PropertyChanged;
+            }
+        }
+
+        private void UnsubscribeItem(T item)
+        {
+            if (item is INotifyPropertyChanged notify)
+            {
+                notify.PropertyChanged -= Item_PropertyChanged;
+            }
+        }
+
+        private void Item_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(HasChanges));
+        }
     }
 }

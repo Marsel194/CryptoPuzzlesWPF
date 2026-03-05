@@ -8,93 +8,61 @@ namespace CryptoPuzzles.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TutorialsController : ControllerBase
+    public class EncryptionMethodsController : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        public TutorialsController(AppDbContext context)
+        public EncryptionMethodsController(AppDbContext context)
         {
             _context = context;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ATutorial>>> GetAll()
+        public async Task<ActionResult<IEnumerable<AEncryptionMethod>>> GetAll()
         {
-            var tutorials = await _context.Tutorials
-                .Include(t => t.Method)
-                .Where(t => !t.IsDeleted)
-                .Select(t => new ATutorial(
-                    t.Id,
-                    t.MethodId,
-                    t.Method.Name,
-                    t.TheoryTitle,
-                    t.TheoryContent,
-                    t.SortOrder,
-                    t.CreatedAt))
+            var methods = await _context.EncryptionMethods
+                .Where(m => !m.IsDeleted)
+                .OrderBy(m => m.Id)
+                .Select(m => new AEncryptionMethod(m.Id, m.Name))
                 .ToListAsync();
-            return Ok(tutorials);
+            return Ok(methods);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ATutorial>> Get(int id)
+        public async Task<ActionResult<AEncryptionMethod>> Get(int id)
         {
-            var tutorial = await _context.Tutorials
-                .Include(t => t.Method)
-                .Where(t => t.Id == id && !t.IsDeleted)
-                .Select(t => new ATutorial(
-                    t.Id,
-                    t.MethodId,
-                    t.Method.Name,
-                    t.TheoryTitle,
-                    t.TheoryContent,
-                    t.SortOrder,
-                    t.CreatedAt))
+            var method = await _context.EncryptionMethods
+                .Where(m => m.Id == id && !m.IsDeleted)
+                .Select(m => new AEncryptionMethod(m.Id, m.Name))
                 .FirstOrDefaultAsync();
-            if (tutorial == null) return NotFound();
-            return Ok(tutorial);
+            if (method == null) return NotFound();
+            return Ok(method);
         }
 
         [HttpPost]
-        public async Task<ActionResult<ATutorial>> Create([FromBody] ATutorialCreate dto)
+        public async Task<ActionResult<AEncryptionMethod>> Create([FromBody] AEncryptionMethodCreate dto)
         {
-            var tutorial = new Tutorial
+            var method = new EncryptionMethod
             {
-                MethodId = dto.MethodId,
-                TheoryTitle = dto.TheoryTitle,
-                TheoryContent = dto.TheoryContent,
-                SortOrder = dto.SortOrder
+                Name = dto.Name
             };
-            _context.Tutorials.Add(tutorial);
+            _context.EncryptionMethods.Add(method);
             await _context.SaveChangesAsync();
 
-            await _context.Entry(tutorial).Reference(t => t.Method).LoadAsync();
-
-            var result = new ATutorial(
-                tutorial.Id,
-                tutorial.MethodId,
-                tutorial.Method.Name,
-                tutorial.TheoryTitle,
-                tutorial.TheoryContent,
-                tutorial.SortOrder,
-                tutorial.CreatedAt);
-
-            return CreatedAtAction(nameof(Get), new { id = tutorial.Id }, result);
+            var result = new AEncryptionMethod(method.Id, method.Name);
+            return CreatedAtAction(nameof(Get), new { id = method.Id }, result);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] ATutorialUpdate dto)
+        public async Task<IActionResult> Update(int id, [FromBody] AEncryptionMethodUpdate dto)
         {
             if (id != dto.Id) return BadRequest();
-            var tutorial = await _context.Tutorials
-                .Where(t => t.Id == id && !t.IsDeleted)
+            var method = await _context.EncryptionMethods
+                .Where(m => m.Id == id && !m.IsDeleted)
                 .FirstOrDefaultAsync();
-            if (tutorial == null) return NotFound();
+            if (method == null) return NotFound();
 
-            tutorial.MethodId = dto.MethodId;
-            tutorial.TheoryTitle = dto.TheoryTitle;
-            tutorial.TheoryContent = dto.TheoryContent;
-            tutorial.SortOrder = dto.SortOrder;
-
+            method.Name = dto.Name;
             await _context.SaveChangesAsync();
             return NoContent();
         }
@@ -102,11 +70,11 @@ namespace CryptoPuzzles.Server.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var tutorial = await _context.Tutorials.FindAsync(id);
-            if (tutorial == null || tutorial.IsDeleted) return NotFound();
+            var method = await _context.EncryptionMethods.FindAsync(id);
+            if (method == null || method.IsDeleted) return NotFound();
 
-            tutorial.IsDeleted = true;
-            tutorial.DeletedAt = DateTime.UtcNow;
+            method.IsDeleted = true;
+            method.DeletedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
             return NoContent();
         }

@@ -38,5 +38,13 @@ namespace CryptoPuzzles.ViewModels
         {
             return true;
         }
+
+        protected override bool FilterPredicate(AGameSession item)
+        {
+            if (string.IsNullOrWhiteSpace(FilterText)) return true;
+            var f = FilterText.ToLower();
+            return item.UserLogin.ToLower().Contains(f) ||
+                   (item.CurrentPuzzleTitle?.ToLower().Contains(f) ?? false);
+        }
     }
 }

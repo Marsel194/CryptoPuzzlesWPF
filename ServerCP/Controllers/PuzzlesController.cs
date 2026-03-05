@@ -24,6 +24,7 @@ namespace CryptoPuzzles.Server.Controllers
                 .Include(p => p.Difficulty)
                 .Include(p => p.Method)
                 .Where(p => !p.IsDeleted)
+                .OrderBy(p => p.Id)
                 .Select(p => new APuzzle(
                     p.Id,
                     p.Title,
