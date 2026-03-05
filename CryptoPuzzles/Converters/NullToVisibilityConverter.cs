@@ -2,18 +2,22 @@
 using System.Windows;
 using System.Windows.Data;
 
-namespace CryptoPuzzles.Converters
+namespace CryptoPuzzles.Helpers
 {
     public class NullToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            bool inverse = parameter as string == "inverse";
+            // Если параметр "invert" – инвертируем логику
+            bool invert = parameter?.ToString()?.ToLower() == "invert";
             bool isNull = value == null;
-            return (inverse ? !isNull : isNull) ? Visibility.Visible : Visibility.Collapsed;
+            bool visible = invert ? !isNull : isNull;
+            return visible ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-            => throw new NotSupportedException();
+        {
+            throw new NotImplementedException();
+        }
     }
 }

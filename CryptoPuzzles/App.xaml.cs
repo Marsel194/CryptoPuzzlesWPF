@@ -40,7 +40,10 @@ namespace CryptoPuzzles
             services.AddTransient<UserViewModel>();
             services.AddTransient<UserProfileViewModel>();
             services.AddTransient<DifficultiesViewModel>();
-            
+
+            services.AddTransient<TrainingViewModel>();
+            services.AddTransient<PracticeViewModel>();
+
             services.AddSingleton<UserApiService>();
             services.AddSingleton<DifficultyApiService>();
             services.AddSingleton<EncryptionMethodApiService>();

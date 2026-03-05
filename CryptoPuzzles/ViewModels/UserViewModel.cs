@@ -12,7 +12,7 @@ namespace CryptoPuzzles.ViewModels
         private readonly UserApiService _userApiService;
         private readonly IServiceProvider _serviceProvider;
         private readonly NavigationService _navigationService;
-        private readonly int _userId = 1; // заглушка, потом брать из сессии
+        private readonly int _userId = 1; // заглушка
 
         private ViewModelBase? _currentSection;
         public ViewModelBase? CurrentSection
@@ -21,6 +21,12 @@ namespace CryptoPuzzles.ViewModels
             set => SetProperty(ref _currentSection, value);
         }
 
+        private string _username = "Пользователь";
+        public string Username
+        {
+            get => _username;
+            set => SetProperty(ref _username, value);
+        }
         public int SolvedCount { get; set; } = 12;
         public int Score { get; set; } = 1250;
 
@@ -64,7 +70,24 @@ namespace CryptoPuzzles.ViewModels
             return Task.CompletedTask;
         }
 
-        private Task StartTrainingAsync() { /* ... */ return Task.CompletedTask; }
-        private Task StartPracticeAsync() { /* ... */ return Task.CompletedTask; }
+        private async Task StartTrainingAsync()
+        {
+            var trainingVM = ActivatorUtilities.CreateInstance<TrainingViewModel>(
+                _serviceProvider,
+                _userId,
+                (Action)(() => CurrentSection = null)
+            );
+            CurrentSection = trainingVM;
+        }
+
+        private async Task StartPracticeAsync()
+        {
+            var practiceVM = ActivatorUtilities.CreateInstance<PracticeViewModel>(
+                _serviceProvider,
+                _userId,
+                (Action)(() => CurrentSection = null)
+            );
+            CurrentSection = practiceVM;
+        }
     }
 }

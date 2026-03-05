@@ -18,7 +18,7 @@ namespace CryptoPuzzles.ViewModels.Base
             : this(_ => execute()) { }
 
         public AsyncRelayCommand(Func<Task> execute, Func<bool>? canExecute = null)
-    : this(_ => execute(), canExecute is null ? null : _ => canExecute())
+            : this(_ => execute(), canExecute is null ? null : _ => canExecute())
         {
         }
 
@@ -48,7 +48,13 @@ namespace CryptoPuzzles.ViewModels.Base
                 CommandManager.InvalidateRequerySuggested();
             }
         }
+
+        public void RaiseCanExecuteChanged()
+        {
+            CommandManager.InvalidateRequerySuggested();
+        }
     }
+
     public class AsyncRelayCommand<T> : ICommand
     {
         private readonly Func<T?, Task> _execute;
@@ -97,6 +103,11 @@ namespace CryptoPuzzles.ViewModels.Base
                 _isExecuting = false;
                 CommandManager.InvalidateRequerySuggested();
             }
+        }
+
+        public void RaiseCanExecuteChanged()
+        {
+            CommandManager.InvalidateRequerySuggested();
         }
     }
 }

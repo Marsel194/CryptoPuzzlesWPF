@@ -1,0 +1,213 @@
+﻿<UserControl x:Class="CryptoPuzzles.Views.PracticeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:helpers="clr-namespace:CryptoPuzzles.Helpers">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Верхняя панель: заголовок и кнопка назад -->
+        <Grid Grid.Row="0" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Command="{Binding GoBackCommand}"
+                    Style="{StaticResource MaterialDesignFlatButton}"
+                    HorizontalAlignment="Left"
+                    Visibility="{Binding IsSelectingDifficulty, Converter={StaticResource BoolToVis}, ConverterParameter=False}">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="ArrowLeft" Width="24" Height="24"/>
+                    <TextBlock Text="Назад" Margin="8,0,0,0" FontSize="16"/>
+                </StackPanel>
+            </Button>
+            <TextBlock Grid.Column="1" Text="Практика"
+                       FontSize="28" FontWeight="Bold"
+                       Foreground="{DynamicResource SecondaryHueMidBrush}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+        </Grid>
+
+        <!-- Основная область -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+
+                <!-- Выбор сложности -->
+                <StackPanel Visibility="{Binding IsSelectingDifficulty, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="Выберите сложность"
+                               FontSize="22" FontWeight="SemiBold"
+                               Foreground="{DynamicResource SecondaryHueMidBrush}"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,24"/>
+
+                    <ListBox ItemsSource="{Binding Difficulties}"
+                             SelectedItem="{Binding SelectedDifficulty}"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             HorizontalContentAlignment="Stretch">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="{DynamicResource MaterialDesignCardBackground}"
+                                        CornerRadius="16"
+                                        Padding="16"
+                                        Margin="0,0,0,12"
+                                        materialDesign:ElevationAssist.Elevation="Dp2"
+                                        Cursor="Hand">
+                                    <Border.InputBindings>
+                                        <MouseBinding Gesture="LeftClick" Command="{Binding DataContext.SelectDifficultyCommand, RelativeSource={RelativeSource AncestorType=ListBox}}" CommandParameter="{Binding}"/>
+                                    </Border.InputBindings>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <materialDesign:PackIcon Grid.Column="0" Kind="Star" Width="24" Height="24"
+                                                               Foreground="{DynamicResource SecondaryHueMidBrush}"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding DifficultyName}"
+                                                   FontSize="18" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource MaterialDesignBody}"
+                                                   Margin="12,0,0,0"
+                                                   VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+
+                <!-- Решение пазла -->
+                <StackPanel Visibility="{Binding IsSolvingPuzzle, Converter={StaticResource BoolToVis}}">
+                    <!-- Таймер -->
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <materialDesign:PackIcon Grid.Column="0" Kind="Timer" Width="24" Height="24"
+                                               Foreground="{DynamicResource SecondaryHueMidBrush}"/>
+                        <TextBlock Grid.Column="1" Text="{Binding ElapsedTime}"
+                                   FontSize="18" FontWeight="Bold"
+                                   Foreground="{DynamicResource SecondaryHueMidBrush}"
+                                   Margin="8,0,0,0"/>
+                    </Grid>
+
+                    <TextBlock Text="{Binding CurrentPuzzle.Title}"
+                               FontSize="22" FontWeight="SemiBold"
+                               Foreground="{DynamicResource SecondaryHueMidBrush}"
+                               Margin="0,0,0,16"/>
+                    <TextBlock Text="{Binding CurrentPuzzle.Content}"
+                               FontSize="16"
+                               Foreground="{DynamicResource MaterialDesignBody}"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,24"/>
+
+                    <!-- Подсказки -->
+                    <Expander Header="Подсказка" 
+                              IsExpanded="False"
+                              Margin="0,0,0,16"
+                              Visibility="{Binding HasHints, Converter={StaticResource BoolToVis}}">
+                        <StackPanel>
+                            <TextBlock Text="{Binding CurrentHint}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,8,0,8"/>
+                            <Button Command="{Binding NextHintCommand}"
+                                    Content="Следующая подсказка"
+                                    HorizontalAlignment="Right"
+                                    IsEnabled="{Binding HasNextHint}"
+                                    Style="{StaticResource MaterialDesignFlatButton}"/>
+                        </StackPanel>
+                    </Expander>
+
+                    <TextBox Text="{Binding UserAnswer, UpdateSourceTrigger=PropertyChanged}"
+                             materialDesign:HintAssist.Hint="Ваш ответ"
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             Margin="0,0,0,16"/>
+
+                    <Button Command="{Binding CheckAnswerCommand}"
+                            Content="Ответить"
+                            Style="{StaticResource PrimaryButton}"
+                            Background="{DynamicResource SecondaryHueMidBrush}"
+                            Height="48"/>
+                </StackPanel>
+
+                <!-- Результат -->
+                <StackPanel Visibility="{Binding IsResult, Converter={StaticResource BoolToVis}}"
+                            HorizontalAlignment="Center" Margin="0,24">
+                    <materialDesign:PackIcon Kind="{Binding ResultIcon}" Width="64" Height="64"
+                                           Foreground="{Binding ResultColor}" HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding ResultMessage}"
+                               FontSize="24" FontWeight="Bold"
+                               Foreground="{Binding ResultColor}"
+                               HorizontalAlignment="Center"
+                               Margin="0,16,0,8"/>
+                    <TextBlock Text="{Binding EarnedScore, StringFormat='Начислено очков: {0}'}"
+                               FontSize="16"
+                               Foreground="{DynamicResource MaterialDesignBodyLight}"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,4"/>
+                    <TextBlock Text="{Binding ElapsedTime, StringFormat='Время решения: {0}'}"
+                               FontSize="16"
+                               Foreground="{DynamicResource MaterialDesignBodyLight}"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,24"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Command="{Binding NextPuzzleCommand}"
+                                Content="Следующий"
+                                Style="{StaticResource PrimaryButton}"
+                                Background="{DynamicResource SecondaryHueMidBrush}"
+                                Margin="0,0,8,0"
+                                Visibility="{Binding HasNextPuzzle, Converter={StaticResource BoolToVis}}"/>
+                        <Button Grid.Column="1" Command="{Binding FinishModuleCommand}"
+                                Content="Завершить"
+                                Style="{StaticResource MaterialDesignFlatButton}"
+                                Foreground="{DynamicResource SecondaryHueMidBrush}"
+                                BorderBrush="{DynamicResource SecondaryHueMidBrush}"
+                                BorderThickness="1"
+                                materialDesign:ButtonAssist.CornerRadius="26"/>
+                    </Grid>
+                </StackPanel>
+
+                <!-- Завершение модуля -->
+                <StackPanel Visibility="{Binding IsModuleCompleted, Converter={StaticResource BoolToVis}}"
+                            HorizontalAlignment="Center" Margin="0,48">
+                    <materialDesign:PackIcon Kind="Trophy" Width="80" Height="80"
+                                           Foreground="Gold" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Поздравляем!" 
+                               FontSize="28" FontWeight="Bold"
+                               Foreground="{DynamicResource SecondaryHueMidBrush}"
+                               HorizontalAlignment="Center"
+                               Margin="0,24,0,12"/>
+                    <TextBlock Text="Вы прошли модуль"
+                               FontSize="18"
+                               Foreground="{DynamicResource MaterialDesignBodyLight}"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,32"/>
+                    <TextBlock Text="{Binding CompletionMessage}" 
+                               FontSize="16"
+                               Foreground="{DynamicResource MaterialDesignBodyLight}"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,32"/>
+                    <Button Command="{Binding GoBackCommand}"
+                            Content="К выбору сложности"
+                            Style="{StaticResource PrimaryButton}"
+                            Background="{DynamicResource SecondaryHueMidBrush}"
+                            Width="200"/>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

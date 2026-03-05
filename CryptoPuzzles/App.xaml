@@ -30,6 +30,14 @@
                 <v:UserProfileView/>
             </DataTemplate>
 
+            <DataTemplate DataType="{x:Type vm:TrainingViewModel}">
+                <v:TrainingView/>
+            </DataTemplate>
+            
+            <DataTemplate DataType="{x:Type vm:PracticeViewModel}">
+                <v:PracticeView/>
+            </DataTemplate>
+            
             <!-- Для админки -->
             
             <DataTemplate DataType="{x:Type vm:AdminViewModel}">
