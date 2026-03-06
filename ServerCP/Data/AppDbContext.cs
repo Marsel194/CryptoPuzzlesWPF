@@ -131,7 +131,6 @@ namespace CryptoPuzzles.Server.Data
                 entity.Property(h => h.PuzzleId).HasColumnName("puzzle_id");
                 entity.Property(h => h.HintText).HasColumnName("hint_text").IsRequired();
                 entity.Property(h => h.HintOrder).HasColumnName("hint_order").HasDefaultValue(1);
-                entity.Property(h => h.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.Property(h => h.IsDeleted).HasColumnName("is_deleted");
                 entity.Property(h => h.DeletedAt).HasColumnName("deleted_at");
 

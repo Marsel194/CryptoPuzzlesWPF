@@ -1,6 +1,6 @@
 ﻿using CryptoPuzzles.Services;
 using CryptoPuzzles.Services.ApiService;
-using CryptoPuzzles.SharedDTO;
+using CryptoPuzzles.Shared;
 using CryptoPuzzles.ViewModels.Base;
 using System.Collections.ObjectModel;
 
@@ -10,8 +10,8 @@ namespace CryptoPuzzles.ViewModels
     {
         private readonly DifficultyApiService _difficultyApi;
         private readonly EncryptionMethodApiService _methodApi;
-        private ObservableCollection<ADifficulty> _difficulties;
-        private ObservableCollection<AEncryptionMethod> _methods;
+        private ObservableCollection<ADifficulty> _difficulties = [];
+        private ObservableCollection<AEncryptionMethod> _methods = [];
 
         public PuzzlesViewModel(PuzzleApiService puzzleApi, DifficultyApiService difficultyApi, EncryptionMethodApiService methodApi)
             : base(puzzleApi)
@@ -21,47 +21,99 @@ namespace CryptoPuzzles.ViewModels
             _ = LoadLookupsAsync();
         }
 
-        public ObservableCollection<ADifficulty> Difficulties { get => _difficulties; set => SetProperty(ref _difficulties, value); }
-        public ObservableCollection<AEncryptionMethod> Methods { get => _methods; set => SetProperty(ref _methods, value); }
+        public ObservableCollection<ADifficulty> Difficulties
+        {
+            get => _difficulties;
+            set => SetProperty(ref _difficulties, value);
+        }
+
+        public ObservableCollection<AEncryptionMethod> Methods
+        {
+            get => _methods;
+            set => SetProperty(ref _methods, value);
+        }
 
         private async Task LoadLookupsAsync()
         {
-            Difficulties = new ObservableCollection<ADifficulty>(await _difficultyApi.GetAllAsync());
-            Methods = new ObservableCollection<AEncryptionMethod>(await _methodApi.GetAllAsync());
+            try
+            {
+                var difficulties = await _difficultyApi.GetAllAsync();
+                Difficulties = new ObservableCollection<ADifficulty>(difficulties);
+
+                var methods = await _methodApi.GetAllAsync();
+                Methods = new ObservableCollection<AEncryptionMethod>(methods);
+            }
+            catch (Exception ex)
+            {
+                await DialogService.ShowError($"Ошибка загрузки справочников: {ex.Message}");
+            }
         }
 
         protected override APuzzle CreateNewItem()
         {
-            return new APuzzle(0, "", "", "", 50, 0, "", null, null, false, null, null, DateTime.Now);
+            return new APuzzle(
+                id: 0,
+                title: string.Empty,
+                content: string.Empty,
+                answer: string.Empty,
+                maxScore: 50,
+                difficultyId: 0,
+                difficultyName: string.Empty,
+                methodId: null,
+                methodName: null,
+                isTraining: false,
+                tutorialOrder: null,
+                createdByAdminId: null,
+                createdAt: DateTime.Now
+            );
         }
 
         protected override APuzzleCreate MapToCreateDto(APuzzle item)
         {
-            return new APuzzleCreate(item.Title, item.Content, item.Answer, item.MaxScore,
-                item.DifficultyId, item.MethodId, item.IsTraining, item.TutorialOrder);
+            return new APuzzleCreate(
+                Title: item.Title,
+                Content: item.Content,
+                Answer: item.Answer,
+                MaxScore: item.MaxScore,
+                DifficultyId: item.DifficultyId,
+                MethodId: item.MethodId,
+                IsTraining: item.IsTraining,
+                TutorialOrder: item.TutorialOrder
+            );
         }
 
         protected override APuzzleUpdate MapToUpdateDto(APuzzle item)
         {
-            return new APuzzleUpdate(item.Id, item.Title, item.Content, item.Answer, item.MaxScore,
-                item.DifficultyId, item.MethodId, item.IsTraining, item.TutorialOrder);
+            return new APuzzleUpdate(
+                Id: item.Id,
+                Title: item.Title,
+                Content: item.Content,
+                Answer: item.Answer,
+                MaxScore: item.MaxScore,
+                DifficultyId: item.DifficultyId,
+                MethodId: item.MethodId,
+                IsTraining: item.IsTraining,
+                TutorialOrder: item.TutorialOrder
+            );
         }
 
         protected override int GetId(APuzzle item) => item.Id;
 
         protected override async Task AddAsync()
         {
-            if (string.IsNullOrWhiteSpace(NewItem?.Title))
+            if (NewItem == null) return;
+
+            if (string.IsNullOrWhiteSpace(NewItem.Title))
             {
                 await DialogService.ShowError("Название не может быть пустым!");
                 return;
             }
-            if (string.IsNullOrWhiteSpace(NewItem?.Content))
+            if (string.IsNullOrWhiteSpace(NewItem.Content))
             {
                 await DialogService.ShowError("Содержание не может быть пустым!");
                 return;
             }
-            if (string.IsNullOrWhiteSpace(NewItem?.Answer))
+            if (string.IsNullOrWhiteSpace(NewItem.Answer))
             {
                 await DialogService.ShowError("Ответ не может быть пустым!");
                 return;
@@ -72,10 +124,28 @@ namespace CryptoPuzzles.ViewModels
                 return;
             }
 
-            var itemToAdd = new APuzzle(0, NewItem.Title, NewItem.Content, NewItem.Answer,
-                NewItem.MaxScore, NewItem.DifficultyId,
-                NewItem.MethodId.HasValue ? NewItem.MethodId.Value.ToString() : null,
-                null, null, NewItem.IsTraining, NewItem.TutorialOrder, null, DateTime.Now);
+            string difficultyName = Difficulties
+                .FirstOrDefault(d => d.Id == NewItem.DifficultyId)?.DifficultyName ?? string.Empty;
+
+            string? methodName = NewItem.MethodId.HasValue
+                ? Methods.FirstOrDefault(m => m.Id == NewItem.MethodId.Value)?.Name
+                : null;
+
+            var itemToAdd = new APuzzle(
+                id: 0,
+                title: NewItem.Title,
+                content: NewItem.Content,
+                answer: NewItem.Answer,
+                maxScore: NewItem.MaxScore,
+                difficultyId: NewItem.DifficultyId,
+                difficultyName: difficultyName,
+                methodId: NewItem.MethodId,
+                methodName: methodName,
+                isTraining: NewItem.IsTraining,
+                tutorialOrder: NewItem.TutorialOrder,
+                createdByAdminId: null,
+                createdAt: DateTime.Now
+            );
 
             Items.Add(itemToAdd);
             _addedItems.Add(itemToAdd);
@@ -88,15 +158,20 @@ namespace CryptoPuzzles.ViewModels
         {
             foreach (var item in _addedItems)
             {
-                if (string.IsNullOrWhiteSpace(item.Title) || string.IsNullOrWhiteSpace(item.Content) || string.IsNullOrWhiteSpace(item.Answer))
+                if (string.IsNullOrWhiteSpace(item.Title) ||
+                    string.IsNullOrWhiteSpace(item.Content) ||
+                    string.IsNullOrWhiteSpace(item.Answer))
                 {
                     await DialogService.ShowError("Заполните все обязательные поля!");
                     return;
                 }
             }
+
             foreach (var item in Items.Except(_addedItems))
             {
-                if (string.IsNullOrWhiteSpace(item.Title) || string.IsNullOrWhiteSpace(item.Content) || string.IsNullOrWhiteSpace(item.Answer))
+                if (string.IsNullOrWhiteSpace(item.Title) ||
+                    string.IsNullOrWhiteSpace(item.Content) ||
+                    string.IsNullOrWhiteSpace(item.Answer))
                 {
                     await DialogService.ShowError("Заполните все обязательные поля!");
                     return;
@@ -108,6 +183,8 @@ namespace CryptoPuzzles.ViewModels
 
         protected override bool IsEqual(APuzzle x, APuzzle y)
         {
+            if (x == null || y == null) return false;
+
             return x.Id == y.Id &&
                    x.Title == y.Title &&
                    x.Content == y.Content &&
@@ -121,11 +198,13 @@ namespace CryptoPuzzles.ViewModels
 
         protected override bool FilterPredicate(APuzzle item)
         {
+            if (item == null) return false;
             if (string.IsNullOrWhiteSpace(FilterText)) return true;
+
             var f = FilterText.ToLower();
-            return item.Title.ToLower().Contains(f) ||
-                   item.Content.ToLower().Contains(f) ||
-                   item.Answer.ToLower().Contains(f);
+            return (item.Title?.ToLower().Contains(f) ?? false) ||
+                   (item.Content?.ToLower().Contains(f) ?? false) ||
+                   (item.Answer?.ToLower().Contains(f) ?? false);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using CryptoPuzzles.Services.Api.Base;
-using CryptoPuzzles.SharedDTO;
+using CryptoPuzzles.Shared;
 using System.Net.Http;
 using System.Net.Http.Json;
 

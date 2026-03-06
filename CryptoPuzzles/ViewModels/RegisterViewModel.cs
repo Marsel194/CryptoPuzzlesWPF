@@ -1,6 +1,6 @@
 ﻿using CryptoPuzzles.Services;
 using CryptoPuzzles.ViewModels.Base;
-using CryptoPuzzles.SharedDTO;
+using CryptoPuzzles.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Input;
 using CryptoPuzzles.Services.ApiService;
@@ -22,7 +22,7 @@ namespace CryptoPuzzles.ViewModels
 
         public AsyncRelayCommand RegisterCommand { get; }
         public ICommand ShowLoginCommand { get; }
-        public AsyncRelayCommand<KeyEventArgs> KeyDownCommand { get; } // Исправлено: добавлен <KeyEventArgs>
+        public AsyncRelayCommand<KeyEventArgs> KeyDownCommand { get; }
 
         public string Login
         {
@@ -61,7 +61,6 @@ namespace CryptoPuzzles.ViewModels
             {
                 _isBusy = value;
                 OnPropertyChanged();
-                // Вместо NotifyCanExecuteChanged используем CommandManager
                 CommandManager.InvalidateRequerySuggested();
             }
         }
@@ -73,12 +72,12 @@ namespace CryptoPuzzles.ViewModels
 
             RegisterCommand = new AsyncRelayCommand(RegisterAsync, _ => !IsBusy);
             ShowLoginCommand = new AsyncRelayCommand(_ => _navigationService.NavigateToAsync<LoginViewModel>());
-            KeyDownCommand = new AsyncRelayCommand<KeyEventArgs>(OnKeyDownAsync, _ => !IsBusy); // Исправлено
+            KeyDownCommand = new AsyncRelayCommand<KeyEventArgs>(OnKeyDownAsync, _ => !IsBusy);
         }
 
-        private async Task OnKeyDownAsync(KeyEventArgs e)
+        private async Task OnKeyDownAsync(KeyEventArgs? e)
         {
-            if (IsBusy) return; // Добавлена проверка
+            if (IsBusy || e == null) return;
 
             if (e.Key == Key.Enter)
             {

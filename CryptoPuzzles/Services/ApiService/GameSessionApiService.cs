@@ -1,4 +1,4 @@
-﻿using CryptoPuzzles.SharedDTO;
+﻿using CryptoPuzzles.Shared;
 using System.Net.Http;
 
 namespace CryptoPuzzles.Services.ApiService

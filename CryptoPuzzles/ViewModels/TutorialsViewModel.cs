@@ -1,6 +1,6 @@
 ﻿using CryptoPuzzles.Services;
 using CryptoPuzzles.Services.ApiService;
-using CryptoPuzzles.SharedDTO;
+using CryptoPuzzles.Shared;
 using CryptoPuzzles.ViewModels.Base;
 using System.Collections.ObjectModel;
 
@@ -9,7 +9,7 @@ namespace CryptoPuzzles.ViewModels
     public class TutorialsViewModel : EntityViewModelBase<ATutorial, ATutorialCreate, ATutorialUpdate>
     {
         private readonly EncryptionMethodApiService _methodApi;
-        private ObservableCollection<AEncryptionMethod> _methods;
+        private ObservableCollection<AEncryptionMethod> _methods = [];
 
         public TutorialsViewModel(TutorialApiService tutorialApi, EncryptionMethodApiService methodApi) : base(tutorialApi)
         {

@@ -7,7 +7,7 @@ namespace CryptoPuzzles.Services
     {
         private ViewModelBase? _currentView;
 
-        public event Action<ViewModelBase> OnViewChanged;
+        public event Action<ViewModelBase> OnViewChanged = delegate { };
 
         public async Task NavigateToAsync<T>() where T : ViewModelBase
         {
@@ -15,9 +15,9 @@ namespace CryptoPuzzles.Services
             {
                 var viewModel = App.Services.GetService<T>()
                      ?? throw new InvalidOperationException($"ViewModel {typeof(T).Name} не зарегистрирован в DI");
-                    
+
                 _currentView = viewModel;
-                OnViewChanged?.Invoke(viewModel);
+                OnViewChanged.Invoke(viewModel);
             }
             catch (Exception ex)
             {

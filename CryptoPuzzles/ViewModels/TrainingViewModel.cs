@@ -1,12 +1,10 @@
 ﻿using CryptoPuzzles.Helpers;
 using CryptoPuzzles.Services;
 using CryptoPuzzles.Services.ApiService;
-using CryptoPuzzles.SharedDTO;
+using CryptoPuzzles.Shared;
 using CryptoPuzzles.ViewModels.Base;
-using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace CryptoPuzzles.ViewModels
 {
@@ -19,25 +17,26 @@ namespace CryptoPuzzles.ViewModels
         private readonly Action _goBack;
         private readonly int _userId;
 
-        private ObservableCollection<ATutorial> _tutorials;
-        private ObservableCollection<APuzzle> _puzzles;
+        private ObservableCollection<ATutorial> _tutorials = [];
+        private ObservableCollection<APuzzle> _puzzles = [];
         private int _currentTutorialIndex;
         private int _currentPuzzleIndex;
         private bool _isTheoryMode;
         private bool _isPuzzleMode;
         private bool _isCompleted;
-        private string _theoryTitle;
-        private string _theoryContent;
-        private string _theoryProgress;
-        private string _puzzleTitle;
-        private string _puzzleContent;
-        private string _puzzleProgress;
-        private ObservableCollection<AHint> _hints;
+        private string _theoryTitle = string.Empty;
+        private string _theoryContent = string.Empty;
+        private string _theoryProgress = string.Empty;
+        private string _puzzleTitle = string.Empty;
+        private string _puzzleContent = string.Empty;
+        private string _puzzleProgress = string.Empty;
+        private ObservableCollection<AHint> _hints = new();
         private int _currentHintIndex;
-        private string _currentHint;
+        private string _currentHint = string.Empty;
         private bool _hasHints;
-        private bool _hasNextHint;
-        private string _userAnswer;
+        // Не используется - удаляем
+        // private bool _hasNextHint;
+        private string _userAnswer = string.Empty;
 
         public TrainingViewModel(
             TutorialApiService tutorialApi,
@@ -53,10 +52,6 @@ namespace CryptoPuzzles.ViewModels
             _sessionApi = sessionApi;
             _userId = userId;
             _goBack = goBack;
-
-            _tutorials = new ObservableCollection<ATutorial>();
-            _puzzles = new ObservableCollection<APuzzle>();
-            _hints = new ObservableCollection<AHint>();
 
             PreviousTheoryCommand = new AsyncRelayCommand(async _ => await PreviousTheoryAsync(), _ => CanGoPrevious);
             NextTheoryCommand = new AsyncRelayCommand(async _ => await NextTheoryAsync(), _ => CanGoNext);
@@ -192,7 +187,7 @@ namespace CryptoPuzzles.ViewModels
             set => SetProperty(ref _hasHints, value);
         }
 
-        public bool HasNextHint => Hints != null && CurrentHintIndex < Hints.Count - 1;
+        public bool HasNextHint => _hints.Count > 0 && CurrentHintIndex < _hints.Count - 1;
 
         public string UserAnswer
         {
@@ -260,6 +255,7 @@ namespace CryptoPuzzles.ViewModels
         {
             if (CanGoPrevious)
                 CurrentTutorialIndex--;
+            await Task.CompletedTask;
         }
 
         private async Task NextTheoryAsync()
@@ -268,7 +264,6 @@ namespace CryptoPuzzles.ViewModels
                 CurrentTutorialIndex++;
             else if (CurrentTutorialIndex == Tutorials.Count - 1)
             {
-                // Переход к пазлам
                 IsTheoryMode = false;
                 if (Puzzles.Any())
                 {
@@ -280,6 +275,7 @@ namespace CryptoPuzzles.ViewModels
                     IsCompleted = true;
                 }
             }
+            await Task.CompletedTask;
         }
 
         private async Task LoadHintsForPuzzleAsync(int puzzleId)
@@ -290,7 +286,7 @@ namespace CryptoPuzzles.ViewModels
                 var hints = allHints.Where(h => h.PuzzleId == puzzleId).OrderBy(h => h.HintOrder).ToList();
                 Hints = new ObservableCollection<AHint>(hints);
                 HasHints = Hints.Any();
-                CurrentHintIndex = -1; // сброс
+                CurrentHintIndex = -1;
             }
             catch
             {
@@ -308,7 +304,6 @@ namespace CryptoPuzzles.ViewModels
                 PuzzleContent = p.Content;
                 PuzzleProgress = $"{CurrentPuzzleIndex + 1}/{Puzzles.Count}";
                 UserAnswer = string.Empty;
-                // Сброс подсказок
                 CurrentHintIndex = -1;
                 CurrentHint = string.Empty;
                 LoadHintsForPuzzleAsync(p.Id).SafeFireAndForget();
@@ -327,6 +322,7 @@ namespace CryptoPuzzles.ViewModels
         {
             if (HasNextHint)
                 CurrentHintIndex++;
+            await Task.CompletedTask;
         }
 
         private async Task CheckAnswerAsync()
@@ -342,14 +338,12 @@ namespace CryptoPuzzles.ViewModels
                 // Начисление очков (можно сохранить сессию)
                 await DialogService.ShowMessage("Правильно! +" + puzzle.MaxScore + " очков");
 
-                // Переход к следующему пазлу или завершение
                 if (CurrentPuzzleIndex < Puzzles.Count - 1)
                 {
                     CurrentPuzzleIndex++;
                 }
                 else
                 {
-                    // Все пазлы решены
                     IsPuzzleMode = false;
                     IsCompleted = true;
                 }

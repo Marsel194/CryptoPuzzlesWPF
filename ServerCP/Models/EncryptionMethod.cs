@@ -1,11 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CryptoPuzzles.Shared;
+using System.ComponentModel.DataAnnotations;
 
 namespace CryptoPuzzles.Server.Models
 {
     public class EncryptionMethod
     {
+        [ExportName("ID")]
         public int Id { get; set; }
 
+        [ExportName("Имя метода")]
         [MaxLength(50)]
         public required string Name { get; set; }
 

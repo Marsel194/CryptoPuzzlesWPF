@@ -6,9 +6,11 @@ using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Reflection;
 using System.Text.Json;
 using System.Windows.Data;
 using System.Windows.Input;
+using CryptoPuzzles.Shared;
 
 namespace CryptoPuzzles.ViewModels.Base
 {
@@ -17,22 +19,22 @@ namespace CryptoPuzzles.ViewModels.Base
         private readonly NavigationService _navigationService;
         protected readonly IEntityApiService<T, TCreate, TUpdate> _apiService;
 
-        private ObservableCollection<T> _items;
-        private T _selectedItem;
-        private T _newItem;
-        private ICollectionView _itemsView;
-        private string _filterText;
+        private ObservableCollection<T> _items = [];
+        private T _selectedItem = null!;
+        private T _newItem = null!;
+        private ICollectionView? _itemsView;
+        private string _filterText = string.Empty;
 
-        protected List<T> _addedItems = new();
-        protected List<T> _removedItems = new();
-        protected Dictionary<int, T> _originalItems = new();
+        protected List<T> _addedItems = [];
+        protected List<T> _removedItems = [];
+        protected Dictionary<int, T> _originalItems = [];
 
         protected EntityViewModelBase(IEntityApiService<T, TCreate, TUpdate> apiService)
         {
             _navigationService = App.Services.GetRequiredService<NavigationService>();
             _apiService = apiService;
-            _items = new ObservableCollection<T>();
             _newItem = CreateNewItem();
+            _selectedItem = CreateNewItem();
 
             AddCommand = new AsyncRelayCommand(async _ => await AddAsync());
             SaveCommand = new AsyncRelayCommand(async _ => await SaveAsync(), _ => HasChanges);
@@ -49,10 +51,9 @@ namespace CryptoPuzzles.ViewModels.Base
             ClearFilterCommand = new AsyncRelayCommand(async _ => await ClearFilterAsync());
             ExportToExcelCommand = new AsyncRelayCommand(async _ => await ExportToExcelAsync());
 
-            _ = LoadDataAsync();
-
-            Items = new ObservableCollection<T>();
             Items.CollectionChanged += Items_CollectionChanged;
+
+            _ = LoadDataAsync();
         }
 
         public ObservableCollection<T> Items
@@ -61,7 +62,7 @@ namespace CryptoPuzzles.ViewModels.Base
             set => SetProperty(ref _items, value);
         }
 
-        public ICollectionView ItemsView
+        public ICollectionView? ItemsView
         {
             get => _itemsView;
             set => SetProperty(ref _itemsView, value);
@@ -83,11 +84,9 @@ namespace CryptoPuzzles.ViewModels.Base
         {
             get
             {
-                // Добавленные / удалённые элементы
-                if (_addedItems.Any() || _removedItems.Any())
+                if (_addedItems.Count != 0 || _removedItems.Count != 0)
                     return true;
 
-                // Изменённые существующие элементы
                 foreach (var item in Items.Where(x => !_addedItems.Contains(x)))
                 {
                     var id = GetId(item);
@@ -117,7 +116,12 @@ namespace CryptoPuzzles.ViewModels.Base
         public ICommand BackCommand { get; }
         public ICommand ClearFilterCommand { get; }
         public ICommand ExportToExcelCommand { get; }
-        bool IEntityViewModel.HasChanges { get => HasChanges; set => throw new NotImplementedException(); }
+
+        bool IEntityViewModel.HasChanges
+        {
+            get => HasChanges;
+            set => throw new NotImplementedException();
+        }
 
         protected abstract T CreateNewItem();
         protected abstract TCreate MapToCreateDto(T item);
@@ -157,16 +161,14 @@ namespace CryptoPuzzles.ViewModels.Base
                 _addedItems.Add(newItem);
                 OnPropertyChanged(nameof(HasChanges));
                 RefreshView();
-                Items.Add(newItem);
                 SubscribeItem(newItem);
-                _addedItems.Add(newItem);
             }
             catch (Exception ex)
             {
                 await DialogService.ShowError($"Ошибка добавления: {ex.Message}");
             }
+            await Task.CompletedTask;
         }
-
 
         protected virtual async Task DeleteAsync(int? id)
         {
@@ -246,8 +248,11 @@ namespace CryptoPuzzles.ViewModels.Base
             if (Items != null)
             {
                 ItemsView = CollectionViewSource.GetDefaultView(Items);
-                ItemsView.SortDescriptions.Clear();
-                ApplyFilter();
+                if (ItemsView != null)
+                {
+                    ItemsView.SortDescriptions.Clear();
+                    ApplyFilter();
+                }
             }
         }
 
@@ -286,7 +291,12 @@ namespace CryptoPuzzles.ViewModels.Base
                     .ToList();
 
                 for (int i = 0; i < properties.Count; i++)
-                    worksheet.Cell(1, i + 1).Value = properties[i].Name;
+                {
+                    var prop = properties[i];
+                    var exportNameAttr = prop.GetCustomAttribute<ExportNameAttribute>();
+                    string headerName = exportNameAttr?.Name ?? prop.Name;
+                    worksheet.Cell(1, i + 1).Value = headerName;
+                }
 
                 for (int row = 0; row < data.Count; row++)
                 {
@@ -308,13 +318,14 @@ namespace CryptoPuzzles.ViewModels.Base
                 await DialogService.ShowError($"Ошибка экспорта: {ex.Message}");
             }
         }
+
         protected virtual T CloneItem(T item)
         {
             var json = JsonSerializer.Serialize(item);
-            return JsonSerializer.Deserialize<T>(json);
+            return JsonSerializer.Deserialize<T>(json) ?? throw new InvalidOperationException("Failed to clone item");
         }
 
-        private void Items_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void Items_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
                 foreach (T item in e.NewItems)
@@ -343,7 +354,7 @@ namespace CryptoPuzzles.ViewModels.Base
             }
         }
 
-        private void Item_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void Item_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             OnPropertyChanged(nameof(HasChanges));
         }

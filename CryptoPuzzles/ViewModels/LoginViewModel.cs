@@ -90,9 +90,9 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
-        private async Task OnKeyDownAsync(KeyEventArgs e)
+        private async Task OnKeyDownAsync(KeyEventArgs? e)
         {
-            if (IsBusy) return;
+            if (IsBusy || e == null) return;
 
             if (e.Key == Key.Enter)
             {

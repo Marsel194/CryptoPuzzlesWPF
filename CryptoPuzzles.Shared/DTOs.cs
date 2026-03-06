@@ -1,15 +1,13 @@
-﻿using System;
-
-namespace CryptoPuzzles.SharedDTO
+﻿namespace CryptoPuzzles.Shared
 {
     // ---- Изменяемые классы для отображения и редактирования в DataGrid ----
 
     public class AAdmin
     {
         public int Id { get; set; }
-        public string Login { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string Login { get; set; } = string.Empty;
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
         public string? MiddleName { get; set; }
         public DateTime CreatedAt { get; set; }
 
@@ -28,7 +26,7 @@ namespace CryptoPuzzles.SharedDTO
     public class ADifficulty
     {
         public int Id { get; set; }
-        public string DifficultyName { get; set; }
+        public string DifficultyName { get; set; } = string.Empty;
 
         public ADifficulty(int id, string difficultyName)
         {
@@ -41,7 +39,7 @@ namespace CryptoPuzzles.SharedDTO
     public class AEncryptionMethod
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         public AEncryptionMethod(int id, string name)
         {
@@ -54,12 +52,12 @@ namespace CryptoPuzzles.SharedDTO
     public class APuzzle
     {
         public int Id { get; set; }
-        public string Title { get; set; }
-        public string Content { get; set; }
-        public string Answer { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string Content { get; set; } = string.Empty;
+        public string Answer { get; set; } = string.Empty;
         public int MaxScore { get; set; }
         public int DifficultyId { get; set; }
-        public string DifficultyName { get; set; }
+        public string DifficultyName { get; set; } = string.Empty;
         public int? MethodId { get; set; }
         public string? MethodName { get; set; }
         public bool IsTraining { get; set; }
@@ -92,19 +90,17 @@ namespace CryptoPuzzles.SharedDTO
     {
         public int Id { get; set; }
         public int PuzzleId { get; set; }
-        public string PuzzleTitle { get; set; }
-        public string HintText { get; set; }
+        public string PuzzleTitle { get; set; } = string.Empty;
+        public string HintText { get; set; } = string.Empty;
         public int HintOrder { get; set; }
-        public DateTime CreatedAt { get; set; }
 
-        public AHint(int id, int puzzleId, string puzzleTitle, string hintText, int hintOrder, DateTime createdAt)
+        public AHint(int id, int puzzleId, string puzzleTitle, string hintText, int hintOrder)
         {
             Id = id;
             PuzzleId = puzzleId;
             PuzzleTitle = puzzleTitle;
             HintText = hintText;
             HintOrder = hintOrder;
-            CreatedAt = createdAt;
         }
         public AHint() { }
     }
@@ -113,7 +109,7 @@ namespace CryptoPuzzles.SharedDTO
     {
         public int Id { get; set; }
         public int UserId { get; set; }
-        public string UserLogin { get; set; }
+        public string UserLogin { get; set; } = string.Empty;
         public int Score { get; set; }
         public DateTime SessionStartTime { get; set; }
         public int? CurrentPuzzleId { get; set; }
@@ -143,9 +139,9 @@ namespace CryptoPuzzles.SharedDTO
     {
         public int Id { get; set; }
         public int MethodId { get; set; }
-        public string MethodName { get; set; }
-        public string TheoryTitle { get; set; }
-        public string TheoryContent { get; set; }
+        public string MethodName { get; set; } = string.Empty;
+        public string TheoryTitle { get; set; } = string.Empty;
+        public string TheoryContent { get; set; } = string.Empty;
         public int SortOrder { get; set; }
         public DateTime CreatedAt { get; set; }
 
@@ -165,9 +161,9 @@ namespace CryptoPuzzles.SharedDTO
     public class AUser
     {
         public int Id { get; set; }
-        public string Login { get; set; }
-        public string Username { get; set; }
-        public string Email { get; set; }
+        public string Login { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
         public DateTime? CreatedAt { get; set; }
 
         public AUser(int id, string login, string username, string email, DateTime? createdAt)
@@ -182,6 +178,7 @@ namespace CryptoPuzzles.SharedDTO
     }
 
     // ---- Неизменяемые record'ы для Create/Update операций (не используются в DataGrid) ----
+    // Records уже безопасны по null, так как они инициализируются через конструктор
     public record AAdminCreate(string Login, string Password, string FirstName, string LastName, string? MiddleName);
     public record AAdminUpdate(int Id, string Login, string FirstName, string LastName, string? MiddleName, string? Password);
     public record ADifficultyCreate(string DifficultyName);

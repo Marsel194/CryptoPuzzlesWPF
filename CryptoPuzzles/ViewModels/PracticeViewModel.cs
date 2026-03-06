@@ -1,7 +1,7 @@
 ﻿using CryptoPuzzles.Helpers;
 using CryptoPuzzles.Services;
 using CryptoPuzzles.Services.ApiService;
-using CryptoPuzzles.SharedDTO;
+using CryptoPuzzles.Shared;
 using CryptoPuzzles.ViewModels.Base;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -19,29 +19,31 @@ namespace CryptoPuzzles.ViewModels
         private readonly Action _goBack;
         private readonly int _userId;
 
-        private ObservableCollection<ADifficulty> _difficulties;
-        private ADifficulty _selectedDifficulty;
-        private ObservableCollection<APuzzle> _puzzles;
+        private ObservableCollection<ADifficulty> _difficulties = [];
+        private ADifficulty _selectedDifficulty = new(0, string.Empty);
+        private ObservableCollection<APuzzle> _puzzles = [];
         private int _currentPuzzleIndex;
         private bool _isSelectingDifficulty;
         private bool _isSolvingPuzzle;
         private bool _isResult;
         private bool _isModuleCompleted;
-        private APuzzle _currentPuzzle;
-        private string _elapsedTime;
-        private Stopwatch _stopwatch;
-        private bool _hasNextPuzzle;
-        private string _userAnswer;
-        private ObservableCollection<AHint> _hints;
+        private APuzzle _currentPuzzle = new();
+        private string _elapsedTime = string.Empty;
+        private readonly Stopwatch _stopwatch;
+        // Эти поля не используются - удаляем
+        // private bool _hasNextPuzzle;
+        private string _userAnswer = string.Empty;
+        private ObservableCollection<AHint> _hints = new();
         private int _currentHintIndex;
-        private string _currentHint;
+        private string _currentHint = string.Empty;
         private bool _hasHints;
-        private bool _hasNextHint;
-        private string _resultIcon;
-        private SolidColorBrush _resultColor;
-        private string _resultMessage;
+        // Не используется - удаляем
+        // private bool _hasNextHint;
+        private string _resultIcon = string.Empty;
+        private SolidColorBrush _resultColor = Brushes.Transparent;
+        private string _resultMessage = string.Empty;
         private int _earnedScore;
-        private string _completionMessage;
+        private string _completionMessage = string.Empty;
 
         public PracticeViewModel(
             DifficultyApiService difficultyApi,
@@ -58,9 +60,6 @@ namespace CryptoPuzzles.ViewModels
             _userId = userId;
             _goBack = goBack;
 
-            _difficulties = new ObservableCollection<ADifficulty>();
-            _puzzles = new ObservableCollection<APuzzle>();
-            _hints = new ObservableCollection<AHint>();
             _stopwatch = new Stopwatch();
 
             SelectDifficultyCommand = new AsyncRelayCommand<ADifficulty>(async d => await SelectDifficultyAsync(d));
@@ -140,7 +139,7 @@ namespace CryptoPuzzles.ViewModels
             set => SetProperty(ref _elapsedTime, value);
         }
 
-        public bool HasNextPuzzle => CurrentPuzzleIndex < Puzzles.Count - 1;
+        public bool HasNextPuzzle => _puzzles.Count > 0 && CurrentPuzzleIndex < _puzzles.Count - 1;
 
         public string UserAnswer
         {
@@ -183,7 +182,7 @@ namespace CryptoPuzzles.ViewModels
             set => SetProperty(ref _hasHints, value);
         }
 
-        public bool HasNextHint => Hints != null && CurrentHintIndex < Hints.Count - 1;
+        public bool HasNextHint => _hints.Count > 0 && CurrentHintIndex < _hints.Count - 1;
 
         public string ResultIcon
         {
@@ -236,7 +235,7 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
-        private async Task SelectDifficultyAsync(ADifficulty difficulty)
+        private async Task SelectDifficultyAsync(ADifficulty? difficulty)
         {
             if (difficulty == null) return;
             SelectedDifficulty = difficulty;
@@ -248,9 +247,9 @@ namespace CryptoPuzzles.ViewModels
             try
             {
                 var allPuzzles = await _puzzleApi.GetAllAsync();
-                // Для практики берём пазлы, которые не являются тренировочными (is_training = false)
+
                 var filtered = allPuzzles.Where(p => p.DifficultyId == difficultyId && !p.IsTraining).ToList();
-                // Перемешиваем для случайного порядка
+
                 var rnd = new Random();
                 Puzzles = new ObservableCollection<APuzzle>(filtered.OrderBy(x => rnd.Next()));
 
@@ -294,11 +293,11 @@ namespace CryptoPuzzles.ViewModels
             {
                 CurrentPuzzle = Puzzles[CurrentPuzzleIndex];
                 UserAnswer = string.Empty;
-                // Сброс подсказок
+
                 CurrentHintIndex = -1;
                 CurrentHint = string.Empty;
                 LoadHintsForPuzzleAsync(CurrentPuzzle.Id).SafeFireAndForget();
-                // Запуск таймера
+
                 _stopwatch.Restart();
                 Task.Run(UpdateTimer);
             }
@@ -325,6 +324,7 @@ namespace CryptoPuzzles.ViewModels
         {
             if (HasNextHint)
                 CurrentHintIndex++;
+            await Task.CompletedTask;
         }
 
         private async Task CheckAnswerAsync()
@@ -337,7 +337,6 @@ namespace CryptoPuzzles.ViewModels
 
             if (isCorrect)
             {
-                // Начисление очков
                 EarnedScore = CurrentPuzzle.MaxScore;
                 ResultIcon = "CheckCircle";
                 ResultColor = Brushes.Green;
@@ -353,6 +352,7 @@ namespace CryptoPuzzles.ViewModels
 
             IsSolvingPuzzle = false;
             IsResult = true;
+            await Task.CompletedTask;
         }
 
         private async Task NextPuzzleAsync()
@@ -365,7 +365,6 @@ namespace CryptoPuzzles.ViewModels
             }
             else
             {
-                // Все пазлы решены
                 await CompleteModuleAsync();
             }
         }
@@ -380,6 +379,7 @@ namespace CryptoPuzzles.ViewModels
             IsResult = false;
             IsModuleCompleted = true;
             CompletionMessage = $"Вы решили все головоломки сложности \"{SelectedDifficulty.DifficultyName}\"!";
+            await Task.CompletedTask;
         }
     }
 }

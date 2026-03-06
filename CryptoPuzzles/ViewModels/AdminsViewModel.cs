@@ -1,6 +1,6 @@
 ﻿using CryptoPuzzles.Services;
 using CryptoPuzzles.Services.ApiService;
-using CryptoPuzzles.SharedDTO;
+using CryptoPuzzles.Shared;
 using CryptoPuzzles.ViewModels.Base;
 
 namespace CryptoPuzzles.ViewModels

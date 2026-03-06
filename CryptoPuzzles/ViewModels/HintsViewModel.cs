@@ -1,6 +1,6 @@
 ﻿using CryptoPuzzles.Services;
 using CryptoPuzzles.Services.ApiService;
-using CryptoPuzzles.SharedDTO;
+using CryptoPuzzles.Shared;
 using CryptoPuzzles.ViewModels.Base;
 using System.Collections.ObjectModel;
 
@@ -9,12 +9,12 @@ namespace CryptoPuzzles.ViewModels
     public class HintsViewModel : EntityViewModelBase<AHint, AHintCreate, AHintUpdate>
     {
         private readonly PuzzleApiService _puzzleApi;
-        private ObservableCollection<APuzzle> _puzzles;
+        private ObservableCollection<APuzzle> _puzzles = [];
 
         public HintsViewModel(HintApiService hintApi, PuzzleApiService puzzleApi) : base(hintApi)
         {
             _puzzleApi = puzzleApi;
-            LoadPuzzlesAsync();
+            _ = LoadPuzzlesAsync();
         }
 
         public ObservableCollection<APuzzle> Puzzles { get => _puzzles; set => SetProperty(ref _puzzles, value); }
@@ -26,7 +26,7 @@ namespace CryptoPuzzles.ViewModels
 
         protected override AHint CreateNewItem()
         {
-            return new AHint(0, 0, "", "", 1, DateTime.Now);
+            return new AHint(0, 0, "", "", 1);
         }
 
         protected override AHintCreate MapToCreateDto(AHint item)
@@ -62,7 +62,7 @@ namespace CryptoPuzzles.ViewModels
             var puzzle = Puzzles.FirstOrDefault(p => p.Id == NewItem.PuzzleId);
             string puzzleTitle = puzzle?.Title ?? "";
 
-            var itemToAdd = new AHint(0, NewItem.PuzzleId, puzzleTitle, NewItem.HintText, NewItem.HintOrder, DateTime.Now);
+            var itemToAdd = new AHint(0, NewItem.PuzzleId, puzzleTitle, NewItem.HintText, NewItem.HintOrder);
             _addedItems.Add(itemToAdd);
 
             NewItem = CreateNewItem();

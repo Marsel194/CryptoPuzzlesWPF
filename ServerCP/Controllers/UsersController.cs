@@ -1,7 +1,7 @@
 ﻿using CryptoPuzzles.Server.Data;
 using CryptoPuzzles.Server.Helpers;
 using CryptoPuzzles.Server.Models;
-using CryptoPuzzles.SharedDTO;
+using CryptoPuzzles.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

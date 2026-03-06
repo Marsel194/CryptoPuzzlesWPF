@@ -1,6 +1,6 @@
 ﻿using CryptoPuzzles.Services;
 using CryptoPuzzles.Services.ApiService;
-using CryptoPuzzles.SharedDTO;
+using CryptoPuzzles.Shared;
 using CryptoPuzzles.ViewModels.Base;
 using System.Windows.Input;
 
@@ -12,17 +12,17 @@ namespace CryptoPuzzles.ViewModels
         private readonly Action _closeAction;
         private readonly int _userId;
 
-        private string _username;
-        private string _login;
-        private string _email;
-        private string _newPassword;
-        private string _confirmPassword;
+        private string _username = string.Empty;
+        private string _login = string.Empty;
+        private string _email = string.Empty;
+        private string _newPassword = string.Empty;
+        private string _confirmPassword = string.Empty;
         private int _trainingProgress;
         private int _practiceProgress;
         private bool _isEditMode;
 
-        private string _originalUsername;
-        private string _originalEmail;
+        private string _originalUsername = string.Empty;
+        private string _originalEmail = string.Empty;
 
         public string Username
         {
@@ -78,9 +78,9 @@ namespace CryptoPuzzles.ViewModels
         public ICommand CancelCommand { get; }
 
         public UserProfileViewModel(
-       UserApiService userApiService,
-       AUser user,
-       Action closeAction)
+           UserApiService userApiService,
+           AUser user,
+           Action closeAction)
         {
             _userApiService = userApiService;
             _closeAction = closeAction;
@@ -91,6 +91,9 @@ namespace CryptoPuzzles.ViewModels
             Email = user.Email;
             TrainingProgress = 65;   // заглушка
             PracticeProgress = 42;
+
+            _originalUsername = user.Username;
+            _originalEmail = user.Email;
 
             CloseCommand = new AsyncRelayCommand(CloseAsync);
             EditCommand = new AsyncRelayCommand(EditAsync);
@@ -154,6 +157,7 @@ namespace CryptoPuzzles.ViewModels
                 NewPassword = string.Empty;
                 ConfirmPassword = string.Empty;
                 IsEditMode = false;
+
                 await DialogService.ShowMessage("Данные успешно сохранены.");
             }
             catch (Exception ex)

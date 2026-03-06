@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using CryptoPuzzles.Server.Data;
 using CryptoPuzzles.Server.Models;
-using CryptoPuzzles.SharedDTO;
+using CryptoPuzzles.Shared;
 
 namespace CryptoPuzzles.Server.Controllers
 {

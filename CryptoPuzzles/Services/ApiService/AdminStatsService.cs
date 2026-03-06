@@ -115,6 +115,6 @@
         public int TotalSolved { get; set; }
         public int SolvedToday { get; set; }
         public int TotalDifficulties { get; set; }
-        public string ErrorMessage { get; set; }
+        public string ErrorMessage { get; set; } = string.Empty;
     }
 }

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using CryptoPuzzles.Server.Data;
 using CryptoPuzzles.Server.Models;
-using CryptoPuzzles.SharedDTO;
+using CryptoPuzzles.Shared;
 
 namespace CryptoPuzzles.Server.Controllers
 {
@@ -29,8 +29,7 @@ namespace CryptoPuzzles.Server.Controllers
                     h.PuzzleId,
                     h.Puzzle.Title,
                     h.HintText,
-                    h.HintOrder,
-                    h.CreatedAt))
+                    h.HintOrder))
                 .ToListAsync();
             return Ok(hints);
         }
@@ -46,8 +45,7 @@ namespace CryptoPuzzles.Server.Controllers
                     h.PuzzleId,
                     h.Puzzle.Title,
                     h.HintText,
-                    h.HintOrder,
-                    h.CreatedAt))
+                    h.HintOrder))
                 .FirstOrDefaultAsync();
             if (hint == null) return NotFound();
             return Ok(hint);
@@ -60,8 +58,7 @@ namespace CryptoPuzzles.Server.Controllers
             {
                 PuzzleId = dto.PuzzleId,
                 HintText = dto.HintText,
-                HintOrder = dto.HintOrder,
-                CreatedAt = DateTime.UtcNow
+                HintOrder = dto.HintOrder
             };
             _context.Hints.Add(hint);
             await _context.SaveChangesAsync();
@@ -73,8 +70,7 @@ namespace CryptoPuzzles.Server.Controllers
                 hint.PuzzleId,
                 hint.Puzzle.Title,
                 hint.HintText,
-                hint.HintOrder,
-                hint.CreatedAt);
+                hint.HintOrder);
 
             return CreatedAtAction(nameof(Get), new { id = hint.Id }, result);
         }
