@@ -69,7 +69,6 @@ namespace CryptoPuzzles.ViewModels
 
         protected override async Task SaveAsync()
         {
-            // Проверка добавляемых
             foreach (var item in _addedItems)
             {
                 if (string.IsNullOrWhiteSpace(item.Login) ||
@@ -81,7 +80,6 @@ namespace CryptoPuzzles.ViewModels
                 }
             }
 
-            // Проверка изменённых
             foreach (var item in Items.Except(_addedItems))
             {
                 if (string.IsNullOrWhiteSpace(item.Login) ||

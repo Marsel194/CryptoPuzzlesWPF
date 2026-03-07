@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Input;
 using CryptoPuzzles.Services.ApiService;
 using System.Windows;
+using DocumentFormat.OpenXml.Office2013.Drawing.Chart;
 
 namespace CryptoPuzzles.ViewModels
 {
@@ -19,10 +20,20 @@ namespace CryptoPuzzles.ViewModels
         private string _password = string.Empty;
         private string _confirmPassword = string.Empty;
         private bool _isBusy;
+        private bool _isEmailWarningVisible = false;
 
         public AsyncRelayCommand RegisterCommand { get; }
         public ICommand ShowLoginCommand { get; }
+        public ICommand TextInputEmailCommand { get; }
         public AsyncRelayCommand<KeyEventArgs> KeyDownCommand { get; }
+
+        public bool IsEmailWarningVisiible
+        {
+            get => _isEmailWarningVisible;
+            set { _isEmailWarningVisible = value;
+                OnPropertyChanged();
+            }
+        }
 
         public string Login
         {
@@ -73,6 +84,7 @@ namespace CryptoPuzzles.ViewModels
             RegisterCommand = new AsyncRelayCommand(RegisterAsync, _ => !IsBusy);
             ShowLoginCommand = new AsyncRelayCommand(_ => _navigationService.NavigateToAsync<LoginViewModel>());
             KeyDownCommand = new AsyncRelayCommand<KeyEventArgs>(OnKeyDownAsync, _ => !IsBusy);
+            TextInputEmailCommand = new AsyncRelayCommand<TextCompositionEventArgs>(OnTextInputEmailAsync);
         }
 
         private async Task OnKeyDownAsync(KeyEventArgs? e)
@@ -81,8 +93,7 @@ namespace CryptoPuzzles.ViewModels
 
             if (e.Key == Key.Enter)
             {
-                var element = e.OriginalSource as FrameworkElement;
-                if (element != null)
+                if (e.OriginalSource is FrameworkElement element)
                 {
                     element.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
 
@@ -93,6 +104,15 @@ namespace CryptoPuzzles.ViewModels
                     }
                 }
                 e.Handled = true;
+            }
+        }
+        private async Task OnTextInputEmailAsync(TextCompositionEventArgs? e)
+        {
+            if (IsBusy || e == null) return;
+
+            if (e.Text == "@")
+            {
+                IsEmailWarningVisiible = true;
             }
         }
 
@@ -109,7 +129,7 @@ namespace CryptoPuzzles.ViewModels
 
             if (!Email.Contains('@'))
             {
-                await DialogService.ShowError("Email введен некорректно");
+                IsEmailWarningVisiible = false;
                 return;
             }
 

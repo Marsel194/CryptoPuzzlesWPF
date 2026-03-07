@@ -17,7 +17,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\CryptoPuzzles.SharedDTO\CryptoPuzzles.Shared.csproj" />
+	  <ProjectReference Include="..\CryptoPuzzles.Shared\CryptoPuzzles.Shared.csproj" />
 	</ItemGroup>
 
 </Project>

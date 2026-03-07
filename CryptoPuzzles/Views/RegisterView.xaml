@@ -1,16 +1,19 @@
 ﻿<UserControl x:Class="CryptoPuzzles.Views.RegisterView"
-             xmlns:helpers="clr-namespace:CryptoPuzzles.Helpers"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:CryptoPuzzles.Converters"
+             xmlns:helpers="clr-namespace:CryptoPuzzles.Helpers">
     <UserControl.Resources>
-        <helpers:InverseBooleanConverter x:Key="InverseBool"/>
-        <helpers:BusyToTextConverter x:Key="BusyToTextConverter"/>
+        <converters:InverseBooleanConverter x:Key="InverseBool"/>
+        <converters:BusyToTextConverter x:Key="BusyToTextConverter"/>
+        <!-- ключ изменён на BusyToTextConverter -->
+        <converters:NullToVisibilityConverter x:Key="NullToVisibility"/>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <!-- добавлен стандартный конвертер -->
     </UserControl.Resources>
 
-    <!-- Добавляем установку фокуса через FocusManager на первый TextBox (Логин) -->
     <Grid x:Name="RootGrid" 
           FocusManager.FocusedElement="{Binding ElementName=txtLogin}"
           Background="{DynamicResource MaterialDesignPaper}">
@@ -50,7 +53,7 @@
                         <Border Background="{DynamicResource MaterialDesignCardBackground}"
                                 CornerRadius="20" Padding="20" Margin="0,0,0,24">
                             <StackPanel>
-                                <!-- Логин - добавляем имя x:Name="txtLogin" -->
+                                <!-- Логин -->
                                 <Grid Margin="0,8,0,16">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -78,7 +81,7 @@
                                     </TextBox>
                                 </Grid>
 
-                                <!-- Остальные поля остаются без изменений -->
+                                <!-- Имя пользователя -->
                                 <Grid Margin="0,8,0,16">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -105,11 +108,16 @@
                                     </TextBox>
                                 </Grid>
 
+                                <!-- Email -->
                                 <Grid Margin="0,8,0,16">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
                                     <Border Grid.Column="0" Width="44" Height="44" 
                                             Background="{DynamicResource PrimaryHueLightBrush}"
                                             CornerRadius="22" Margin="0,0,12,0">
@@ -129,8 +137,19 @@
                                             </i:EventTrigger>
                                         </i:Interaction.Triggers>
                                     </TextBox>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="Email введен некорректно!"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           Foreground="Red" FontWeight="Bold"
+                                           Visibility="{Binding IsTextVisible, Converter={StaticResource NullToVisibility}, ConverterParameter=invert}"
+                                               <i:Interaction.Triggers>
+                                                    <i:EventTrigger EventName="TextInput">
+                                                        <i:InvokeCommandAction Command="{Binding KeyDownEmailCommand}"
+                                                                              PassEventArgsToCommand="True"/>
+                                                    </i:EventTrigger>
+</i:Interaction.Triggers>/>
                                 </Grid>
 
+                                <!-- Пароль -->
                                 <Grid Margin="0,8,0,16">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -159,6 +178,7 @@
                                     </PasswordBox>
                                 </Grid>
 
+                                <!-- Подтверждение пароля -->
                                 <Grid Margin="0,8,0,16">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -191,23 +211,23 @@
 
                         <!-- Кнопка регистрации -->
                         <Button Content="{Binding IsBusy, Converter={StaticResource BusyToTextConverter}, ConverterParameter='ЗАРЕГИСТРИРОВАТЬСЯ|Регистрация...'}"
-      Command="{Binding RegisterCommand}"
-      Background="{DynamicResource PrimaryHueMidBrush}"
-      Foreground="Black" Height="52" FontSize="16" FontWeight="Bold"
-      Margin="0,16,0,24" Cursor="Hand"
-      materialDesign:ButtonAssist.CornerRadius="26"
-      IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBool}}"/>
+                                Command="{Binding RegisterCommand}"
+                                Background="{DynamicResource PrimaryHueMidBrush}"
+                                Foreground="Black" Height="52" FontSize="16" FontWeight="Bold"
+                                Margin="0,16,0,24" Cursor="Hand"
+                                materialDesign:ButtonAssist.CornerRadius="26"
+                                IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBool}}"/>
 
-                        <!-- Индикатор загрузки (ЗАКРЫВАЕМ Grid ПРАВИЛЬНО) -->
+                        <!-- Индикатор загрузки -->
                         <Grid Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"
-      Margin="0,0,0,10">
+                              Margin="0,0,0,10">
                             <ProgressBar IsIndeterminate="True" 
-                 Height="4" 
-                 Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                                         Height="4" 
+                                         Foreground="{DynamicResource PrimaryHueMidBrush}"/>
                             <TextBlock Text="Регистрация..." 
-               HorizontalAlignment="Center" 
-               FontSize="12"
-               Margin="0,8,0,0"/>
+                                       HorizontalAlignment="Center" 
+                                       FontSize="12"
+                                       Margin="0,8,0,0"/>
                         </Grid>
 
                         <Grid Margin="0,0,0,16">
@@ -222,22 +242,22 @@
                         </Grid>
 
                         <Button Content="Войти в существующий аккаунт"
-                              Command="{Binding ShowLoginCommand}"
-                              Foreground="{DynamicResource PrimaryHueMidBrush}"
-                              BorderBrush="{DynamicResource PrimaryHueMidBrush}"
-                              BorderThickness="2" Height="48" FontSize="15" FontWeight="SemiBold"
-                              materialDesign:ButtonAssist.CornerRadius="26" Cursor="Hand"
-                              Style="{StaticResource RoundedOutlinedButton}"/>
+                                Command="{Binding ShowLoginCommand}"
+                                Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                BorderBrush="{DynamicResource PrimaryHueMidBrush}"
+                                BorderThickness="2" Height="48" FontSize="15" FontWeight="SemiBold"
+                                materialDesign:ButtonAssist.CornerRadius="26" Cursor="Hand"
+                                Style="{StaticResource RoundedOutlinedButton}"/>
                     </StackPanel>
                 </Border>
             </Grid>
         </ScrollViewer>
 
         <Button Command="{Binding ShowLoginCommand}"
-              Foreground="{DynamicResource PrimaryHueMidBrush}"
-              FontWeight="SemiBold" Cursor="Hand"
-              HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20"
-              Style="{StaticResource MaterialDesignFlatButton}">
+                Foreground="{DynamicResource PrimaryHueMidBrush}"
+                FontWeight="SemiBold" Cursor="Hand"
+                HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20"
+                Style="{StaticResource MaterialDesignFlatButton}">
             <StackPanel Orientation="Horizontal">
                 <materialDesign:PackIcon Kind="ArrowLeft" Width="20" Height="20" Margin="0,0,5,0"/>
                 <TextBlock Text="На главную"/>

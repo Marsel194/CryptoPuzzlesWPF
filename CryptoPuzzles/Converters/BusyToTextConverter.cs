@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows.Data;
 
-namespace CryptoPuzzles.Helpers
+namespace CryptoPuzzles.Converters
 {
     public class BusyToTextConverter : IValueConverter
     {

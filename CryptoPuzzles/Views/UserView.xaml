@@ -3,10 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:local="clr-namespace:CryptoPuzzles.Views"
-             xmlns:helpers="clr-namespace:CryptoPuzzles.Helpers">
+             xmlns:converters="clr-namespace:CryptoPuzzles.Converters">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
-        <helpers:NullToVisibilityConverter x:Key="NullToVis"/>
+        <converters:NullToVisibilityConverter x:Key="NullToVis"/>
     </UserControl.Resources>
 
     <Grid Background="{DynamicResource MaterialDesignPaper}">
