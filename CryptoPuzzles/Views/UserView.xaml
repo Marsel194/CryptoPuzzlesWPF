@@ -5,7 +5,6 @@
              xmlns:local="clr-namespace:CryptoPuzzles.Views"
              xmlns:converters="clr-namespace:CryptoPuzzles.Converters">
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <converters:NullToVisibilityConverter x:Key="NullToVis"/>
     </UserControl.Resources>
 

@@ -13,6 +13,7 @@ namespace CryptoPuzzles.Shared
         private string _lastName = string.Empty;
         private string? _middleName;
         private DateTime _createdAt;
+        private bool _isDeleted;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
         public string Login { get => _login; set { _login = value; OnPropertyChanged(); } }
@@ -20,8 +21,9 @@ namespace CryptoPuzzles.Shared
         public string LastName { get => _lastName; set { _lastName = value; OnPropertyChanged(); } }
         public string? MiddleName { get => _middleName; set { _middleName = value; OnPropertyChanged(); } }
         public DateTime CreatedAt { get => _createdAt; set { _createdAt = value; OnPropertyChanged(); } }
+        public bool IsDeleted { get => _isDeleted; set { _isDeleted = value; OnPropertyChanged(); } }
 
-        public AAdmin(int id, string login, string firstName, string lastName, string? middleName, DateTime createdAt)
+        public AAdmin(int id, string login, string firstName, string lastName, string? middleName, DateTime createdAt, bool isDeleted = false)
         {
             _id = id;
             _login = login;
@@ -29,6 +31,7 @@ namespace CryptoPuzzles.Shared
             _lastName = lastName;
             _middleName = middleName;
             _createdAt = createdAt;
+            _isDeleted = isDeleted;
         }
         public AAdmin() { }
 
@@ -41,14 +44,17 @@ namespace CryptoPuzzles.Shared
     {
         private int _id;
         private string _difficultyName = string.Empty;
+        private bool _isDeleted;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
         public string DifficultyName { get => _difficultyName; set { _difficultyName = value; OnPropertyChanged(); } }
+        public bool IsDeleted { get => _isDeleted; set { _isDeleted = value; OnPropertyChanged(); } }
 
-        public ADifficulty(int id, string difficultyName)
+        public ADifficulty(int id, string difficultyName, bool isDeleted = false)
         {
             _id = id;
             _difficultyName = difficultyName;
+            _isDeleted = isDeleted;
         }
         public ADifficulty() { }
 
@@ -61,14 +67,17 @@ namespace CryptoPuzzles.Shared
     {
         private int _id;
         private string _name = string.Empty;
+        private bool _isDeleted;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
         public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
+        public bool IsDeleted { get => _isDeleted; set { _isDeleted = value; OnPropertyChanged(); } }
 
-        public AEncryptionMethod(int id, string name)
+        public AEncryptionMethod(int id, string name, bool isDeleted = false)
         {
             _id = id;
             _name = name;
+            _isDeleted = isDeleted;
         }
         public AEncryptionMethod() { }
 
@@ -92,6 +101,7 @@ namespace CryptoPuzzles.Shared
         private int? _tutorialOrder;
         private int? _createdByAdminId;
         private DateTime _createdAt;
+        private bool _isDeleted;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
         public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
@@ -106,10 +116,12 @@ namespace CryptoPuzzles.Shared
         public int? TutorialOrder { get => _tutorialOrder; set { _tutorialOrder = value; OnPropertyChanged(); } }
         public int? CreatedByAdminId { get => _createdByAdminId; set { _createdByAdminId = value; OnPropertyChanged(); } }
         public DateTime CreatedAt { get => _createdAt; set { _createdAt = value; OnPropertyChanged(); } }
+        public bool IsDeleted { get => _isDeleted; set { _isDeleted = value; OnPropertyChanged(); } }
 
         public APuzzle(int id, string title, string content, string answer, int maxScore,
             int difficultyId, string difficultyName, int? methodId, string? methodName,
-            bool isTraining, int? tutorialOrder, int? createdByAdminId, DateTime createdAt)
+            bool isTraining, int? tutorialOrder, int? createdByAdminId, DateTime createdAt,
+            bool isDeleted = false)
         {
             _id = id;
             _title = title;
@@ -124,6 +136,7 @@ namespace CryptoPuzzles.Shared
             _tutorialOrder = tutorialOrder;
             _createdByAdminId = createdByAdminId;
             _createdAt = createdAt;
+            _isDeleted = isDeleted;
         }
         public APuzzle() { }
 
@@ -139,20 +152,23 @@ namespace CryptoPuzzles.Shared
         private string _puzzleTitle = string.Empty;
         private string _hintText = string.Empty;
         private int _hintOrder;
+        private bool _isDeleted;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
         public int PuzzleId { get => _puzzleId; set { _puzzleId = value; OnPropertyChanged(); } }
         public string PuzzleTitle { get => _puzzleTitle; set { _puzzleTitle = value; OnPropertyChanged(); } }
         public string HintText { get => _hintText; set { _hintText = value; OnPropertyChanged(); } }
         public int HintOrder { get => _hintOrder; set { _hintOrder = value; OnPropertyChanged(); } }
+        public bool IsDeleted { get => _isDeleted; set { _isDeleted = value; OnPropertyChanged(); } }
 
-        public AHint(int id, int puzzleId, string puzzleTitle, string hintText, int hintOrder)
+        public AHint(int id, int puzzleId, string puzzleTitle, string hintText, int hintOrder, bool isDeleted = false)
         {
             _id = id;
             _puzzleId = puzzleId;
             _puzzleTitle = puzzleTitle;
             _hintText = hintText;
             _hintOrder = hintOrder;
+            _isDeleted = isDeleted;
         }
         public AHint() { }
 
@@ -173,6 +189,7 @@ namespace CryptoPuzzles.Shared
         private bool _trainingCompleted;
         private int _hintsUsed;
         private DateTime? _completedAt;
+        private bool _isDeleted;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
         public int UserId { get => _userId; set { _userId = value; OnPropertyChanged(); } }
@@ -184,9 +201,11 @@ namespace CryptoPuzzles.Shared
         public bool TrainingCompleted { get => _trainingCompleted; set { _trainingCompleted = value; OnPropertyChanged(); } }
         public int HintsUsed { get => _hintsUsed; set { _hintsUsed = value; OnPropertyChanged(); } }
         public DateTime? CompletedAt { get => _completedAt; set { _completedAt = value; OnPropertyChanged(); } }
+        public bool IsDeleted { get => _isDeleted; set { _isDeleted = value; OnPropertyChanged(); } }
 
         public AGameSession(int id, int userId, string userLogin, int score, DateTime sessionStartTime,
-            int? currentPuzzleId, string? currentPuzzleTitle, bool trainingCompleted, int hintsUsed, DateTime? completedAt)
+            int? currentPuzzleId, string? currentPuzzleTitle, bool trainingCompleted, int hintsUsed, DateTime? completedAt,
+            bool isDeleted = false)
         {
             _id = id;
             _userId = userId;
@@ -198,6 +217,7 @@ namespace CryptoPuzzles.Shared
             _trainingCompleted = trainingCompleted;
             _hintsUsed = hintsUsed;
             _completedAt = completedAt;
+            _isDeleted = isDeleted;
         }
         public AGameSession() { }
 
@@ -215,6 +235,7 @@ namespace CryptoPuzzles.Shared
         private string _theoryContent = string.Empty;
         private int _sortOrder;
         private DateTime _createdAt;
+        private bool _isDeleted;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
         public int MethodId { get => _methodId; set { _methodId = value; OnPropertyChanged(); } }
@@ -223,8 +244,9 @@ namespace CryptoPuzzles.Shared
         public string TheoryContent { get => _theoryContent; set { _theoryContent = value; OnPropertyChanged(); } }
         public int SortOrder { get => _sortOrder; set { _sortOrder = value; OnPropertyChanged(); } }
         public DateTime CreatedAt { get => _createdAt; set { _createdAt = value; OnPropertyChanged(); } }
+        public bool IsDeleted { get => _isDeleted; set { _isDeleted = value; OnPropertyChanged(); } }
 
-        public ATutorial(int id, int methodId, string methodName, string theoryTitle, string theoryContent, int sortOrder, DateTime createdAt)
+        public ATutorial(int id, int methodId, string methodName, string theoryTitle, string theoryContent, int sortOrder, DateTime createdAt, bool isDeleted = false)
         {
             _id = id;
             _methodId = methodId;
@@ -233,6 +255,7 @@ namespace CryptoPuzzles.Shared
             _theoryContent = theoryContent;
             _sortOrder = sortOrder;
             _createdAt = createdAt;
+            _isDeleted = isDeleted;
         }
         public ATutorial() { }
 
@@ -248,20 +271,23 @@ namespace CryptoPuzzles.Shared
         private string _username = string.Empty;
         private string _email = string.Empty;
         private DateTime? _createdAt;
+        private bool _isDeleted;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
         public string Login { get => _login; set { _login = value; OnPropertyChanged(); } }
         public string Username { get => _username; set { _username = value; OnPropertyChanged(); } }
         public string Email { get => _email; set { _email = value; OnPropertyChanged(); } }
         public DateTime? CreatedAt { get => _createdAt; set { _createdAt = value; OnPropertyChanged(); } }
+        public bool IsDeleted { get => _isDeleted; set { _isDeleted = value; OnPropertyChanged(); } }
 
-        public AUser(int id, string login, string username, string email, DateTime? createdAt)
+        public AUser(int id, string login, string username, string email, DateTime? createdAt, bool isDeleted = false)
         {
             _id = id;
             _login = login;
             _username = username;
             _email = email;
             _createdAt = createdAt;
+            _isDeleted = isDeleted;
         }
         public AUser() { }
 

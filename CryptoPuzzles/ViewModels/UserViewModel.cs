@@ -12,6 +12,10 @@ namespace CryptoPuzzles.ViewModels
         private readonly UserApiService _userApiService;
         private readonly IServiceProvider _serviceProvider;
         private readonly NavigationService _navigationService;
+        private readonly GameSessionApiService _sessionApiService;
+        private readonly PuzzleApiService _puzzleApiService;
+
+
         private readonly int _userId = 1; // заглушка
 
         private ViewModelBase? _currentSection;
@@ -37,11 +41,18 @@ namespace CryptoPuzzles.ViewModels
         public ICommand StartPracticeCommand { get; }
         public ICommand GoBackCommand { get; }
 
-        public UserViewModel(UserApiService userApiService, IServiceProvider serviceProvider)
+        public UserViewModel(
+            UserApiService userApiService,
+            GameSessionApiService sessionApiService,
+            PuzzleApiService puzzleApiService,
+            IServiceProvider serviceProvider)
         {
             _userApiService = userApiService;
+            _sessionApiService = sessionApiService;
+            _puzzleApiService = puzzleApiService;
             _serviceProvider = serviceProvider;
             _navigationService = App.Services.GetRequiredService<NavigationService>();
+
             LogoutCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<LoginViewModel>());
             ToggleThemeCommand = new AsyncRelayCommand(async _ => await ThemeHelper.ToggleTheme());
             OpenProfileCommand = new AsyncRelayCommand(OpenProfileAsync);
