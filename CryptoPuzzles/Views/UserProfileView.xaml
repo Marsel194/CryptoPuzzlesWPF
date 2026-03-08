@@ -4,8 +4,9 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:helpers="clr-namespace:CryptoPuzzles.Helpers">
     <UserControl.Resources>
-        
+        <helpers:BooleanToVisibilityConverterWithParameter x:Key="BoolToVis"/>
     </UserControl.Resources>
+
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="0,0,0,24">
             <!-- Кнопка назад -->
@@ -25,24 +26,18 @@
                        Foreground="{DynamicResource PrimaryHueMidBrush}"
                        Margin="0,0,0,24"/>
 
-            <!-- Прогресс -->
+            <!-- Прогресс (без изменений) -->
             <Border Background="{DynamicResource MaterialDesignCardBackground}"
-                    CornerRadius="20"
-                    Padding="24"
-                    Margin="0,0,0,24"
+                    CornerRadius="20" Padding="24" Margin="0,0,0,24"
                     materialDesign:ElevationAssist.Elevation="Dp4">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-
-                    <!-- Обучение -->
                     <StackPanel Grid.Column="0">
-                        <TextBlock Text="Обучение"
-                                   FontSize="18" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource PrimaryHueMidBrush}"
-                                   Margin="0,0,0,12"/>
+                        <TextBlock Text="Обучение" FontSize="18" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,0,12"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -52,36 +47,26 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-
                             <materialDesign:PackIcon Grid.Row="0" Grid.Column="0"
-                                                   Kind="BookOpenOutline"
-                                                   Width="24" Height="24"
+                                                   Kind="BookOpenOutline" Width="24" Height="24"
                                                    Foreground="{DynamicResource PrimaryHueMidBrush}"
                                                    Margin="0,0,12,0"/>
                             <TextBlock Grid.Row="0" Grid.Column="1"
                                        Text="{Binding TrainingProgress, StringFormat={}{0}%}"
                                        FontSize="20" FontWeight="Bold"
                                        Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-
                             <ProgressBar Grid.Row="1" Grid.ColumnSpan="2"
-                                         Value="{Binding TrainingProgress}"
-                                         Maximum="100"
-                                         Height="8"
-                                         Margin="0,8,0,0"
+                                         Value="{Binding TrainingProgress}" Maximum="100"
+                                         Height="8" Margin="0,8,0,0"
                                          Foreground="{DynamicResource PrimaryHueMidBrush}"/>
                         </Grid>
                         <TextBlock Text="{Binding TrainingProgress, StringFormat=Пройдено {0} из 100%}"
-                                   FontSize="12"
-                                   Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                   FontSize="12" Foreground="{DynamicResource MaterialDesignBodyLight}"
                                    Margin="0,8,0,0"/>
                     </StackPanel>
-
-                    <!-- Практика -->
                     <StackPanel Grid.Column="1" Margin="24,0,0,0">
-                        <TextBlock Text="Практика"
-                                   FontSize="18" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource SecondaryHueMidBrush}"
-                                   Margin="0,0,0,12"/>
+                        <TextBlock Text="Практика" FontSize="18" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource SecondaryHueMidBrush}" Margin="0,0,0,12"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -91,27 +76,21 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-
                             <materialDesign:PackIcon Grid.Row="0" Grid.Column="0"
-                                                   Kind="PuzzleOutline"
-                                                   Width="24" Height="24"
+                                                   Kind="PuzzleOutline" Width="24" Height="24"
                                                    Foreground="{DynamicResource SecondaryHueMidBrush}"
                                                    Margin="0,0,12,0"/>
                             <TextBlock Grid.Row="0" Grid.Column="1"
                                        Text="{Binding PracticeProgress, StringFormat={}{0}%}"
                                        FontSize="20" FontWeight="Bold"
                                        Foreground="{DynamicResource SecondaryHueMidBrush}"/>
-
                             <ProgressBar Grid.Row="1" Grid.ColumnSpan="2"
-                                         Value="{Binding PracticeProgress}"
-                                         Maximum="100"
-                                         Height="8"
-                                         Margin="0,8,0,0"
+                                         Value="{Binding PracticeProgress}" Maximum="100"
+                                         Height="8" Margin="0,8,0,0"
                                          Foreground="{DynamicResource SecondaryHueMidBrush}"/>
                         </Grid>
                         <TextBlock Text="{Binding PracticeProgress, StringFormat=Решено {0} из 100%}"
-                                   FontSize="12"
-                                   Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                   FontSize="12" Foreground="{DynamicResource MaterialDesignBodyLight}"
                                    Margin="0,8,0,0"/>
                     </StackPanel>
                 </Grid>
@@ -119,10 +98,10 @@
 
             <!-- Данные пользователя -->
             <Border Background="{DynamicResource MaterialDesignCardBackground}"
-                    CornerRadius="20"
-                    Padding="24"
+                    CornerRadius="20" Padding="24"
                     materialDesign:ElevationAssist.Elevation="Dp4">
                 <StackPanel>
+                    <!-- Заголовок с кнопкой -->
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -134,7 +113,6 @@
                                    Foreground="{DynamicResource PrimaryHueMidBrush}"/>
                         <Button Grid.Column="1"
                                 Command="{Binding EditCommand}"
-                                Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}, ConverterParameter=False}"
                                 Style="{StaticResource MaterialDesignFlatButton}">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="Pencil" Width="20" Height="20"/>
@@ -143,7 +121,7 @@
                         </Button>
                     </Grid>
 
-                    <!-- Поля данных (логин, email, имя, и пароли) -->
+                    <!-- Поля данных -->
                     <Grid Margin="0,24,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -157,63 +135,49 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <!-- Логин (Row 0) - всегда отображается, но не редактируется -->
+                        <!-- Логин -->
                         <TextBlock Grid.Row="0" Grid.Column="0"
-                                   Text="Логин:"
-                                   FontSize="16"
+                                   Text="Логин:" FontSize="16"
                                    Foreground="{DynamicResource MaterialDesignBodyLight}"
-                                   VerticalAlignment="Center"
-                                   Margin="0,0,16,16"/>
+                                   VerticalAlignment="Center" Margin="0,0,16,16"/>
                         <TextBlock Grid.Row="0" Grid.Column="1"
-                                   Text="{Binding Login}"
-                                   FontSize="16"
+                                   Text="{Binding Login}" FontSize="16"
                                    Foreground="{DynamicResource MaterialDesignBody}"
-                                   VerticalAlignment="Center"
-                                   Margin="0,0,0,16"/>
+                                   VerticalAlignment="Center" Margin="0,0,0,16"/>
 
-                        <!-- Email (Row 1) -->
+                        <!-- Email -->
                         <TextBlock Grid.Row="1" Grid.Column="0"
-                                   Text="Email:"
-                                   FontSize="16"
+                                   Text="Email:" FontSize="16"
                                    Foreground="{DynamicResource MaterialDesignBodyLight}"
-                                   VerticalAlignment="Center"
-                                   Margin="0,0,16,16"/>
+                                   VerticalAlignment="Center" Margin="0,0,16,16"/>
                         <TextBlock Grid.Row="1" Grid.Column="1"
-                                   Text="{Binding Email}"
-                                   FontSize="16"
+                                   Text="{Binding Email}" FontSize="16"
                                    Foreground="{DynamicResource MaterialDesignBody}"
-                                   VerticalAlignment="Center"
-                                   Margin="0,0,0,16"
+                                   VerticalAlignment="Center" Margin="0,0,0,16"
                                    Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}, ConverterParameter=False}"/>
                         <TextBox Grid.Row="1" Grid.Column="1"
                                  Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
-                                 FontSize="16"
+                                 FontSize="16" Margin="0,0,0,16"
                                  Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}"
-                                 Margin="0,0,0,16"
                                  materialDesign:HintAssist.Hint="Email"/>
 
-                        <!-- Имя (Username) (Row 2) -->
+                        <!-- Имя -->
                         <TextBlock Grid.Row="2" Grid.Column="0"
-                                   Text="Имя:"
-                                   FontSize="16"
+                                   Text="Имя:" FontSize="16"
                                    Foreground="{DynamicResource MaterialDesignBodyLight}"
-                                   VerticalAlignment="Center"
-                                   Margin="0,0,16,16"/>
+                                   VerticalAlignment="Center" Margin="0,0,16,16"/>
                         <TextBlock Grid.Row="2" Grid.Column="1"
-                                   Text="{Binding Username}"
-                                   FontSize="16"
+                                   Text="{Binding Username}" FontSize="16"
                                    Foreground="{DynamicResource MaterialDesignBody}"
-                                   VerticalAlignment="Center"
-                                   Margin="0,0,0,16"
+                                   VerticalAlignment="Center" Margin="0,0,0,16"
                                    Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}, ConverterParameter=False}"/>
                         <TextBox Grid.Row="2" Grid.Column="1"
                                  Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
-                                 FontSize="16"
+                                 FontSize="16" Margin="0,0,0,16"
                                  Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}"
-                                 Margin="0,0,0,16"
                                  materialDesign:HintAssist.Hint="Имя"/>
 
-                        <!-- Новый пароль (Row 3) - виден только в режиме редактирования -->
+                        <!-- Новый пароль -->
                         <Grid Grid.Row="3" Grid.ColumnSpan="2" Margin="0,8,0,16"
                               Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}">
                             <Grid.ColumnDefinitions>
@@ -236,7 +200,7 @@
                                Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"/>
                         </Grid>
 
-                        <!-- Подтверждение пароля (Row 4) - виден только в режиме редактирования -->
+                        <!-- Подтверждение пароля -->
                         <Grid Grid.Row="4" Grid.ColumnSpan="2" Margin="0,8,0,16"
                               Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}">
                             <Grid.ColumnDefinitions>
@@ -260,14 +224,13 @@
                         </Grid>
                     </Grid>
 
-                    <!-- Кнопки сохранения/отмены в режиме редактирования -->
+                    <!-- Кнопки сохранения/отмены -->
                     <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Right"
                                 Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}">
                         <Button Command="{Binding SaveCommand}"
                                 Style="{StaticResource PrimaryButton}"
-                                Content="Сохранить"
-                                Margin="0,0,16,0"/>
+                                Content="Сохранить" Margin="0,0,16,0"/>
                         <Button Command="{Binding CancelCommand}"
                                 Style="{StaticResource MaterialDesignFlatButton}"
                                 Content="Отмена"/>

@@ -3,51 +3,212 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:helpers="clr-namespace:CryptoPuzzles.Helpers">
-    <Grid Margin="24" MaxWidth="500">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <UserControl.Resources>
+        <helpers:BooleanToVisibilityConverterWithParameter x:Key="BoolToVis"/>
+    </UserControl.Resources>
 
-        <TextBlock Grid.Row="0" Text="Профиль администратора" FontSize="24" FontWeight="Bold" Margin="0,0,0,24"/>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="0,0,0,24" MaxWidth="600" HorizontalAlignment="Center">
+            <!-- Кнопка назад -->
+            <Button Command="{Binding CloseCommand}"
+                    Style="{StaticResource MaterialDesignFlatButton}"
+                    HorizontalAlignment="Left"
+                    Margin="0,0,0,16">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="ArrowLeft" Width="24" Height="24"/>
+                    <TextBlock Text="Назад" Margin="8,0,0,0" FontSize="16"/>
+                </StackPanel>
+            </Button>
 
-        <TextBox Grid.Row="1" Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}" 
-                 materialDesign:HintAssist.Hint="Логин" Margin="0,0,0,16"/>
+            <!-- Заголовок -->
+            <TextBlock Text="Профиль администратора"
+                       FontSize="28" FontWeight="Bold"
+                       Foreground="{DynamicResource PrimaryHueMidBrush}"
+                       Margin="0,0,0,24"/>
 
-        <TextBox Grid.Row="2" Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" 
-                 materialDesign:HintAssist.Hint="Имя" Margin="0,0,0,16"/>
+            <!-- Карточка с данными -->
+            <Border Background="{DynamicResource MaterialDesignCardBackground}"
+                    CornerRadius="20"
+                    Padding="24"
+                    materialDesign:ElevationAssist.Elevation="Dp4">
+                <StackPanel>
+                    <!-- Заголовок с кнопкой -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-        <TextBox Grid.Row="3" Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" 
-                 materialDesign:HintAssist.Hint="Фамилия" Margin="0,0,0,16"/>
+                        <TextBlock Grid.Column="0"
+                                   Text="Личные данные"
+                                   FontSize="22" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource PrimaryHueMidBrush}"/>
 
-        <TextBox Grid.Row="4" Text="{Binding MiddleName, UpdateSourceTrigger=PropertyChanged}" 
-                 materialDesign:HintAssist.Hint="Отчество" Margin="0,0,0,16"/>
+                        <!-- Кнопка Изменить (показывается когда не в режиме редактирования) -->
+                        <Button Grid.Column="1"
+                                Command="{Binding EditCommand}"
+                                Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}, ConverterParameter=False}"
+                                Style="{StaticResource MaterialDesignFlatButton}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Pencil" Width="20" Height="20"/>
+                                <TextBlock Text="Изменить" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
 
-        <PasswordBox Grid.Row="5" 
-                     helpers:PasswordHelper.Attach="True" 
-                     helpers:PasswordHelper.Password="{Binding NewPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                     materialDesign:HintAssist.Hint="Новый пароль (оставьте пустым, если не меняете)" Margin="0,0,0,16"/>
+                    <!-- Поля данных -->
+                    <Grid Margin="0,24,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
 
-        <PasswordBox Grid.Row="6" 
-                     helpers:PasswordHelper.Attach="True" 
-                     helpers:PasswordHelper.Password="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                     materialDesign:HintAssist.Hint="Подтверждение пароля" Margin="0,0,0,24"/>
+                        <!-- Логин (Row 0) - всегда только для чтения -->
+                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                   Text="Логин:"
+                                   FontSize="16"
+                                   Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,16,16"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1"
+                                   Text="{Binding Login}"
+                                   FontSize="16"
+                                   Foreground="{DynamicResource MaterialDesignBody}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,0,16"/>
 
-        <Grid Grid.Row="7">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Command="{Binding SaveCommand}" Content="Сохранить" 
-                    Style="{StaticResource PrimaryButton}" Margin="4"/>
-            <Button Grid.Column="1" Command="{Binding CancelCommand}" Content="Отмена" 
-                    Style="{StaticResource MaterialDesignFlatButton}" Margin="4"/>
-        </Grid>
-    </Grid>
+                        <!-- Имя (Row 1) -->
+                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                   Text="Имя:"
+                                   FontSize="16"
+                                   Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,16,16"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1"
+                                   Text="{Binding FirstName}"
+                                   FontSize="16"
+                                   Foreground="{DynamicResource MaterialDesignBody}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,0,16"
+                                   Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}, ConverterParameter=False}"/>
+                        <TextBox Grid.Row="1" Grid.Column="1"
+                                 Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}"
+                                 FontSize="16"
+                                 Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}"
+                                 Margin="0,0,0,16"
+                                 materialDesign:HintAssist.Hint="Имя"/>
+
+                        <!-- Фамилия (Row 2) -->
+                        <TextBlock Grid.Row="2" Grid.Column="0"
+                                   Text="Фамилия:"
+                                   FontSize="16"
+                                   Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,16,16"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1"
+                                   Text="{Binding LastName}"
+                                   FontSize="16"
+                                   Foreground="{DynamicResource MaterialDesignBody}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,0,16"
+                                   Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}, ConverterParameter=False}"/>
+                        <TextBox Grid.Row="2" Grid.Column="1"
+                                 Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}"
+                                 FontSize="16"
+                                 Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}"
+                                 Margin="0,0,0,16"
+                                 materialDesign:HintAssist.Hint="Фамилия"/>
+
+                        <!-- Отчество (Row 3) -->
+                        <TextBlock Grid.Row="3" Grid.Column="0"
+                                   Text="Отчество:"
+                                   FontSize="16"
+                                   Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,16,16"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1"
+                                   Text="{Binding MiddleName}"
+                                   FontSize="16"
+                                   Foreground="{DynamicResource MaterialDesignBody}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,0,16"
+                                   Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}, ConverterParameter=False}"/>
+                        <TextBox Grid.Row="3" Grid.Column="1"
+                                 Text="{Binding MiddleName, UpdateSourceTrigger=PropertyChanged}"
+                                 FontSize="16"
+                                 Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}"
+                                 Margin="0,0,0,16"
+                                 materialDesign:HintAssist.Hint="Отчество"/>
+
+                        <!-- Новый пароль (Row 4) -->
+                        <Grid Grid.Row="4" Grid.ColumnSpan="2" Margin="0,8,0,16"
+                              Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Width="44" Height="44" 
+                                    Background="{DynamicResource PrimaryHueLightBrush}"
+                                    CornerRadius="22" Margin="0,0,12,0">
+                                <materialDesign:PackIcon Kind="Lock" Width="22" Height="22" 
+                                                       Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <PasswordBox x:Name="txtNewPassword"
+                               Grid.Column="1"
+                               materialDesign:HintAssist.Hint="Новый пароль (оставьте пустым, если не меняете)"
+                               helpers:PasswordHelper.Attach="True"
+                               helpers:PasswordHelper.Password="{Binding NewPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                               MaxLength="64"
+                               Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"/>
+                        </Grid>
+
+                        <!-- Подтверждение пароля (Row 5) -->
+                        <Grid Grid.Row="5" Grid.ColumnSpan="2" Margin="0,8,0,16"
+                              Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Width="44" Height="44" 
+                                    Background="{DynamicResource PrimaryHueLightBrush}"
+                                    CornerRadius="22" Margin="0,0,12,0">
+                                <materialDesign:PackIcon Kind="LockCheck" Width="22" Height="22" 
+                                                       Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <PasswordBox x:Name="txtConfirmPassword"
+                               Grid.Column="1"
+                               materialDesign:HintAssist.Hint="Подтверждение пароля"
+                               helpers:PasswordHelper.Attach="True"
+                               helpers:PasswordHelper.Password="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                               MaxLength="64"
+                               Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"/>
+                        </Grid>
+                    </Grid>
+
+                    <!-- Кнопки сохранения/отмены в режиме редактирования -->
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}">
+                        <Button Command="{Binding SaveCommand}"
+                                Style="{StaticResource PrimaryButton}"
+                                Content="Сохранить"
+                                Margin="0,0,16,0"/>
+                        <Button Command="{Binding CancelCommand}"
+                                Style="{StaticResource MaterialDesignFlatButton}"
+                                Content="Отмена"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

@@ -26,6 +26,8 @@ namespace CryptoPuzzles.ViewModels
 
         private string _originalUsername = string.Empty;
         private string _originalEmail = string.Empty;
+        private int _totalTrainingPuzzles;
+        private int _totalPracticePuzzles;
 
         public string Username
         {
@@ -78,8 +80,6 @@ namespace CryptoPuzzles.ViewModels
                 {
                     _isEditMode = value;
                     OnPropertyChanged();
-
-                    // Явно вызываем обновление команд
                     CommandManager.InvalidateRequerySuggested();
                 }
             }
@@ -109,7 +109,6 @@ namespace CryptoPuzzles.ViewModels
             _closeAction = closeAction;
             _userId = user.Id;
 
-            // Инициализация данными пользователя
             Username = user.Username;
             Login = user.Login;
             Email = user.Email;
@@ -118,11 +117,10 @@ namespace CryptoPuzzles.ViewModels
             _originalEmail = user.Email;
 
             CloseCommand = new AsyncRelayCommand(CloseAsync);
-            EditCommand = new AsyncRelayCommand(EditAsync);
-            SaveCommand = new AsyncRelayCommand(SaveAsync);
-            CancelCommand = new AsyncRelayCommand(CancelAsync);
+            EditCommand = new AsyncRelayCommand(EditAsync, () => !IsLoading && !IsEditMode);
+            SaveCommand = new AsyncRelayCommand(SaveAsync, () => !IsLoading && IsEditMode);
+            CancelCommand = new AsyncRelayCommand(CancelAsync, () => !IsLoading && IsEditMode);
 
-            // Загружаем прогресс асинхронно
             _ = LoadProgressAsync();
         }
 
@@ -139,8 +137,6 @@ namespace CryptoPuzzles.ViewModels
             NewPassword = string.Empty;
             ConfirmPassword = string.Empty;
             IsEditMode = true;
-
-            System.Diagnostics.Debug.WriteLine($"EditAsync called, IsEditMode = {IsEditMode}");
             return Task.CompletedTask;
         }
 
@@ -188,8 +184,6 @@ namespace CryptoPuzzles.ViewModels
                 IsEditMode = false;
 
                 await DialogService.ShowMessage("Данные успешно сохранены.");
-
-                // Обновляем прогресс после сохранения
                 await LoadProgressAsync();
             }
             catch (Exception ex)
@@ -209,8 +203,6 @@ namespace CryptoPuzzles.ViewModels
             NewPassword = string.Empty;
             ConfirmPassword = string.Empty;
             IsEditMode = false;
-
-            System.Diagnostics.Debug.WriteLine($"CancelAsync called, IsEditMode = {IsEditMode}");
             return Task.CompletedTask;
         }
 
@@ -220,32 +212,18 @@ namespace CryptoPuzzles.ViewModels
             {
                 IsLoading = true;
 
-                // Загружаем все головоломки для подсчета общего количества
                 var allPuzzles = await _puzzleApiService.GetAllAsync();
-
-                // Считаем общее количество обучающих и практических головоломок (не удаленных)
                 var activePuzzles = allPuzzles.Where(p => !p.IsDeleted).ToList();
+
                 _totalTrainingPuzzles = activePuzzles.Count(p => p.IsTraining);
                 _totalPracticePuzzles = activePuzzles.Count(p => !p.IsTraining);
 
-                // Если нет головоломок, прогресс будет 0
-                if (_totalTrainingPuzzles == 0 && _totalPracticePuzzles == 0)
-                {
-                    TrainingProgress = 0;
-                    PracticeProgress = 0;
-                    return;
-                }
-
-                // Загружаем все завершенные сессии пользователя
                 var allSessions = await _sessionApiService.GetAllAsync();
                 var completedSessions = allSessions
                     .Where(s => s.UserId == _userId && s.CompletedAt != null && !s.IsDeleted)
                     .ToList();
 
-                // Создаем словарь головоломок для быстрого доступа
                 var puzzlesDict = activePuzzles.ToDictionary(p => p.Id, p => p);
-
-                // Считаем уникальные завершенные головоломки (по одной сессии на головоломку)
                 var completedTrainingIds = new HashSet<int>();
                 var completedPracticeIds = new HashSet<int>();
 
@@ -261,24 +239,16 @@ namespace CryptoPuzzles.ViewModels
                     }
                 }
 
-                // Расчет прогресса в процентах
                 TrainingProgress = _totalTrainingPuzzles > 0
-                    ? (int)((double)completedTrainingIds.Count / _totalTrainingPuzzles * 100)
-                    : 0;
-
+                    ? (int)((double)completedTrainingIds.Count / _totalTrainingPuzzles * 100) : 0;
                 PracticeProgress = _totalPracticePuzzles > 0
-                    ? (int)((double)completedPracticeIds.Count / _totalPracticePuzzles * 100)
-                    : 0;
+                    ? (int)((double)completedPracticeIds.Count / _totalPracticePuzzles * 100) : 0;
 
-                // Ограничиваем максимальное значение 100%
                 TrainingProgress = Math.Min(100, Math.Max(0, TrainingProgress));
                 PracticeProgress = Math.Min(100, Math.Max(0, PracticeProgress));
             }
-            catch (Exception ex)
+            catch
             {
-                await DialogService.ShowError($"Ошибка загрузки прогресса: {ex.Message}");
-
-                // В случае ошибки показываем 0
                 TrainingProgress = 0;
                 PracticeProgress = 0;
             }
@@ -287,9 +257,5 @@ namespace CryptoPuzzles.ViewModels
                 IsLoading = false;
             }
         }
-
-        // Добавляем поля для хранения общего количества
-        private int _totalTrainingPuzzles;
-        private int _totalPracticePuzzles;
     }
 }
