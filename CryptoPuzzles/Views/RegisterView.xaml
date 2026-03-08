@@ -8,10 +8,8 @@
     <UserControl.Resources>
         <converters:InverseBooleanConverter x:Key="InverseBool"/>
         <converters:BusyToTextConverter x:Key="BusyToTextConverter"/>
-        <!-- ключ изменён на BusyToTextConverter -->
         <converters:NullToVisibilityConverter x:Key="NullToVisibility"/>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        <!-- добавлен стандартный конвертер -->
     </UserControl.Resources>
 
     <Grid x:Name="RootGrid" 
@@ -125,7 +123,8 @@
                                                                Foreground="{DynamicResource PrimaryHueMidBrush}"
                                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
-                                    <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
+                                    <TextBox x:Name="txtEmail"
+                                           Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
                                            Grid.Column="1"
                                            materialDesign:HintAssist.Hint="Электронная почта"
                                            MaxLength="100"
@@ -135,18 +134,22 @@
                                                 <i:InvokeCommandAction Command="{Binding KeyDownCommand}"
                                                                       PassEventArgsToCommand="True"/>
                                             </i:EventTrigger>
+                                            <i:EventTrigger EventName="TextChanged">
+                                                <i:InvokeCommandAction Command="{Binding EmailTextInputCommand}"
+                                                                      PassEventArgsToCommand="True"/>
+                                            </i:EventTrigger>
+
+                                            <i:EventTrigger EventName="LostFocus">
+                                                <i:InvokeCommandAction Command="{Binding EmailLostFocusCommand}"
+                          PassEventArgsToCommand="True"/>
+                                            </i:EventTrigger>
                                         </i:Interaction.Triggers>
                                     </TextBox>
-                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="Email введен некорректно!"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center"
-                                           Foreground="Red" FontWeight="Bold"
-                                           Visibility="{Binding IsTextVisible, Converter={StaticResource NullToVisibility}, ConverterParameter=invert}"
-                                               <i:Interaction.Triggers>
-                                                    <i:EventTrigger EventName="TextInput">
-                                                        <i:InvokeCommandAction Command="{Binding KeyDownEmailCommand}"
-                                                                              PassEventArgsToCommand="True"/>
-                                                    </i:EventTrigger>
-</i:Interaction.Triggers>/>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" 
+                                               Text="Email введен некорректно!"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                                               Foreground="Red" FontWeight="Bold"
+                                               Visibility="{Binding IsEmailWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=False}"/>
                                 </Grid>
 
                                 <!-- Пароль -->

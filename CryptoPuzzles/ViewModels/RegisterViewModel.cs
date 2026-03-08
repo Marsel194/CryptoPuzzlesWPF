@@ -1,11 +1,10 @@
 ﻿using CryptoPuzzles.Services;
-using CryptoPuzzles.ViewModels.Base;
-using CryptoPuzzles.Shared;
-using Microsoft.Extensions.DependencyInjection;
-using System.Windows.Input;
 using CryptoPuzzles.Services.ApiService;
+using CryptoPuzzles.Shared;
+using CryptoPuzzles.ViewModels.Base;
+using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
-using DocumentFormat.OpenXml.Office2013.Drawing.Chart;
+using System.Windows.Input;
 
 namespace CryptoPuzzles.ViewModels
 {
@@ -24,10 +23,11 @@ namespace CryptoPuzzles.ViewModels
 
         public AsyncRelayCommand RegisterCommand { get; }
         public ICommand ShowLoginCommand { get; }
-        public ICommand TextInputEmailCommand { get; }
+        public ICommand EmailTextInputCommand { get; }
+        public ICommand EmailLostFocusCommand { get; }
         public AsyncRelayCommand<KeyEventArgs> KeyDownCommand { get; }
 
-        public bool IsEmailWarningVisiible
+        public bool IsEmailWarningVisible
         {
             get => _isEmailWarningVisible;
             set { _isEmailWarningVisible = value;
@@ -84,7 +84,8 @@ namespace CryptoPuzzles.ViewModels
             RegisterCommand = new AsyncRelayCommand(RegisterAsync, _ => !IsBusy);
             ShowLoginCommand = new AsyncRelayCommand(_ => _navigationService.NavigateToAsync<LoginViewModel>());
             KeyDownCommand = new AsyncRelayCommand<KeyEventArgs>(OnKeyDownAsync, _ => !IsBusy);
-            TextInputEmailCommand = new AsyncRelayCommand<TextCompositionEventArgs>(OnTextInputEmailAsync);
+            EmailTextInputCommand = new AsyncRelayCommand<TextCompositionEventArgs>(OnTextInputEmailAsync);
+            EmailLostFocusCommand = new AsyncRelayCommand<RoutedEventArgs>(OnEmailLostFocusAsync);
         }
 
         private async Task OnKeyDownAsync(KeyEventArgs? e)
@@ -106,14 +107,26 @@ namespace CryptoPuzzles.ViewModels
                 e.Handled = true;
             }
         }
+
         private async Task OnTextInputEmailAsync(TextCompositionEventArgs? e)
         {
             if (IsBusy || e == null) return;
 
-            if (e.Text == "@")
+            if (string.IsNullOrWhiteSpace(Email) || !Email.Contains('@') || !Email.Contains('.'))
             {
-                IsEmailWarningVisiible = true;
+                IsEmailWarningVisible = true;
             }
+
+            await Task.CompletedTask;
+        }
+        private async Task OnEmailLostFocusAsync(RoutedEventArgs? e)
+        {
+            if (string.IsNullOrWhiteSpace(Email) || !Email.Contains('@') || !Email.Contains('.'))
+                IsEmailWarningVisible = true;
+            else
+                IsEmailWarningVisible = false;
+
+            await Task.CompletedTask;
         }
 
         private async Task RegisterAsync(object? parameter = null)
@@ -127,9 +140,9 @@ namespace CryptoPuzzles.ViewModels
                 return;
             }
 
-            if (!Email.Contains('@'))
+            if (string.IsNullOrWhiteSpace(Email) || !Email.Contains('@') || !Email.Contains('.'))
             {
-                IsEmailWarningVisiible = false;
+                IsEmailWarningVisible = true;
                 return;
             }
 
