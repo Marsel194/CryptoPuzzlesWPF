@@ -74,7 +74,7 @@ namespace CryptoPuzzles.ViewModels
                    x.CompletedAt == y.CompletedAt &&
                    x.UserId == y.UserId &&
                    x.UserLogin == y.UserLogin &&
-                   x.SessionStartTime == y.SessionStartTime;    
+                   x.SessionStartTime == y.SessionStartTime;
         }
 
         protected override bool FilterPredicate(AGameSession item)
