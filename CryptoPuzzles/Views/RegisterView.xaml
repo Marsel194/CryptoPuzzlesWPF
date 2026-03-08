@@ -15,6 +15,7 @@
     <Grid x:Name="RootGrid" 
           FocusManager.FocusedElement="{Binding ElementName=txtLogin}"
           Background="{DynamicResource MaterialDesignPaper}">
+        <!-- Фоновые круги (декор) -->
         <Ellipse Width="500" Height="500" Style="{StaticResource BackgroundCircle}"
                  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-150,-150,0,0"/>
         <Ellipse Width="350" Height="350" Style="{StaticResource BackgroundCircle}"
@@ -23,30 +24,32 @@
                  HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,50,100,0"/>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto"
-            HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Margin="40,20">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
+                <!-- Иконка сверху -->
                 <Border Grid.Row="0" Style="{StaticResource LogoCircle}" 
-                        Width="90" Height="90" CornerRadius="45" Margin="0,0,0,-30" Cursor="">
+                        Width="90" Height="90" CornerRadius="45" Margin="0,0,0,-30">
                     <Viewbox Width="45" Height="45">
                         <materialDesign:PackIcon Kind="AccountPlus" Foreground="{DynamicResource MaterialDesignBody}"/>
                     </Viewbox>
                 </Border>
 
+                <!-- Основная карточка -->
                 <Border Grid.Row="1" Background="{DynamicResource MaterialDesignPaper}" 
                         CornerRadius="24" Padding="40 45 40 40" 
                         Width="520" materialDesign:ElevationAssist.Elevation="Dp8">
                     <StackPanel>
                         <TextBlock Text="Создание аккаунта" 
-                                 HorizontalAlignment="Center" 
-                                 Margin="0,0,0,24" 
-                                 FontWeight="SemiBold" 
-                                 Foreground="{DynamicResource PrimaryHueMidBrush}" 
-                                 FontSize="28"/>
+                                   HorizontalAlignment="Center" 
+                                   Margin="0,0,0,24" 
+                                   FontWeight="SemiBold" 
+                                   Foreground="{DynamicResource PrimaryHueMidBrush}" 
+                                   FontSize="28"/>
 
                         <Border Background="{DynamicResource MaterialDesignCardBackground}"
                                 CornerRadius="20" Padding="20" Margin="0,0,0,24">
@@ -61,15 +64,15 @@
                                             Background="{DynamicResource PrimaryHueLightBrush}"
                                             CornerRadius="22" Margin="0,0,12,0">
                                         <materialDesign:PackIcon Kind="Account" Width="22" Height="22" 
-                                                               Foreground="{DynamicResource PrimaryHueMidBrush}"
-                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                 Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                                                 HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
                                     <TextBox x:Name="txtLogin" 
-                                           Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}"
-                                           Grid.Column="1"
-                                           materialDesign:HintAssist.Hint="Придумайте логин"
-                                           MaxLength="40"
-                                           Style="{StaticResource MaterialDesignFloatingHintTextBox}">
+                                             Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}"
+                                             Grid.Column="1"
+                                             materialDesign:HintAssist.Hint="Придумайте логин"
+                                             MaxLength="40"
+                                             Style="{StaticResource MaterialDesignFloatingHintTextBox}">
                                         <i:Interaction.Triggers>
                                             <i:EventTrigger EventName="KeyDown">
                                                 <i:InvokeCommandAction Command="{Binding KeyDownCommand}"
@@ -89,14 +92,14 @@
                                             Background="{DynamicResource PrimaryHueLightBrush}"
                                             CornerRadius="22" Margin="0,0,12,0">
                                         <materialDesign:PackIcon Kind="BadgeAccount" Width="22" Height="22" 
-                                                               Foreground="{DynamicResource PrimaryHueMidBrush}"
-                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                 Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                                                 HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
                                     <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
-                                           Grid.Column="1"
-                                           materialDesign:HintAssist.Hint="Ваше имя"
-                                           MaxLength="40"
-                                           Style="{StaticResource MaterialDesignFloatingHintTextBox}">
+                                             Grid.Column="1"
+                                             materialDesign:HintAssist.Hint="Ваше имя"
+                                             MaxLength="40"
+                                             Style="{StaticResource MaterialDesignFloatingHintTextBox}">
                                         <i:Interaction.Triggers>
                                             <i:EventTrigger EventName="KeyDown">
                                                 <i:InvokeCommandAction Command="{Binding KeyDownCommand}"
@@ -113,22 +116,22 @@
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
-                                        <RowDefinition />
-                                        <RowDefinition />
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
-                                    <Border Grid.Column="0" Width="44" Height="44" 
+                                    <Border Grid.Column="0" Grid.RowSpan="2" Width="44" Height="44" 
                                             Background="{DynamicResource PrimaryHueLightBrush}"
                                             CornerRadius="22" Margin="0,0,12,0">
                                         <materialDesign:PackIcon Kind="Email" Width="22" Height="22" 
-                                                               Foreground="{DynamicResource PrimaryHueMidBrush}"
-                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                 Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                                                 HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
                                     <TextBox x:Name="txtEmail"
-                                           Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
-                                           Grid.Column="1"
-                                           materialDesign:HintAssist.Hint="Электронная почта"
-                                           MaxLength="100"
-                                           Style="{StaticResource MaterialDesignFloatingHintTextBox}">
+                                             Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
+                                             Grid.Column="1" Grid.Row="0"
+                                             materialDesign:HintAssist.Hint="Электронная почта"
+                                             MaxLength="100"
+                                             Style="{StaticResource MaterialDesignFloatingHintTextBox}">
                                         <i:Interaction.Triggers>
                                             <i:EventTrigger EventName="KeyDown">
                                                 <i:InvokeCommandAction Command="{Binding KeyDownCommand}"
@@ -138,18 +141,17 @@
                                                 <i:InvokeCommandAction Command="{Binding EmailTextInputCommand}"
                                                                       PassEventArgsToCommand="True"/>
                                             </i:EventTrigger>
-
                                             <i:EventTrigger EventName="LostFocus">
                                                 <i:InvokeCommandAction Command="{Binding EmailLostFocusCommand}"
-                          PassEventArgsToCommand="True"/>
+                                                                      PassEventArgsToCommand="True"/>
                                             </i:EventTrigger>
                                         </i:Interaction.Triggers>
                                     </TextBox>
                                     <TextBlock Grid.Row="1" Grid.Column="1" 
                                                Text="Email введен некорректно!"
-                                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                                               HorizontalAlignment="Center" 
                                                Foreground="Red" FontWeight="Bold"
-                                               Visibility="{Binding IsEmailWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=False}"/>
+                                               Visibility="{Binding IsEmailWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                 </Grid>
 
                                 <!-- Пароль -->
@@ -158,27 +160,40 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0" Width="44" Height="44" 
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Border Grid.Column="0" Grid.RowSpan="2" Width="44" Height="44" 
                                             Background="{DynamicResource PrimaryHueLightBrush}"
                                             CornerRadius="22" Margin="0,0,12,0">
                                         <materialDesign:PackIcon Kind="Lock" Width="22" Height="22" 
-                                                               Foreground="{DynamicResource PrimaryHueMidBrush}"
-                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                 Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                                                 HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
                                     <PasswordBox x:Name="txtPassword"
-                                       Grid.Column="1"
-                                       materialDesign:HintAssist.Hint="Придумайте пароль"
-                                       helpers:PasswordHelper.Attach="True"
-                                       helpers:PasswordHelper.Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                       MaxLength="64"
-                                       Style="{StaticResource MaterialDesignFloatingHintPasswordBox}">
+                                                 Grid.Column="1" Grid.Row="0"
+                                                 materialDesign:HintAssist.Hint="Придумайте пароль (мин. 8 символов)"
+                                                 helpers:PasswordHelper.Attach="True"
+                                                 helpers:PasswordHelper.Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 MaxLength="64"
+                                                 Style="{StaticResource MaterialDesignFloatingHintPasswordBox}">
                                         <i:Interaction.Triggers>
                                             <i:EventTrigger EventName="KeyDown">
                                                 <i:InvokeCommandAction Command="{Binding KeyDownCommand}"
                                                                       PassEventArgsToCommand="True"/>
                                             </i:EventTrigger>
+                                            <i:EventTrigger EventName="LostFocus">
+                                                <i:InvokeCommandAction Command="{Binding PasswordLostFocusCommand}"
+                                                                      PassEventArgsToCommand="True"/>
+                                            </i:EventTrigger>
                                         </i:Interaction.Triggers>
                                     </PasswordBox>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" 
+                                               Text="Пароль должен содержать минимум 8 символов"
+                                               HorizontalAlignment="Center" 
+                                               Foreground="Red" FontWeight="Bold"
+                                               Visibility="{Binding IsPasswordWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                 </Grid>
 
                                 <!-- Подтверждение пароля -->
@@ -187,27 +202,40 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0" Width="44" Height="44" 
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Border Grid.Column="0" Grid.RowSpan="2" Width="44" Height="44" 
                                             Background="{DynamicResource PrimaryHueLightBrush}"
                                             CornerRadius="22" Margin="0,0,12,0">
                                         <materialDesign:PackIcon Kind="LockCheck" Width="22" Height="22" 
-                                                               Foreground="{DynamicResource PrimaryHueMidBrush}"
-                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                 Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                                                 HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
                                     <PasswordBox x:Name="txtConfirmPassword"
-                                       Grid.Column="1"
-                                       materialDesign:HintAssist.Hint="Повторите пароль"
-                                       helpers:PasswordHelper.Attach="True"
-                                       helpers:PasswordHelper.Password="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                       MaxLength="64"
-                                       Style="{StaticResource MaterialDesignFloatingHintPasswordBox}">
+                                                 Grid.Column="1" Grid.Row="0"
+                                                 materialDesign:HintAssist.Hint="Повторите пароль"
+                                                 helpers:PasswordHelper.Attach="True"
+                                                 helpers:PasswordHelper.Password="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 MaxLength="64"
+                                                 Style="{StaticResource MaterialDesignFloatingHintPasswordBox}">
                                         <i:Interaction.Triggers>
                                             <i:EventTrigger EventName="KeyDown">
                                                 <i:InvokeCommandAction Command="{Binding KeyDownCommand}"
                                                                       PassEventArgsToCommand="True"/>
                                             </i:EventTrigger>
+                                            <i:EventTrigger EventName="LostFocus">
+                                                <i:InvokeCommandAction Command="{Binding ConfirmPasswordLostFocusCommand}"
+                                                                      PassEventArgsToCommand="True"/>
+                                            </i:EventTrigger>
                                         </i:Interaction.Triggers>
                                     </PasswordBox>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" 
+                                               Text="Пароли не совпадают"
+                                               HorizontalAlignment="Center" 
+                                               Foreground="Red" FontWeight="Bold"
+                                               Visibility="{Binding IsConfirmPasswordWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                 </Grid>
                             </StackPanel>
                         </Border>
@@ -233,6 +261,7 @@
                                        Margin="0,8,0,0"/>
                         </Grid>
 
+                        <!-- Разделитель -->
                         <Grid Margin="0,0,0,16">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -244,6 +273,7 @@
                             <Border Grid.Column="2" Height="1" Background="{DynamicResource MaterialDesignDivider}" VerticalAlignment="Center"/>
                         </Grid>
 
+                        <!-- Кнопка перехода на логин -->
                         <Button Content="Войти в существующий аккаунт"
                                 Command="{Binding ShowLoginCommand}"
                                 Foreground="{DynamicResource PrimaryHueMidBrush}"
@@ -256,6 +286,7 @@
             </Grid>
         </ScrollViewer>
 
+        <!-- Кнопка "На главную" сверху слева -->
         <Button Command="{Binding ShowLoginCommand}"
                 Foreground="{DynamicResource PrimaryHueMidBrush}"
                 FontWeight="SemiBold" Cursor="Hand"

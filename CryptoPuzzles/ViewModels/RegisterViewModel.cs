@@ -19,20 +19,34 @@ namespace CryptoPuzzles.ViewModels
         private string _password = string.Empty;
         private string _confirmPassword = string.Empty;
         private bool _isBusy;
-        private bool _isEmailWarningVisible = false;
+        private bool _isEmailWarningVisible;
+        private bool _isPasswordWarningVisible;
+        private bool _isConfirmPasswordWarningVisible;
 
         public AsyncRelayCommand RegisterCommand { get; }
         public ICommand ShowLoginCommand { get; }
         public ICommand EmailTextInputCommand { get; }
         public ICommand EmailLostFocusCommand { get; }
+        public ICommand PasswordLostFocusCommand { get; }
+        public ICommand ConfirmPasswordLostFocusCommand { get; }
         public AsyncRelayCommand<KeyEventArgs> KeyDownCommand { get; }
 
         public bool IsEmailWarningVisible
         {
             get => _isEmailWarningVisible;
-            set { _isEmailWarningVisible = value;
-                OnPropertyChanged();
-            }
+            set { _isEmailWarningVisible = value; OnPropertyChanged(); }
+        }
+
+        public bool IsPasswordWarningVisible
+        {
+            get => _isPasswordWarningVisible;
+            set { _isPasswordWarningVisible = value; OnPropertyChanged(); }
+        }
+
+        public bool IsConfirmPasswordWarningVisible
+        {
+            get => _isConfirmPasswordWarningVisible;
+            set { _isConfirmPasswordWarningVisible = value; OnPropertyChanged(); }
         }
 
         public string Login
@@ -86,6 +100,8 @@ namespace CryptoPuzzles.ViewModels
             KeyDownCommand = new AsyncRelayCommand<KeyEventArgs>(OnKeyDownAsync, _ => !IsBusy);
             EmailTextInputCommand = new AsyncRelayCommand<TextCompositionEventArgs>(OnTextInputEmailAsync);
             EmailLostFocusCommand = new AsyncRelayCommand<RoutedEventArgs>(OnEmailLostFocusAsync);
+            PasswordLostFocusCommand = new AsyncRelayCommand<RoutedEventArgs>(OnPasswordLostFocusAsync);
+            ConfirmPasswordLostFocusCommand = new AsyncRelayCommand<RoutedEventArgs>(OnConfirmPasswordLostFocusAsync);
         }
 
         private async Task OnKeyDownAsync(KeyEventArgs? e)
@@ -116,9 +132,14 @@ namespace CryptoPuzzles.ViewModels
             {
                 IsEmailWarningVisible = true;
             }
+            else
+            {
+                IsEmailWarningVisible = false;
+            }
 
             await Task.CompletedTask;
         }
+
         private async Task OnEmailLostFocusAsync(RoutedEventArgs? e)
         {
             if (string.IsNullOrWhiteSpace(Email) || !Email.Contains('@') || !Email.Contains('.'))
@@ -129,10 +150,23 @@ namespace CryptoPuzzles.ViewModels
             await Task.CompletedTask;
         }
 
+        private async Task OnPasswordLostFocusAsync(RoutedEventArgs? e)
+        {
+            IsPasswordWarningVisible = Password.Length < 8;
+            await Task.CompletedTask;
+        }
+
+        private async Task OnConfirmPasswordLostFocusAsync(RoutedEventArgs? e)
+        {
+            IsConfirmPasswordWarningVisible = Password != ConfirmPassword;
+            await Task.CompletedTask;
+        }
+
         private async Task RegisterAsync(object? parameter = null)
         {
             if (IsBusy) return;
 
+            // Проверка заполнения всех полей
             if (string.IsNullOrWhiteSpace(Login) || string.IsNullOrWhiteSpace(Password) ||
                 string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email))
             {
@@ -140,14 +174,26 @@ namespace CryptoPuzzles.ViewModels
                 return;
             }
 
+            // Валидация email
             if (string.IsNullOrWhiteSpace(Email) || !Email.Contains('@') || !Email.Contains('.'))
             {
                 IsEmailWarningVisible = true;
+                await DialogService.ShowError("Введите корректный email!");
                 return;
             }
 
+            // Валидация длины пароля
+            if (Password.Length < 8)
+            {
+                IsPasswordWarningVisible = true;
+                await DialogService.ShowError("Пароль должен содержать минимум 8 символов!");
+                return;
+            }
+
+            // Проверка совпадения паролей
             if (Password != ConfirmPassword)
             {
+                IsConfirmPasswordWarningVisible = true;
                 await DialogService.ShowError("Пароли не совпадают!");
                 return;
             }
