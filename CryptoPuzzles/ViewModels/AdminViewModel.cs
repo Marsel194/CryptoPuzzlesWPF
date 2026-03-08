@@ -28,26 +28,18 @@ namespace CryptoPuzzles.ViewModels
         private int _totalDifficulties;
         private ObservableCollection<RecentAction> _recentActions = new();
 
-        public AdminViewModel()
+        private ViewModelBase? _currentSection;
+        public ViewModelBase? CurrentSection
         {
-            _statsService = App.Services.GetRequiredService<AdminStatsService>();
-            _navigationService = App.Services.GetRequiredService<NavigationService>();
+            get => _currentSection;
+            set => SetProperty(ref _currentSection, value);
+        }
 
-            NavigateToUsersCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<UsersViewModel>());
-            NavigateToAdminsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<AdminsViewModel>());
-            NavigateToMethodsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<MethodsViewModel>());
-            NavigateToPuzzlesCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<PuzzlesViewModel>());
-            NavigateToHintsCommand = new AsyncRelayCommand(async() => await _navigationService.NavigateToAsync<HintsViewModel>());
-            NavigateToSessionsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<SessionsViewModel>());
-            NavigateToTutorialsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<TutorialsViewModel>());
-            NavigateToStatisticsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<StatisticsViewModel>());
-            NavigateToDifficultiesCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<DifficultiesViewModel>());
-
-            ToggleThemeCommand = new AsyncRelayCommand(async _ => await ThemeHelper.ToggleTheme());
-            LogoutCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<LoginViewModel>());
-            LoadStatsCommand = new AsyncRelayCommand(async _ => await LoadStatsAsync());
-
-            _ = LoadStatsAsync();
+        private string _username = "Администратор";
+        public string Username
+        {
+            get => _username;
+            set => SetProperty(ref _username, value);
         }
 
         public ICommand NavigateToUsersCommand { get; }
@@ -62,6 +54,66 @@ namespace CryptoPuzzles.ViewModels
         public ICommand ToggleThemeCommand { get; }
         public ICommand LogoutCommand { get; }
         public ICommand LoadStatsCommand { get; }
+        public ICommand OpenProfileCommand { get; }
+        public ICommand GoBackCommand { get; }
+
+        public AdminViewModel()
+        {
+            _statsService = App.Services.GetRequiredService<AdminStatsService>();
+            _navigationService = App.Services.GetRequiredService<NavigationService>();
+
+            NavigateToUsersCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<UsersViewModel>());
+            NavigateToAdminsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<AdminsViewModel>());
+            NavigateToMethodsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<MethodsViewModel>());
+            NavigateToPuzzlesCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<PuzzlesViewModel>());
+            NavigateToHintsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<HintsViewModel>());
+            NavigateToSessionsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<SessionsViewModel>());
+            NavigateToTutorialsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<TutorialsViewModel>());
+            NavigateToStatisticsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<StatisticsViewModel>());
+            NavigateToDifficultiesCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<DifficultiesViewModel>());
+
+            ToggleThemeCommand = new AsyncRelayCommand(async _ => await ThemeHelper.ToggleTheme());
+            LogoutCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<LoginViewModel>());
+            LoadStatsCommand = new AsyncRelayCommand(async _ => await LoadStatsAsync());
+            OpenProfileCommand = new AsyncRelayCommand(OpenProfileAsync);
+            GoBackCommand = new AsyncRelayCommand(_ => { CurrentSection = null; return Task.CompletedTask; });
+
+            _ = LoadStatsAsync();
+            _ = LoadAdminDataAsync();
+        }
+
+        private async Task LoadAdminDataAsync()
+        {
+            try
+            {
+                var admin = await App.Services.GetRequiredService<AdminApiService>().GetByIdAsync(1); // TODO: заменить на ID текущего админа
+                if (admin != null)
+                {
+                    Username = $"{admin.FirstName} {admin.LastName}";
+                }
+            }
+            catch { }
+        }
+
+        private async Task OpenProfileAsync()
+        {
+            try
+            {
+                var admin = await App.Services.GetRequiredService<AdminApiService>().GetByIdAsync(1); // TODO: заменить на ID текущего админа
+                if (admin == null) return;
+
+                var profileVM = ActivatorUtilities.CreateInstance<AdminProfileViewModel>(
+                    App.Services,
+                    admin,
+                    (Action)(() => CurrentSection = null)
+                );
+                CurrentSection = profileVM;
+            }
+            catch (Exception ex)
+            {
+                await DialogService.ShowError($"Ошибка загрузки профиля: {ex.Message}");
+            }
+        }
 
         public int TotalUsers { get => _totalUsers; set => SetProperty(ref _totalUsers, value); }
         public int NewUsersToday { get => _newUsersToday; set => SetProperty(ref _newUsersToday, value); }

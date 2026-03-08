@@ -61,7 +61,8 @@
             <TextBlock Grid.Column="0" Text="Поиск:" VerticalAlignment="Center" Margin="0,0,8,0"/>
             <TextBox Grid.Column="1" Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Введите текст..." Padding="4"/>
             <Button Grid.Column="2" Command="{Binding ClearFilterCommand}" Content="Очистить" Style="{StaticResource MaterialDesignFlatButton}" Margin="8,0,0,0"/>
-            <Button Grid.Column="3" Command="{Binding ExportToExcelCommand}" Content="Экспорт в Excel" Style="{StaticResource PrimaryButton}" Margin="8,0,0,0" Width="140"/>
+            <Button Grid.Column="3" Command="{Binding ExportToExcelCommand}" Content="Экспорт в Excel" Style="{StaticResource PrimaryButton}"
+                    Margin="8,0,0,0" MinWidth="140" Padding="8,0"/>
         </Grid>
 
         <!-- DataGrid -->
@@ -84,7 +85,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
-                                    CommandParameter="{Binding Id}" Content="Удалить" Style="{StaticResource MaterialDesignFlatButton}" Foreground="Red"/>
+                                    CommandParameter="{Binding Id}" Content="Удалить" Style="{StaticResource MaterialDesignFlatButton}" Foreground="Red"
+                                    MinWidth="70" Padding="4,0"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -94,6 +96,6 @@
         <!-- Кнопка Сохранить -->
         <Button Grid.Row="4" HorizontalAlignment="Right" VerticalAlignment="Center" 
                 Command="{Binding SaveCommand}" Content="Сохранить изменения" 
-                Style="{StaticResource PrimaryButton}" Margin="0,16,0,0" Width="200"/>
+                Style="{StaticResource PrimaryButton}" Margin="0,16,0,0" MinWidth="200" Padding="16,0"/>
     </Grid>
 </UserControl>

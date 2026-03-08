@@ -35,13 +35,9 @@ namespace CryptoPuzzles.ViewModels
             }
 
             var itemToAdd = new AEncryptionMethod(0, NewItem.Name);
-
             Items.Add(itemToAdd);
             _addedItems.Add(itemToAdd);
-
             NewItem = CreateNewItem();
-
-            await Task.CompletedTask;
         }
 
         protected override async Task SaveAsync()
@@ -65,6 +61,11 @@ namespace CryptoPuzzles.ViewModels
             }
 
             await base.SaveAsync();
+        }
+
+        protected override bool IsEqual(AEncryptionMethod x, AEncryptionMethod y)
+        {
+            return x.Id == y.Id && x.Name == y.Name;
         }
 
         protected override bool FilterPredicate(AEncryptionMethod item)
