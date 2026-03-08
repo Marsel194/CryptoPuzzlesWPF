@@ -4,7 +4,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:helpers="clr-namespace:CryptoPuzzles.Helpers">
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        
     </UserControl.Resources>
 
     <Grid Margin="24">
@@ -20,20 +20,21 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
+            <!-- Кнопка назад теперь видна всегда -->
             <Button Command="{Binding GoBackCommand}"
-                    Style="{StaticResource MaterialDesignFlatButton}"
-                    HorizontalAlignment="Left"
-                    Visibility="{Binding IsSelectingDifficulty, Converter={StaticResource BoolToVis}, ConverterParameter=False}">
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="ArrowLeft" Width="24" Height="24"/>
-                    <TextBlock Text="Назад" Margin="8,0,0,0" FontSize="16"/>
-                </StackPanel>
-            </Button>
+                Style="{StaticResource MaterialDesignFlatButton}"
+                HorizontalAlignment="Left">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="ArrowLeft" Width="24" Height="24"/>
+                        <TextBlock Text="Назад" Margin="8,0,0,0" FontSize="16"/>
+                    </StackPanel>
+                </Button>
+
             <TextBlock Grid.Column="1" Text="Практика"
-                       FontSize="28" FontWeight="Bold"
-                       Foreground="{DynamicResource SecondaryHueMidBrush}"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"/>
+                   FontSize="28" FontWeight="Bold"
+                   Foreground="{DynamicResource SecondaryHueMidBrush}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"/>
         </Grid>
 
         <!-- Основная область -->
@@ -101,14 +102,15 @@
                     </Grid>
 
                     <TextBlock Text="{Binding CurrentPuzzle.Title}"
-                               FontSize="22" FontWeight="SemiBold"
-                               Foreground="{DynamicResource SecondaryHueMidBrush}"
-                               Margin="0,0,0,16"/>
+                       FontSize="22" FontWeight="SemiBold"
+                       Foreground="{DynamicResource PrimaryHueMidBrush}"
+                       Margin="0,0,0,16"/>
                     <TextBlock Text="{Binding CurrentPuzzle.Content}"
-                               FontSize="16"
-                               Foreground="{DynamicResource MaterialDesignBody}"
-                               TextWrapping="Wrap"
-                               Margin="0,0,0,24"/>
+                       FontSize="16"
+                       Foreground="{DynamicResource MaterialDesignBody}"
+                       TextWrapping="Wrap"
+                       Background="{DynamicResource MaterialDesignPaper}"
+                       Margin="0,0,0,24"/>
 
                     <!-- Подсказки -->
                     <Expander Header="Подсказка" 

@@ -71,6 +71,8 @@ namespace CryptoPuzzles
             };
 
             mainWindow.Show();
+
+            _ = DebugTests.RunAllTests();
         }
     }
 }

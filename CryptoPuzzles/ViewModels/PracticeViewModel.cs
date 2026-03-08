@@ -5,8 +5,10 @@ using CryptoPuzzles.Shared;
 using CryptoPuzzles.ViewModels.Base;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace CryptoPuzzles.ViewModels
 {
@@ -18,6 +20,7 @@ namespace CryptoPuzzles.ViewModels
         private readonly GameSessionApiService _sessionApi;
         private readonly Action _goBack;
         private readonly int _userId;
+        private readonly DispatcherTimer _timer;
 
         private ObservableCollection<ADifficulty> _difficulties = [];
         private ADifficulty _selectedDifficulty = new(0, string.Empty);
@@ -28,22 +31,18 @@ namespace CryptoPuzzles.ViewModels
         private bool _isResult;
         private bool _isModuleCompleted;
         private APuzzle _currentPuzzle = new();
-        private string _elapsedTime = string.Empty;
-        private readonly Stopwatch _stopwatch;
-        // Эти поля не используются - удаляем
-        // private bool _hasNextPuzzle;
+        private string _elapsedTime = "00:00";
         private string _userAnswer = string.Empty;
         private ObservableCollection<AHint> _hints = new();
         private int _currentHintIndex;
         private string _currentHint = string.Empty;
         private bool _hasHints;
-        // Не используется - удаляем
-        // private bool _hasNextHint;
-        private string _resultIcon = string.Empty;
+        private string _resultIcon = "Help";
         private SolidColorBrush _resultColor = Brushes.Transparent;
         private string _resultMessage = string.Empty;
         private int _earnedScore;
         private string _completionMessage = string.Empty;
+        private DateTime _startTime;
 
         public PracticeViewModel(
             DifficultyApiService difficultyApi,
@@ -60,14 +59,15 @@ namespace CryptoPuzzles.ViewModels
             _userId = userId;
             _goBack = goBack;
 
-            _stopwatch = new Stopwatch();
+            _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
+            _timer.Tick += (s, e) => UpdateElapsedTime();
 
             SelectDifficultyCommand = new AsyncRelayCommand<ADifficulty>(async d => await SelectDifficultyAsync(d));
             NextHintCommand = new AsyncRelayCommand(async _ => await NextHintAsync(), _ => HasNextHint);
             CheckAnswerCommand = new AsyncRelayCommand(async _ => await CheckAnswerAsync(), _ => !string.IsNullOrWhiteSpace(UserAnswer));
             NextPuzzleCommand = new AsyncRelayCommand(async _ => await NextPuzzleAsync());
             FinishModuleCommand = new AsyncRelayCommand(async _ => await FinishModuleAsync());
-            GoBackCommand = new AsyncRelayCommand(async _ => { _goBack(); await Task.CompletedTask; });
+            GoBackCommand = new AsyncRelayCommand(async _ => await GoBackAsync());
 
             LoadDifficultiesAsync().SafeFireAndForget();
         }
@@ -112,7 +112,21 @@ namespace CryptoPuzzles.ViewModels
         public bool IsSolvingPuzzle
         {
             get => _isSolvingPuzzle;
-            set => SetProperty(ref _isSolvingPuzzle, value);
+            set
+            {
+                if (SetProperty(ref _isSolvingPuzzle, value))
+                {
+                    if (value)
+                    {
+                        _startTime = DateTime.Now;
+                        _timer.Start();
+                    }
+                    else
+                    {
+                        _timer.Stop();
+                    }
+                }
+            }
         }
 
         public bool IsResult
@@ -130,7 +144,17 @@ namespace CryptoPuzzles.ViewModels
         public APuzzle CurrentPuzzle
         {
             get => _currentPuzzle;
-            set => SetProperty(ref _currentPuzzle, value);
+            set
+            {
+                if (_currentPuzzle != value)
+                {
+                    _currentPuzzle = value;
+                    OnPropertyChanged(nameof(CurrentPuzzle));
+                    // Дополнительно уведомляем о вложенных свойствах
+                    OnPropertyChanged(nameof(CurrentPuzzle.Title));
+                    OnPropertyChanged(nameof(CurrentPuzzle.Content));
+                }
+            }
         }
 
         public string ElapsedTime
@@ -226,13 +250,41 @@ namespace CryptoPuzzles.ViewModels
             try
             {
                 var difficulties = await _difficultyApi.GetAllAsync();
-                Difficulties = new ObservableCollection<ADifficulty>(difficulties);
-                IsSelectingDifficulty = true;
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    Difficulties = new ObservableCollection<ADifficulty>(difficulties);
+                    IsSelectingDifficulty = true;
+                });
             }
             catch (Exception ex)
             {
-                await DialogService.ShowError($"Ошибка загрузки сложностей: {ex.Message}");
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                    DialogService.ShowError($"Ошибка загрузки сложностей: {ex.Message}"));
             }
+        }
+
+        private async Task GoBackAsync()
+        {
+            if (IsSelectingDifficulty)
+            {
+                _goBack();
+            }
+            else
+            {
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    Puzzles.Clear();
+                    IsSolvingPuzzle = false;
+                    IsResult = false;
+                    IsModuleCompleted = false;
+                    IsSelectingDifficulty = true;
+                    SelectedDifficulty = new ADifficulty(0, string.Empty);
+                    Hints.Clear();
+                    CurrentHint = string.Empty;
+                    ElapsedTime = "00:00";
+                });
+            }
+            await Task.CompletedTask;
         }
 
         private async Task SelectDifficultyAsync(ADifficulty? difficulty)
@@ -247,26 +299,33 @@ namespace CryptoPuzzles.ViewModels
             try
             {
                 var allPuzzles = await _puzzleApi.GetAllAsync();
-
                 var filtered = allPuzzles.Where(p => p.DifficultyId == difficultyId && !p.IsTraining).ToList();
-
                 var rnd = new Random();
-                Puzzles = new ObservableCollection<APuzzle>(filtered.OrderBy(x => rnd.Next()));
+                var shuffled = filtered.OrderBy(x => rnd.Next()).ToList();
 
-                if (Puzzles.Any())
+                await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    IsSelectingDifficulty = false;
-                    IsSolvingPuzzle = true;
-                    CurrentPuzzleIndex = 0;
-                }
-                else
-                {
-                    await DialogService.ShowMessage("В этой сложности пока нет головоломок.");
-                }
+                    Puzzles = new ObservableCollection<APuzzle>(shuffled);
+                    if (Puzzles.Any())
+                    {
+                        IsSelectingDifficulty = false;
+                        IsResult = false;
+                        IsModuleCompleted = false;
+                        IsSolvingPuzzle = true;
+                        CurrentPuzzleIndex = 0;
+
+                        OnPropertyChanged(nameof(IsSolvingPuzzle));
+                    }
+                    else
+                    {
+                        _ = DialogService.ShowMessage("В этой сложности пока нет головоломок.");
+                    }
+                });
             }
             catch (Exception ex)
             {
-                await DialogService.ShowError($"Ошибка загрузки пазлов: {ex.Message}");
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                    DialogService.ShowError($"Ошибка загрузки пазлов: {ex.Message}"));
             }
         }
 
@@ -276,14 +335,21 @@ namespace CryptoPuzzles.ViewModels
             {
                 var allHints = await _hintApi.GetAllAsync();
                 var hints = allHints.Where(h => h.PuzzleId == puzzleId).OrderBy(h => h.HintOrder).ToList();
-                Hints = new ObservableCollection<AHint>(hints);
-                HasHints = Hints.Any();
-                CurrentHintIndex = -1;
+
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    Hints = new ObservableCollection<AHint>(hints);
+                    HasHints = Hints.Any();
+                    CurrentHintIndex = -1;
+                });
             }
             catch
             {
-                Hints.Clear();
-                HasHints = false;
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    Hints.Clear();
+                    HasHints = false;
+                });
             }
         }
 
@@ -292,23 +358,22 @@ namespace CryptoPuzzles.ViewModels
             if (CurrentPuzzleIndex >= 0 && CurrentPuzzleIndex < Puzzles.Count)
             {
                 CurrentPuzzle = Puzzles[CurrentPuzzleIndex];
-                UserAnswer = string.Empty;
+                OnPropertyChanged(nameof(CurrentPuzzle));
 
+                UserAnswer = string.Empty;
                 CurrentHintIndex = -1;
                 CurrentHint = string.Empty;
-                LoadHintsForPuzzleAsync(CurrentPuzzle.Id).SafeFireAndForget();
-
-                _stopwatch.Restart();
-                Task.Run(UpdateTimer);
+                _ = LoadHintsForPuzzleAsync(CurrentPuzzle.Id);
+                ElapsedTime = "00:00";
             }
         }
 
-        private async Task UpdateTimer()
+        private void UpdateElapsedTime()
         {
-            while (IsSolvingPuzzle && !IsResult && !IsModuleCompleted)
+            if (IsSolvingPuzzle)
             {
-                await Task.Delay(100);
-                ElapsedTime = _stopwatch.Elapsed.ToString(@"mm\:ss");
+                var elapsed = DateTime.Now - _startTime;
+                ElapsedTime = elapsed.ToString(@"mm\:ss");
             }
         }
 
@@ -332,7 +397,8 @@ namespace CryptoPuzzles.ViewModels
             if (string.IsNullOrWhiteSpace(UserAnswer) || CurrentPuzzle == null)
                 return;
 
-            _stopwatch.Stop();
+            IsSolvingPuzzle = false;
+
             bool isCorrect = UserAnswer.Trim().Equals(CurrentPuzzle.Answer.Trim(), StringComparison.OrdinalIgnoreCase);
 
             if (isCorrect)
@@ -350,7 +416,6 @@ namespace CryptoPuzzles.ViewModels
                 ResultMessage = "Неправильно!";
             }
 
-            IsSolvingPuzzle = false;
             IsResult = true;
             await Task.CompletedTask;
         }
