@@ -4,7 +4,6 @@ using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.Shared;
 using CryptoPuzzles.ViewModels.Base;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -122,9 +121,7 @@ namespace CryptoPuzzles.ViewModels
                         _timer.Start();
                     }
                     else
-                    {
                         _timer.Stop();
-                    }
                 }
             }
         }
@@ -146,6 +143,7 @@ namespace CryptoPuzzles.ViewModels
             get => _currentPuzzle;
             set
             {
+                _currentPuzzle = value;
                 _currentPuzzle = value;
                 OnPropertyChanged(nameof(CurrentPuzzle));
             }
@@ -260,9 +258,7 @@ namespace CryptoPuzzles.ViewModels
         private async Task GoBackAsync()
         {
             if (IsSelectingDifficulty)
-            {
                 _goBack();
-            }
             else
             {
                 await Application.Current.Dispatcher.InvokeAsync(() =>
@@ -312,9 +308,7 @@ namespace CryptoPuzzles.ViewModels
                         CurrentPuzzle = Puzzles[0];
                     }
                     else
-                    {
                         _ = DialogService.ShowMessage("В этой сложности пока нет головоломок.");
-                    }
                 });
             }
             catch (Exception ex)
@@ -424,14 +418,15 @@ namespace CryptoPuzzles.ViewModels
                 IsSolvingPuzzle = true;
             }
             else
-            {
                 await CompleteModuleAsync();
-            }
         }
 
         private async Task FinishModuleAsync()
         {
-            await CompleteModuleAsync();
+            if (CurrentPuzzleIndex >= Puzzles.Count - 1)
+                await CompleteModuleAsync();
+            else
+                await NextPuzzleAsync();
         }
 
         private async Task CompleteModuleAsync()

@@ -41,11 +41,11 @@
 
                 <!-- Режим теории -->
                 <StackPanel Visibility="{Binding IsTheoryMode, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Text="{Binding TheoryTitle}"
+                    <TextBlock Text="{Binding TheoryTitle, FallbackValue='Загрузка...'}"
                        FontSize="22" FontWeight="SemiBold"
                        Foreground="{DynamicResource PrimaryHueMidBrush}"
                        Margin="0,0,0,16"/>
-                    <TextBlock Text="{Binding TheoryContent}"
+                    <TextBlock Text="{Binding TheoryContent, FallbackValue='Загрузка...'}"
                        FontSize="16"
                        Foreground="{DynamicResource MaterialDesignBody}"
                        TextWrapping="Wrap"
@@ -82,11 +82,11 @@
 
                 <!-- Режим пазла -->
                 <StackPanel Visibility="{Binding IsPuzzleMode, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Text="{Binding PuzzleTitle}"
+                    <TextBlock Text="{Binding PuzzleTitle, FallbackValue='Загрузка...'}"
                                FontSize="22" FontWeight="SemiBold"
                                Foreground="{DynamicResource PrimaryHueMidBrush}"
                                Margin="0,0,0,16"/>
-                    <TextBlock Text="{Binding PuzzleContent}"
+                    <TextBlock Text="{Binding PuzzleContent, FallbackValue='Загрузка...'}"
                                FontSize="16"
                                Foreground="{DynamicResource MaterialDesignBody}"
                                TextWrapping="Wrap"

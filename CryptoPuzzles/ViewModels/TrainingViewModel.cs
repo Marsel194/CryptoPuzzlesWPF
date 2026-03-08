@@ -93,9 +93,7 @@ namespace CryptoPuzzles.ViewModels
             set
             {
                 if (SetProperty(ref _currentPuzzleIndex, value))
-                {
                     UpdatePuzzleDisplay();
-                }
             }
         }
 
@@ -224,6 +222,16 @@ namespace CryptoPuzzles.ViewModels
                     {
                         IsTheoryMode = true;
                         CurrentTutorialIndex = 0;
+                        var firstTutorial = Tutorials[0];
+                        TheoryTitle = firstTutorial.TheoryTitle;
+                        TheoryContent = firstTutorial.TheoryContent;
+                        TheoryProgress = $"1/{Tutorials.Count}";
+
+                        OnPropertyChanged(nameof(CanGoPrevious));
+                        OnPropertyChanged(nameof(CanGoNext));
+
+                        ((AsyncRelayCommand)PreviousTheoryCommand).RaiseCanExecuteChanged();
+                        ((AsyncRelayCommand)NextTheoryCommand).RaiseCanExecuteChanged();
                     }
                     else if (Puzzles.Any())
                     {
@@ -231,9 +239,7 @@ namespace CryptoPuzzles.ViewModels
                         CurrentPuzzleIndex = 0;
                     }
                     else
-                    {
                         IsCompleted = true;
-                    }
                 });
             }
             catch (Exception ex)
@@ -248,12 +254,17 @@ namespace CryptoPuzzles.ViewModels
             if (CurrentTutorialIndex >= 0 && CurrentTutorialIndex < Tutorials.Count)
             {
                 var t = Tutorials[CurrentTutorialIndex];
-                TheoryTitle = t.TheoryTitle;
-                TheoryContent = t.TheoryContent;
+                TheoryTitle = t.TheoryTitle ?? string.Empty;
+                TheoryContent = t.TheoryContent ?? string.Empty;
+                TheoryProgress = $"{CurrentTutorialIndex + 1}/{Tutorials.Count}";
 
                 OnPropertyChanged(nameof(TheoryTitle));
                 OnPropertyChanged(nameof(TheoryContent));
-                TheoryProgress = $"{CurrentTutorialIndex + 1}/{Tutorials.Count}";
+
+                OnPropertyChanged(nameof(CanGoPrevious));
+                OnPropertyChanged(nameof(CanGoNext));
+                ((AsyncRelayCommand)PreviousTheoryCommand).RaiseCanExecuteChanged();
+                ((AsyncRelayCommand)NextTheoryCommand).RaiseCanExecuteChanged();
             }
         }
 
@@ -277,9 +288,7 @@ namespace CryptoPuzzles.ViewModels
                     CurrentPuzzleIndex = 0;
                 }
                 else
-                {
                     IsCompleted = true;
-                }
             }
             await Task.CompletedTask;
         }
@@ -313,9 +322,13 @@ namespace CryptoPuzzles.ViewModels
             if (CurrentPuzzleIndex >= 0 && CurrentPuzzleIndex < Puzzles.Count)
             {
                 var p = Puzzles[CurrentPuzzleIndex];
-                PuzzleTitle = p.Title;
-                PuzzleContent = p.Content;
+                PuzzleTitle = p.Title ?? string.Empty;
+                PuzzleContent = p.Content ?? string.Empty;
                 PuzzleProgress = $"{CurrentPuzzleIndex + 1}/{Puzzles.Count}";
+
+                OnPropertyChanged(nameof(PuzzleTitle));
+                OnPropertyChanged(nameof(PuzzleContent));
+
                 UserAnswer = string.Empty;
                 CurrentHintIndex = -1;
                 CurrentHint = string.Empty;
@@ -351,9 +364,7 @@ namespace CryptoPuzzles.ViewModels
                 await DialogService.ShowMessage("Правильно! +" + puzzle.MaxScore + " очков");
 
                 if (CurrentPuzzleIndex < Puzzles.Count - 1)
-                {
                     CurrentPuzzleIndex++;
-                }
                 else
                 {
                     IsPuzzleMode = false;
@@ -361,9 +372,7 @@ namespace CryptoPuzzles.ViewModels
                 }
             }
             else
-            {
                 await DialogService.ShowError("Неправильный ответ. Попробуйте ещё раз.");
-            }
         }
     }
 }
