@@ -101,11 +101,11 @@
                                    Margin="8,0,0,0"/>
                     </Grid>
 
-                    <TextBlock Text="{Binding CurrentPuzzle.Title}"
+                    <TextBlock Text="{Binding CurrentPuzzle.Title, FallbackValue='Загрузка...'}"
                        FontSize="22" FontWeight="SemiBold"
                        Foreground="{DynamicResource PrimaryHueMidBrush}"
                        Margin="0,0,0,16"/>
-                    <TextBlock Text="{Binding CurrentPuzzle.Content}"
+                    <TextBlock Text="{Binding CurrentPuzzle.Content, FallbackValue='Загрузка...'}"
                        FontSize="16"
                        Foreground="{DynamicResource MaterialDesignBody}"
                        TextWrapping="Wrap"

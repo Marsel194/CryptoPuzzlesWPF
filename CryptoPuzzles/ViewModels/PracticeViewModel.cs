@@ -146,14 +146,8 @@ namespace CryptoPuzzles.ViewModels
             get => _currentPuzzle;
             set
             {
-                if (_currentPuzzle != value)
-                {
-                    _currentPuzzle = value;
-                    OnPropertyChanged(nameof(CurrentPuzzle));
-                    // Дополнительно уведомляем о вложенных свойствах
-                    OnPropertyChanged(nameof(CurrentPuzzle.Title));
-                    OnPropertyChanged(nameof(CurrentPuzzle.Content));
-                }
+                _currentPuzzle = value;
+                OnPropertyChanged(nameof(CurrentPuzzle));
             }
         }
 
@@ -306,6 +300,7 @@ namespace CryptoPuzzles.ViewModels
                 await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
                     Puzzles = new ObservableCollection<APuzzle>(shuffled);
+
                     if (Puzzles.Any())
                     {
                         IsSelectingDifficulty = false;
@@ -314,7 +309,7 @@ namespace CryptoPuzzles.ViewModels
                         IsSolvingPuzzle = true;
                         CurrentPuzzleIndex = 0;
 
-                        OnPropertyChanged(nameof(IsSolvingPuzzle));
+                        CurrentPuzzle = Puzzles[0];
                     }
                     else
                     {
