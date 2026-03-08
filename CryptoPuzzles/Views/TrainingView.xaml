@@ -14,7 +14,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Верхняя панель: заголовок и кнопка назад -->
+        <!-- Верхняя панель -->
         <Grid Grid.Row="0" Margin="0,0,0,16">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -42,15 +42,15 @@
                 <!-- Режим теории -->
                 <StackPanel Visibility="{Binding IsTheoryMode, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="{Binding TheoryTitle, FallbackValue='Загрузка...'}"
-                       FontSize="22" FontWeight="SemiBold"
-                       Foreground="{DynamicResource PrimaryHueMidBrush}"
-                       Margin="0,0,0,16"/>
+                               FontSize="22" FontWeight="SemiBold"
+                               Foreground="{DynamicResource PrimaryHueMidBrush}"
+                               Margin="0,0,0,16"/>
                     <TextBlock Text="{Binding TheoryContent, FallbackValue='Загрузка...'}"
-                       FontSize="16"
-                       Foreground="{DynamicResource MaterialDesignBody}"
-                       TextWrapping="Wrap"
-                       Background="{DynamicResource MaterialDesignPaper}"
-                       Margin="0,0,0,24"/>
+                               FontSize="16"
+                               Foreground="{DynamicResource MaterialDesignBody}"
+                               TextWrapping="Wrap"
+                               Background="{DynamicResource MaterialDesignPaper}"
+                               Margin="0,0,0,24"/>
 
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -120,7 +120,7 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="{Binding PuzzleProgress, StringFormat='Задание {0} из {1}'}"
+                        <TextBlock Grid.Column="0" Text="{Binding PuzzleProgress}" 
                                    VerticalAlignment="Center"/>
                         <Button Grid.Column="1" Command="{Binding CheckAnswerCommand}"
                                 Content="Проверить"
@@ -152,7 +152,7 @@
             </StackPanel>
         </ScrollViewer>
 
-        <!-- Нижняя панель для индикации прогресса (исправлено: добавлено свойство TotalPuzzles в VM) -->
+        <!-- Индикатор прогресса для пазлов -->
         <Grid Grid.Row="2" Margin="0,16,0,0" Visibility="{Binding IsPuzzleMode, Converter={StaticResource BoolToVis}}">
             <ProgressBar Value="{Binding CurrentPuzzleIndex}" Maximum="{Binding TotalPuzzles}" Height="4"/>
         </Grid>

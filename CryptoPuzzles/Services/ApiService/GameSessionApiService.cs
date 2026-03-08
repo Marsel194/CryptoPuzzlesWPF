@@ -3,7 +3,7 @@ using System.Net.Http;
 
 namespace CryptoPuzzles.Services.ApiService
 {
-    public class GameSessionApiService : BaseEntityApiService<AGameSession, AGameSessionUpdate, AGameSessionUpdate>
+    public class GameSessionApiService : BaseEntityApiService<AGameSession, AGameSessionCreate, AGameSessionUpdate>
     {
         public GameSessionApiService(HttpClient httpClient) : base(httpClient, "api/gamesessions") { }
     }

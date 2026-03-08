@@ -5,28 +5,56 @@ using CryptoPuzzles.ViewModels.Base;
 
 namespace CryptoPuzzles.ViewModels
 {
-    public class SessionsViewModel : EntityViewModelBase<AGameSession, AGameSessionUpdate, AGameSessionUpdate>
+    public class SessionsViewModel : EntityViewModelBase<AGameSession, AGameSessionCreate, AGameSessionUpdate>
     {
         public SessionsViewModel(GameSessionApiService apiService) : base(apiService) { }
 
         protected override AGameSession CreateNewItem()
         {
-            return new AGameSession(0, 0, "", 0, DateTime.Now, null, null, false, 0, null);
+            return new AGameSession
+            {
+                Id = 0,
+                UserId = 0,
+                UserLogin = "",
+                Score = 0,
+                SessionStartTime = DateTime.Now,
+                CurrentPuzzleId = null,
+                CurrentPuzzleTitle = null,
+                TrainingCompleted = false,
+                HintsUsed = 0,
+                CompletedAt = null
+            };
         }
 
-        protected override AGameSessionUpdate MapToCreateDto(AGameSession item)
+        protected override AGameSessionCreate MapToCreateDto(AGameSession item)
         {
-            return new AGameSessionUpdate(item.Id, item.Score, item.CurrentPuzzleId, item.TrainingCompleted, item.HintsUsed, item.CompletedAt);
+            return new AGameSessionCreate(
+                UserId: item.UserId,
+                Score: item.Score,
+                CurrentPuzzleId: item.CurrentPuzzleId,
+                TrainingCompleted: item.TrainingCompleted,
+                HintsUsed: item.HintsUsed,
+                CompletedAt: item.CompletedAt
+            );
         }
 
-        protected override AGameSessionUpdate MapToUpdateDto(AGameSession item) => MapToCreateDto(item);
+        protected override AGameSessionUpdate MapToUpdateDto(AGameSession item)
+        {
+            return new AGameSessionUpdate(
+                Id: item.Id,
+                Score: item.Score,
+                CurrentPuzzleId: item.CurrentPuzzleId,
+                TrainingCompleted: item.TrainingCompleted,
+                HintsUsed: item.HintsUsed,
+                CompletedAt: item.CompletedAt
+            );
+        }
 
         protected override int GetId(AGameSession item) => item.Id;
 
         protected override async Task AddAsync()
         {
             await DialogService.ShowMessage("Создание сессий вручную не поддерживается.");
-            await Task.CompletedTask;
         }
 
         protected override async Task SaveAsync()
@@ -36,15 +64,25 @@ namespace CryptoPuzzles.ViewModels
 
         protected override bool IsEqual(AGameSession x, AGameSession y)
         {
-            return true;
+            if (ReferenceEquals(x, y)) return true;
+            if (x is null || y is null) return false;
+            return x.Id == y.Id &&
+                   x.Score == y.Score &&
+                   x.CurrentPuzzleId == y.CurrentPuzzleId &&
+                   x.TrainingCompleted == y.TrainingCompleted &&
+                   x.HintsUsed == y.HintsUsed &&
+                   x.CompletedAt == y.CompletedAt &&
+                   x.UserId == y.UserId &&
+                   x.UserLogin == y.UserLogin &&
+                   x.SessionStartTime == y.SessionStartTime;    
         }
 
         protected override bool FilterPredicate(AGameSession item)
         {
             if (string.IsNullOrWhiteSpace(FilterText)) return true;
             var f = FilterText.ToLower();
-            return item.UserLogin.ToLower().Contains(f) ||
-                   (item.CurrentPuzzleTitle?.ToLower().Contains(f) ?? false);
+            return (!string.IsNullOrEmpty(item.UserLogin) && item.UserLogin.ToLower().Contains(f)) ||
+                   (!string.IsNullOrEmpty(item.CurrentPuzzleTitle) && item.CurrentPuzzleTitle.ToLower().Contains(f));
         }
     }
 }

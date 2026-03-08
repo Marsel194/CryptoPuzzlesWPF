@@ -178,7 +178,7 @@
     }
 
     // ---- Неизменяемые record'ы для Create/Update операций (не используются в DataGrid) ----
-    // Records уже безопасны по null, так как они инициализируются через конструктор
+
     public record AAdminCreate(string Login, string Password, string FirstName, string LastName, string? MiddleName);
     public record AAdminUpdate(int Id, string Login, string FirstName, string LastName, string? MiddleName, string? Password);
     public record ADifficultyCreate(string DifficultyName);
