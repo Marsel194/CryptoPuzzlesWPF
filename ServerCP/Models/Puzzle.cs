@@ -46,7 +46,6 @@ namespace CryptoPuzzles.Server.Models
         public virtual EncryptionMethod? Method { get; set; }
         public virtual Admin? CreatedByAdmin { get; set; }
         public virtual ICollection<Hint> Hints { get; set; } = [];
-        public virtual ICollection<GameSession> GameSessions { get; set; } = [];
 
         public virtual ICollection<SessionProgress> SessionProgresses { get; set; } = new List<SessionProgress>();
     }
