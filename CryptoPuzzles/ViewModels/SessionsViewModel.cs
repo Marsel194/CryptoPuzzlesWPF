@@ -16,13 +16,14 @@ namespace CryptoPuzzles.ViewModels
                 Id = 0,
                 UserId = 0,
                 UserLogin = "",
-                Score = 0,
-                SessionStartTime = DateTime.Now,
-                CurrentPuzzleId = null,
-                CurrentPuzzleTitle = null,
-                TrainingCompleted = false,
-                HintsUsed = 0,
-                CompletedAt = null
+                Username = "",
+                SessionType = "training",
+                TotalScore = 0,
+                SessionStart = DateTime.Now,
+                CompletedAt = null,
+                IsCompleted = false,
+                PuzzlesCount = 0,
+                SolvedCount = 0
             };
         }
 
@@ -30,11 +31,8 @@ namespace CryptoPuzzles.ViewModels
         {
             return new AGameSessionCreate(
                 UserId: item.UserId,
-                Score: item.Score,
-                CurrentPuzzleId: item.CurrentPuzzleId,
-                TrainingCompleted: item.TrainingCompleted,
-                HintsUsed: item.HintsUsed,
-                CompletedAt: item.CompletedAt
+                SessionType: item.SessionType,
+                TotalScore: item.TotalScore
             );
         }
 
@@ -42,10 +40,8 @@ namespace CryptoPuzzles.ViewModels
         {
             return new AGameSessionUpdate(
                 Id: item.Id,
-                Score: item.Score,
-                CurrentPuzzleId: item.CurrentPuzzleId,
-                TrainingCompleted: item.TrainingCompleted,
-                HintsUsed: item.HintsUsed,
+                TotalScore: item.TotalScore,
+                IsCompleted: item.IsCompleted,
                 CompletedAt: item.CompletedAt
             );
         }
@@ -67,14 +63,12 @@ namespace CryptoPuzzles.ViewModels
             if (ReferenceEquals(x, y)) return true;
             if (x is null || y is null) return false;
             return x.Id == y.Id &&
-                   x.Score == y.Score &&
-                   x.CurrentPuzzleId == y.CurrentPuzzleId &&
-                   x.TrainingCompleted == y.TrainingCompleted &&
-                   x.HintsUsed == y.HintsUsed &&
+                   x.TotalScore == y.TotalScore &&
+                   x.IsCompleted == y.IsCompleted &&
                    x.CompletedAt == y.CompletedAt &&
                    x.UserId == y.UserId &&
                    x.UserLogin == y.UserLogin &&
-                   x.SessionStartTime == y.SessionStartTime;
+                   x.SessionStart == y.SessionStart;
         }
 
         protected override bool FilterPredicate(AGameSession item)
@@ -82,7 +76,7 @@ namespace CryptoPuzzles.ViewModels
             if (string.IsNullOrWhiteSpace(FilterText)) return true;
             var f = FilterText.ToLower();
             return (!string.IsNullOrEmpty(item.UserLogin) && item.UserLogin.ToLower().Contains(f)) ||
-                   (!string.IsNullOrEmpty(item.CurrentPuzzleTitle) && item.CurrentPuzzleTitle.ToLower().Contains(f));
+                   (!string.IsNullOrEmpty(item.Username) && item.Username.ToLower().Contains(f));
         }
     }
 }

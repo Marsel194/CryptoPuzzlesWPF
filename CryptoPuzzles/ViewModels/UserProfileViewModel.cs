@@ -2,6 +2,7 @@
 using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.Shared;
 using CryptoPuzzles.ViewModels.Base;
+using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Input;
 
 namespace CryptoPuzzles.ViewModels
@@ -218,39 +219,54 @@ namespace CryptoPuzzles.ViewModels
                 _totalTrainingPuzzles = activePuzzles.Count(p => p.IsTraining);
                 _totalPracticePuzzles = activePuzzles.Count(p => !p.IsTraining);
 
-                var allSessions = await _sessionApiService.GetAllAsync();
-                var completedSessions = allSessions
-                    .Where(s => s.UserId == _userId && s.CompletedAt != null && !s.IsDeleted)
-                    .ToList();
-
-                var puzzlesDict = activePuzzles.ToDictionary(p => p.Id, p => p);
-                var completedTrainingIds = new HashSet<int>();
-                var completedPracticeIds = new HashSet<int>();
-
-                foreach (var session in completedSessions)
+                // Получаем прогресс из SessionProgress, а не из GameSession
+                var progressApi = App.Services.GetService<SessionProgressApiService>();
+                if (progressApi != null)
                 {
-                    if (session.CurrentPuzzleId.HasValue &&
-                        puzzlesDict.TryGetValue(session.CurrentPuzzleId.Value, out var puzzle))
+                    var allProgress = await progressApi.GetAllAsync(userId: _userId);
+
+                    var solvedPuzzles = allProgress
+                        .Where(p => p.Solved)
+                        .Select(p => p.PuzzleId)
+                        .Distinct()
+                        .ToList();
+
+                    var trainingSolved = activePuzzles
+                        .Count(p => p.IsTraining && solvedPuzzles.Contains(p.Id));
+
+                    var practiceSolved = activePuzzles
+                        .Count(p => !p.IsTraining && solvedPuzzles.Contains(p.Id));
+
+                    TrainingProgress = _totalTrainingPuzzles > 0
+                        ? (int)((double)trainingSolved / _totalTrainingPuzzles * 100) : 0;
+                    PracticeProgress = _totalPracticePuzzles > 0
+                        ? (int)((double)practiceSolved / _totalPracticePuzzles * 100) : 0;
+                }
+                else
+                {
+                    // Fallback на старую логику, если SessionProgressApiService недоступен
+                    var allSessions = await _sessionApiService.GetAllAsync();
+                    var userSessions = allSessions
+                        .Where(s => s.UserId == _userId && s.CompletedAt != null && !s.IsDeleted)
+                        .ToList();
+
+                    var completedPuzzleIds = new HashSet<int>();
+
+                    foreach (var session in userSessions)
                     {
-                        if (puzzle.IsTraining)
-                            completedTrainingIds.Add(puzzle.Id);
-                        else
-                            completedPracticeIds.Add(puzzle.Id);
+                        // У AGameSession больше нет CurrentPuzzleId, используем другой подход
+                        // Например, можно получить прогресс по сессии через отдельный API
                     }
                 }
-
-                TrainingProgress = _totalTrainingPuzzles > 0
-                    ? (int)((double)completedTrainingIds.Count / _totalTrainingPuzzles * 100) : 0;
-                PracticeProgress = _totalPracticePuzzles > 0
-                    ? (int)((double)completedPracticeIds.Count / _totalPracticePuzzles * 100) : 0;
 
                 TrainingProgress = Math.Min(100, Math.Max(0, TrainingProgress));
                 PracticeProgress = Math.Min(100, Math.Max(0, PracticeProgress));
             }
-            catch
+            catch (Exception ex)
             {
                 TrainingProgress = 0;
                 PracticeProgress = 0;
+                await DialogService.ShowError($"Ошибка загрузки прогресса: {ex.Message}");
             }
             finally
             {

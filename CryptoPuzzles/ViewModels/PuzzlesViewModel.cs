@@ -64,7 +64,10 @@ namespace CryptoPuzzles.ViewModels
                 isTraining: false,
                 tutorialOrder: null,
                 createdByAdminId: null,
-                createdAt: DateTime.Now
+                createdByAdminName: null,
+                createdAt: DateTime.Now,
+                isDeleted: false,
+                deletedAt: null
             );
         }
 
@@ -144,7 +147,10 @@ namespace CryptoPuzzles.ViewModels
                 isTraining: NewItem.IsTraining,
                 tutorialOrder: NewItem.TutorialOrder,
                 createdByAdminId: null,
-                createdAt: DateTime.Now
+                createdByAdminName: null,
+                createdAt: DateTime.Now,
+                isDeleted: false,
+                deletedAt: null
             );
 
             Items.Add(itemToAdd);

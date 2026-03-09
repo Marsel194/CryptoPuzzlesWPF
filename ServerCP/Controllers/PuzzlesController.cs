@@ -23,6 +23,7 @@ namespace CryptoPuzzles.Server.Controllers
             var puzzles = await _context.Puzzles
                 .Include(p => p.Difficulty)
                 .Include(p => p.Method)
+                .Include(p => p.CreatedByAdmin)
                 .Where(p => !p.IsDeleted)
                 .OrderBy(p => p.Id)
                 .Select(p => new APuzzle(
@@ -38,7 +39,11 @@ namespace CryptoPuzzles.Server.Controllers
                     p.IsTraining,
                     p.TutorialOrder,
                     p.CreatedByAdminId,
-                    p.CreatedAt))
+                    p.CreatedByAdmin != null ? $"{p.CreatedByAdmin.FirstName} {p.CreatedByAdmin.LastName}" : null,
+                    p.CreatedAt,
+                    p.IsDeleted,
+                    p.DeletedAt
+                ))
                 .ToListAsync();
             return Ok(puzzles);
         }
@@ -49,6 +54,7 @@ namespace CryptoPuzzles.Server.Controllers
             var puzzle = await _context.Puzzles
                 .Include(p => p.Difficulty)
                 .Include(p => p.Method)
+                .Include(p => p.CreatedByAdmin)
                 .Where(p => p.Id == id && !p.IsDeleted)
                 .Select(p => new APuzzle(
                     p.Id,
@@ -63,11 +69,16 @@ namespace CryptoPuzzles.Server.Controllers
                     p.IsTraining,
                     p.TutorialOrder,
                     p.CreatedByAdminId,
-                    p.CreatedAt))
+                    p.CreatedByAdmin != null ? $"{p.CreatedByAdmin.FirstName} {p.CreatedByAdmin.LastName}" : null,
+                    p.CreatedAt,
+                    p.IsDeleted,
+                    p.DeletedAt
+                ))
                 .FirstOrDefaultAsync();
             if (puzzle == null) return NotFound();
             return Ok(puzzle);
         }
+
 
         [HttpPost]
         public async Task<ActionResult<APuzzle>> Create([FromBody] APuzzleCreate dto)
@@ -83,14 +94,13 @@ namespace CryptoPuzzles.Server.Controllers
                 IsTraining = dto.IsTraining,
                 TutorialOrder = dto.TutorialOrder,
                 CreatedAt = DateTime.UtcNow
-                // CreatedByAdminId можно установить позже, если нужно
             };
             _context.Puzzles.Add(puzzle);
             await _context.SaveChangesAsync();
 
-            // Загружаем связанные данные для ответа
             await _context.Entry(puzzle).Reference(p => p.Difficulty).LoadAsync();
             await _context.Entry(puzzle).Reference(p => p.Method).LoadAsync();
+            await _context.Entry(puzzle).Reference(p => p.CreatedByAdmin).LoadAsync();
 
             var result = new APuzzle(
                 puzzle.Id,
@@ -105,7 +115,11 @@ namespace CryptoPuzzles.Server.Controllers
                 puzzle.IsTraining,
                 puzzle.TutorialOrder,
                 puzzle.CreatedByAdminId,
-                puzzle.CreatedAt);
+                puzzle.CreatedByAdmin != null ? $"{puzzle.CreatedByAdmin.FirstName} {puzzle.CreatedByAdmin.LastName}" : null,
+                puzzle.CreatedAt,
+                puzzle.IsDeleted,
+                puzzle.DeletedAt
+            );
 
             return CreatedAtAction(nameof(Get), new { id = puzzle.Id }, result);
         }

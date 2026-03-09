@@ -13,9 +13,9 @@ namespace CryptoPuzzles.Helpers
                 return Visibility.Collapsed;
 
             bool invert = false;
-            if (parameter != null)
+            if (parameter is string paramString)
             {
-                string param = parameter.ToString().ToLowerInvariant();
+                string param = paramString.ToLowerInvariant();
                 invert = param is "true" or "invert" or "1" or "yes";
             }
 

@@ -7,7 +7,7 @@ namespace CryptoPuzzles.Server.Models
         [ExportName("ID")]
         public int Id { get; set; }
 
-        [ExportName("ID пазла ")]
+        [ExportName("ID пазла")]
         public int PuzzleId { get; set; }
 
         [ExportName("Текст подсказки")]
@@ -15,6 +15,9 @@ namespace CryptoPuzzles.Server.Models
 
         [ExportName("Порядок подсказки")]
         public int HintOrder { get; set; } = 1;
+
+        [ExportName("Дата создания")]
+        public DateTime CreatedAt { get; set; }
 
         public bool IsDeleted { get; set; }
         public DateTime? DeletedAt { get; set; }

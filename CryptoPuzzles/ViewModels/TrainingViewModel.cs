@@ -278,11 +278,8 @@ namespace CryptoPuzzles.ViewModels
             {
                 var sessionCreate = new AGameSessionCreate(
                     UserId: _userId,
-                    Score: 0,
-                    CurrentPuzzleId: Puzzles.FirstOrDefault()?.Id, // может быть null
-                    TrainingCompleted: false,
-                    HintsUsed: 0,
-                    CompletedAt: null
+                    SessionType: "training",  // Вместо Score
+                    TotalScore: 0              // Добавить TotalScore
                 );
                 var session = await _sessionApi.CreateAsync(sessionCreate);
                 _currentSessionId = session.Id;
@@ -303,10 +300,8 @@ namespace CryptoPuzzles.ViewModels
             {
                 var update = new AGameSessionUpdate(
                     Id: _currentSessionId.Value,
-                    Score: newScore,
-                    CurrentPuzzleId: newPuzzleId,
-                    TrainingCompleted: completed,
-                    HintsUsed: newHintsUsed,
+                    TotalScore: newScore,      // Вместо Score
+                    IsCompleted: completed,     // Вместо TrainingCompleted
                     CompletedAt: completed == true ? DateTime.UtcNow : null
                 );
                 await _sessionApi.UpdateAsync(_currentSessionId.Value, update);

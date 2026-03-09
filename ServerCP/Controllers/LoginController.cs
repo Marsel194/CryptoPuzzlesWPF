@@ -9,28 +9,37 @@ namespace CryptoPuzzles.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LoginController(AppDbContext context) : ControllerBase
+    public class LoginController : ControllerBase
     {
-        private readonly AppDbContext _context = context;
+        private readonly AppDbContext _context;
+
+        public LoginController(AppDbContext context)
+        {
+            _context = context;
+        }
 
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] UALoginRequest request)
         {
             try
             {
-                // Проверяем в Users
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == request.Login);
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == request.Login && !u.IsDeleted);
                 if (user != null)
                 {
                     if (Argon2PasswordActions.VerifyPassword(request.Password, user.PasswordHash))
                     {
-                        var response = new UALoginResponse(user.Login, user.Email, user.Username, false);
+                        var response = new UALoginResponse(
+                            user.Id,
+                            user.Login,
+                            user.Email,
+                            user.Username,
+                            false
+                        );
                         return Ok(response);
                     }
                 }
 
-                // Проверяем в Admins
-                var admin = await _context.Admins.FirstOrDefaultAsync(a => a.Login == request.Login);
+                var admin = await _context.Admins.FirstOrDefaultAsync(a => a.Login == request.Login && !a.IsDeleted);
                 if (admin != null)
                 {
                     if (Argon2PasswordActions.VerifyPassword(request.Password, admin.PasswordHash))
@@ -39,7 +48,13 @@ namespace CryptoPuzzles.Server.Controllers
                         if (!string.IsNullOrEmpty(admin.MiddleName))
                             username += $" {admin.MiddleName[0]}.";
 
-                        var response = new UALoginResponse(admin.Login, "", username, true);
+                        var response = new UALoginResponse(
+                            admin.Id,
+                            admin.Login,
+                            "",
+                            username,
+                            true
+                        );
                         return Ok(response);
                     }
                 }
@@ -57,11 +72,13 @@ namespace CryptoPuzzles.Server.Controllers
         {
             try
             {
-                var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Login == request.Login);
+                var existingUser = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Login == request.Login && !u.IsDeleted);
                 if (existingUser != null)
                     return Conflict(new UAErrorResponse("Пользователь с таким логином уже существует", null));
 
-                var existingEmail = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+                var existingEmail = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Email == request.Email && !u.IsDeleted);
                 if (existingEmail != null)
                     return Conflict(new UAErrorResponse("Пользователь с таким email уже существует", null));
 
@@ -71,7 +88,8 @@ namespace CryptoPuzzles.Server.Controllers
                     Username = request.Username,
                     Email = request.Email,
                     PasswordHash = Argon2PasswordActions.HashPassword(request.Password),
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow,
+                    IsDeleted = false
                 };
 
                 _context.Users.Add(newUser);

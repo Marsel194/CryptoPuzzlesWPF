@@ -29,7 +29,11 @@ namespace CryptoPuzzles.Server.Controllers
                     h.PuzzleId,
                     h.Puzzle.Title,
                     h.HintText,
-                    h.HintOrder))
+                    h.HintOrder,
+                    h.CreatedAt,
+                    h.IsDeleted,
+                    h.DeletedAt
+                ))
                 .ToListAsync();
             return Ok(hints);
         }
@@ -45,7 +49,11 @@ namespace CryptoPuzzles.Server.Controllers
                     h.PuzzleId,
                     h.Puzzle.Title,
                     h.HintText,
-                    h.HintOrder))
+                    h.HintOrder,
+                    h.CreatedAt,
+                    h.IsDeleted,
+                    h.DeletedAt
+                ))
                 .FirstOrDefaultAsync();
             if (hint == null) return NotFound();
             return Ok(hint);
@@ -70,7 +78,11 @@ namespace CryptoPuzzles.Server.Controllers
                 hint.PuzzleId,
                 hint.Puzzle.Title,
                 hint.HintText,
-                hint.HintOrder);
+                hint.HintOrder,
+                hint.CreatedAt,
+                hint.IsDeleted,
+                hint.DeletedAt
+            );
 
             return CreatedAtAction(nameof(Get), new { id = hint.Id }, result);
         }

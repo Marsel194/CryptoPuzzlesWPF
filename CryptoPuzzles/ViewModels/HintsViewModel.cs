@@ -26,7 +26,7 @@ namespace CryptoPuzzles.ViewModels
 
         protected override AHint CreateNewItem()
         {
-            return new AHint(0, 0, "", "", 1);
+            return new AHint(0, 0, "", "", 1, DateTime.Now);
         }
 
         protected override AHintCreate MapToCreateDto(AHint item)
@@ -62,7 +62,7 @@ namespace CryptoPuzzles.ViewModels
             var puzzle = Puzzles.FirstOrDefault(p => p.Id == NewItem.PuzzleId);
             string puzzleTitle = puzzle?.Title ?? "";
 
-            var itemToAdd = new AHint(0, NewItem.PuzzleId, puzzleTitle, NewItem.HintText, NewItem.HintOrder);
+            var itemToAdd = new AHint(0, NewItem.PuzzleId, puzzleTitle, NewItem.HintText, NewItem.HintOrder, DateTime.Now);
             _addedItems.Add(itemToAdd);
 
             NewItem = CreateNewItem();

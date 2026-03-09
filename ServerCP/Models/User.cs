@@ -29,5 +29,7 @@ namespace CryptoPuzzles.Server.Models
         public DateTime? DeletedAt { get; set; }
 
         public virtual ICollection<GameSession> GameSessions { get; set; } = [];
+
+        public virtual UserStatistic? Statistic { get; set; }
     }
 }

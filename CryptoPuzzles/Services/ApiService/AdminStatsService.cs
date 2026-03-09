@@ -73,7 +73,7 @@
                         stats.ActiveSessions = sessions.Count(s => s.CompletedAt == null);
                         stats.TotalSolved = sessions.Count(s => s.CompletedAt != null);
                         stats.SolvedToday = sessions.Count(s => s.CompletedAt?.Date == DateTime.Today);
-                        stats.AvgScore = sessions.Count != 0 ? sessions.Average(s => s.Score) : 0;
+                        stats.AvgScore = sessions.Count != 0 ? sessions.Average(s => s.TotalScore) : 0;
                     }),
                     Task.Run(async () =>
                     {
