@@ -18,9 +18,14 @@ namespace CryptoPuzzles.ViewModels
         private readonly PuzzleApiService _puzzleApi;
         private readonly HintApiService _hintApi;
         private readonly GameSessionApiService _sessionApi;
+        private readonly SessionProgressApiService _sessionProgressApi;
         private readonly Action _goBack;
         private readonly int _userId;
         private readonly DispatcherTimer _timer;
+
+        private int? _currentSessionId;
+        private int _totalScore;
+        private int _totalHintsUsed;
 
         private ObservableCollection<ADifficulty> _difficulties = [];
         private ADifficulty _selectedDifficulty = new(0, string.Empty);
@@ -49,6 +54,7 @@ namespace CryptoPuzzles.ViewModels
             PuzzleApiService puzzleApi,
             HintApiService hintApi,
             GameSessionApiService sessionApi,
+            SessionProgressApiService sessionProgressApi,
             int userId,
             Action goBack)
         {
@@ -56,6 +62,7 @@ namespace CryptoPuzzles.ViewModels
             _puzzleApi = puzzleApi;
             _hintApi = hintApi;
             _sessionApi = sessionApi;
+            _sessionProgressApi = sessionProgressApi;
             _userId = userId;
             _goBack = goBack;
 
@@ -144,7 +151,6 @@ namespace CryptoPuzzles.ViewModels
             get => _currentPuzzle;
             set
             {
-                _currentPuzzle = value;
                 _currentPuzzle = value;
                 OnPropertyChanged(nameof(CurrentPuzzle));
             }
@@ -242,6 +248,7 @@ namespace CryptoPuzzles.ViewModels
         {
             try
             {
+                await CreateSessionAsync();
                 var difficulties = await _difficultyApi.GetAllAsync();
                 await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
@@ -256,8 +263,97 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
+        private async Task CreateSessionAsync()
+        {
+            try
+            {
+                var sessionCreate = new AGameSessionCreate(_userId, "practice", 0);
+                var session = await _sessionApi.CreateAsync(sessionCreate);
+                _currentSessionId = session.Id;
+                _totalScore = 0;
+                _totalHintsUsed = 0;
+            }
+            catch (Exception ex)
+            {
+                await DialogService.ShowError($"Не удалось создать сессию: {ex.Message}");
+            }
+        }
+
+        private async Task UpdateSessionAsync(int? newScore = null, bool? completed = null)
+        {
+            if (!_currentSessionId.HasValue) return;
+
+            try
+            {
+                var update = new AGameSessionUpdate(
+                    _currentSessionId.Value,
+                    newScore,
+                    completed,
+                    completed == true ? DateTime.UtcNow : null
+                );
+                await _sessionApi.UpdateAsync(_currentSessionId.Value, update);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Practice] Error updating session: {ex}");
+            }
+        }
+
+        private async Task CreateProgressForCurrentPuzzleAsync()
+        {
+            if (!_currentSessionId.HasValue || CurrentPuzzle == null) return;
+
+            try
+            {
+                var progressCreate = new ASessionProgressCreate(
+                    _currentSessionId.Value,
+                    CurrentPuzzle.Id,
+                    CurrentPuzzleIndex + 1,
+                    0,
+                    0
+                );
+                await _sessionProgressApi.CreateAsync(progressCreate);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Practice] Error creating progress: {ex}");
+            }
+        }
+
+        private async Task UpdateProgressForCurrentPuzzleAsync(bool solved, int hintsUsed, int scoreEarned)
+        {
+            if (!_currentSessionId.HasValue || CurrentPuzzle == null) return;
+
+            try
+            {
+                var progresses = await _sessionProgressApi.GetAllAsync(sessionId: _currentSessionId.Value);
+                var progress = progresses.FirstOrDefault(p => p.PuzzleId == CurrentPuzzle.Id);
+
+                if (progress != null)
+                {
+                    var update = new ASessionProgressUpdate(
+                        progress.Id,
+                        hintsUsed,
+                        scoreEarned,
+                        solved,
+                        solved ? DateTime.UtcNow : null
+                    );
+                    await _sessionProgressApi.UpdateAsync(progress.Id, update);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Practice] Error updating progress: {ex}");
+            }
+        }
+
         private async Task GoBackAsync()
         {
+            if (_currentSessionId.HasValue && !IsModuleCompleted)
+            {
+                await UpdateSessionAsync(completed: true);
+            }
+
             if (IsSelectingDifficulty)
                 _goBack();
             else
@@ -273,6 +369,9 @@ namespace CryptoPuzzles.ViewModels
                     Hints.Clear();
                     CurrentHint = string.Empty;
                     ElapsedTime = "00:00";
+                    _currentSessionId = null;
+                    _totalScore = 0;
+                    _totalHintsUsed = 0;
                 });
             }
             await Task.CompletedTask;
@@ -294,7 +393,7 @@ namespace CryptoPuzzles.ViewModels
                 var rnd = new Random();
                 var shuffled = filtered.OrderBy(x => rnd.Next()).ToList();
 
-                await Application.Current.Dispatcher.InvokeAsync(() =>
+                await Application.Current.Dispatcher.InvokeAsync(async () =>
                 {
                     Puzzles = new ObservableCollection<APuzzle>(shuffled);
 
@@ -305,11 +404,11 @@ namespace CryptoPuzzles.ViewModels
                         IsModuleCompleted = false;
                         IsSolvingPuzzle = true;
                         CurrentPuzzleIndex = 0;
-
                         CurrentPuzzle = Puzzles[0];
+                        await CreateProgressForCurrentPuzzleAsync();
                     }
                     else
-                        _ = DialogService.ShowMessage("В этой сложности пока нет головоломок.");
+                        await DialogService.ShowMessage("В этой сложности пока нет головоломок.");
                 });
             }
             catch (Exception ex)
@@ -354,6 +453,7 @@ namespace CryptoPuzzles.ViewModels
                 CurrentHintIndex = -1;
                 CurrentHint = string.Empty;
                 _ = LoadHintsForPuzzleAsync(CurrentPuzzle.Id);
+                _ = CreateProgressForCurrentPuzzleAsync();
                 ElapsedTime = "00:00";
             }
         }
@@ -378,7 +478,11 @@ namespace CryptoPuzzles.ViewModels
         private async Task NextHintAsync()
         {
             if (HasNextHint)
+            {
                 CurrentHintIndex++;
+                _totalHintsUsed++;
+                await UpdateProgressForCurrentPuzzleAsync(false, CurrentHintIndex + 1, 0);
+            }
             await Task.CompletedTask;
         }
 
@@ -397,6 +501,10 @@ namespace CryptoPuzzles.ViewModels
                 ResultIcon = "CheckCircle";
                 ResultColor = Brushes.Green;
                 ResultMessage = "Правильно!";
+
+                _totalScore += CurrentPuzzle.MaxScore;
+                await UpdateSessionAsync(newScore: _totalScore);
+                await UpdateProgressForCurrentPuzzleAsync(true, CurrentHintIndex + 1, EarnedScore);
             }
             else
             {
@@ -404,6 +512,7 @@ namespace CryptoPuzzles.ViewModels
                 ResultIcon = "CloseCircle";
                 ResultColor = Brushes.Red;
                 ResultMessage = "Неправильно!";
+                await UpdateProgressForCurrentPuzzleAsync(false, CurrentHintIndex + 1, 0);
             }
 
             IsResult = true;
@@ -434,8 +543,11 @@ namespace CryptoPuzzles.ViewModels
         {
             IsResult = false;
             IsModuleCompleted = true;
-            CompletionMessage = $"Вы решили все головоломки сложности \"{SelectedDifficulty.DifficultyName}\"!";
-            await Task.CompletedTask;
+            CompletionMessage = $"Вы решили все головоломки сложности \"{SelectedDifficulty.DifficultyName}\"!\n\n" +
+                               $"Всего очков: {_totalScore}\n" +
+                               $"Использовано подсказок: {_totalHintsUsed}";
+
+            await UpdateSessionAsync(newScore: _totalScore, completed: true);
         }
     }
 }

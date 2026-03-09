@@ -68,7 +68,7 @@ namespace CryptoPuzzles.ViewModels
 
             var profileVM = ActivatorUtilities.CreateInstance<UserProfileViewModel>(
                 _serviceProvider,
-                user,
+                _userId,
                 (Action)(() => CurrentSection = null)
             );
 

@@ -279,8 +279,8 @@ namespace CryptoPuzzles.ViewModels
             {
                 var sessionCreate = new AGameSessionCreate(
                     UserId: _userId,
-                    SessionType: "training",  // Вместо Score
-                    TotalScore: 0              // Добавить TotalScore
+                    SessionType: "training",
+                    TotalScore: 0
                 );
                 var session = await _sessionApi.CreateAsync(sessionCreate);
                 _currentSessionId = session.Id;
@@ -293,16 +293,16 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
-        // Обновление сессии
-        private async Task UpdateSessionAsync(int? newScore = null, int? newPuzzleId = null, int? newHintsUsed = null, bool? completed = null)
+        // ИСПРАВЛЕНО: Убрал newPuzzleId из параметров
+        private async Task UpdateSessionAsync(int? newScore = null, int? newHintsUsed = null, bool? completed = null)
         {
             if (!_currentSessionId.HasValue) return;
             try
             {
                 var update = new AGameSessionUpdate(
                     Id: _currentSessionId.Value,
-                    TotalScore: newScore,      // Вместо Score
-                    IsCompleted: completed,     // Вместо TrainingCompleted
+                    TotalScore: newScore,
+                    IsCompleted: completed,
                     CompletedAt: completed == true ? DateTime.UtcNow : null
                 );
                 await _sessionApi.UpdateAsync(_currentSessionId.Value, update);
@@ -329,6 +329,7 @@ namespace CryptoPuzzles.ViewModels
             await Task.CompletedTask;
         }
 
+        // ИСПРАВЛЕНО: Убрал newPuzzleId из вызова
         private async Task NextTheoryAsync()
         {
             if (CanGoNext)
@@ -346,8 +347,8 @@ namespace CryptoPuzzles.ViewModels
                     // Принудительно обновляем отображение
                     OnPropertyChanged(nameof(PuzzleTitle));
                     OnPropertyChanged(nameof(PuzzleContent));
-                    // Обновляем сессию: теперь текущий пазл - первый
-                    await UpdateSessionAsync(newPuzzleId: Puzzles[0].Id);
+                    // Обновляем сессию: просто обновляем, без newPuzzleId
+                    await UpdateSessionAsync();
                 }
                 else
                 {
@@ -423,7 +424,7 @@ namespace CryptoPuzzles.ViewModels
             await Task.CompletedTask;
         }
 
-        // Проверка ответа на пазл
+        // ИСПРАВЛЕНО: Убрал newPuzzleId из вызова
         private async Task CheckAnswerAsync()
         {
             if (string.IsNullOrWhiteSpace(UserAnswer) || CurrentPuzzleIndex < 0 || CurrentPuzzleIndex >= Puzzles.Count)
@@ -437,13 +438,11 @@ namespace CryptoPuzzles.ViewModels
                 _totalScore += puzzle.MaxScore;
                 await DialogService.ShowMessage($"Правильно! +{puzzle.MaxScore} очков");
 
-                // Обновляем сессию: новый счет и, возможно, следующий пазл
-                int? nextPuzzleId = null;
+                // Обновляем сессию: новый счет и, возможно, завершение
                 bool completed = false;
                 if (CurrentPuzzleIndex < Puzzles.Count - 1)
                 {
                     CurrentPuzzleIndex++;
-                    nextPuzzleId = Puzzles[CurrentPuzzleIndex].Id;
                 }
                 else
                 {
@@ -453,7 +452,7 @@ namespace CryptoPuzzles.ViewModels
                     completed = true;
                 }
 
-                await UpdateSessionAsync(newScore: _totalScore, newPuzzleId: nextPuzzleId, completed: completed);
+                await UpdateSessionAsync(newScore: _totalScore, completed: completed);
             }
             else
             {

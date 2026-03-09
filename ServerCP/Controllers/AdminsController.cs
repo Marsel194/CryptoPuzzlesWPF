@@ -20,8 +20,16 @@ namespace CryptoPuzzles.Server.Controllers
             var admins = await _context.Admins
                 .Where(a => !a.IsDeleted)
                 .OrderBy(a => a.Id)
-                .Select(a => new AAdmin(a.Id, a.Login, a.FirstName, a.LastName, a.MiddleName ?? "", a.CreatedAt))
-                .ToListAsync();
+                .Select(a => new AAdmin(
+                    a.Id,
+                    a.Login,
+                    a.FirstName,
+                    a.LastName,
+                    a.MiddleName ?? "",
+                    a.CreatedAt,
+                    a.IsDeleted,
+                    a.DeletedAt
+                )).ToListAsync();
             return Ok(admins);
         }
 
@@ -68,8 +76,16 @@ namespace CryptoPuzzles.Server.Controllers
         {
             var admin = await _context.Admins
                 .Where(a => a.Id == id && !a.IsDeleted)
-                .Select(a => new AAdmin(a.Id, a.Login, a.FirstName, a.LastName, a.MiddleName ?? "", a.CreatedAt))
-                .FirstOrDefaultAsync();
+                .Select(a => new AAdmin(
+                    a.Id,
+                    a.Login,
+                    a.FirstName,
+                    a.LastName,
+                    a.MiddleName ?? "",
+                    a.CreatedAt,
+                    a.IsDeleted,
+                    a.DeletedAt
+                )).FirstOrDefaultAsync();
             if (admin == null) return NotFound();
             return Ok(admin);
         }

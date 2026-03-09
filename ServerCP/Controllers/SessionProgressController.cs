@@ -19,45 +19,53 @@ namespace CryptoPuzzles.Server.Controllers
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ASessionProgress>>> GetAll(
-            [FromQuery] int? userId = null,
-            [FromQuery] int? sessionId = null,
-            [FromQuery] bool? solved = null)
+        [FromQuery] int? userId = null,
+        [FromQuery] int? sessionId = null,
+        [FromQuery] bool? solved = null)
         {
-            var query = _context.SessionProgress
-                .Include(sp => sp.Session)
-                    .ThenInclude(s => s.User)
-                .Include(sp => sp.Puzzle)
-                .Where(sp => !sp.IsDeleted);
+            var query = from sp in _context.SessionProgress
+                        join s in _context.GameSessions on sp.SessionId equals s.Id
+                        join u in _context.Users on s.UserId equals u.Id
+                        join p in _context.Puzzles on sp.PuzzleId equals p.Id
+                        where !sp.IsDeleted && !s.IsDeleted && !u.IsDeleted && !p.IsDeleted
+                        select new
+                        {
+                            SessionProgress = sp,
+                            UserLogin = u.Login,
+                            Username = u.Username,
+                            PuzzleTitle = p.Title
+                        };
 
             if (userId.HasValue)
-                query = query.Where(sp => sp.Session.UserId == userId.Value);
+                query = query.Where(x => x.SessionProgress.Session.UserId == userId.Value);
 
             if (sessionId.HasValue)
-                query = query.Where(sp => sp.SessionId == sessionId.Value);
+                query = query.Where(x => x.SessionProgress.SessionId == sessionId.Value);
 
             if (solved.HasValue)
-                query = query.Where(sp => sp.Solved == solved.Value);
+                query = query.Where(x => x.SessionProgress.Solved == solved.Value);
 
-            var progress = await query
-                .OrderByDescending(sp => sp.StartedAt)
-                .Select(sp => new ASessionProgress(
-                    sp.Id,
-                    sp.SessionId,
-                    sp.Session.User.Login,
-                    sp.Session.User.Username,
-                    sp.PuzzleId,
-                    sp.Puzzle.Title,
-                    sp.PuzzleOrder,
-                    sp.Solved,
-                    sp.HintsUsed,
-                    sp.ScoreEarned,
-                    sp.StartedAt,
-                    sp.SolvedAt,
-                    sp.TimeToSolve,
-                    sp.IsDeleted,
-                    sp.DeletedAt
-                ))
+            var results = await query
+                .OrderByDescending(x => x.SessionProgress.StartedAt)
                 .ToListAsync();
+
+            var progress = results.Select(x => new ASessionProgress(
+                x.SessionProgress.Id,
+                x.SessionProgress.SessionId,
+                x.UserLogin,
+                x.Username,
+                x.SessionProgress.PuzzleId,
+                x.PuzzleTitle,
+                x.SessionProgress.PuzzleOrder,
+                x.SessionProgress.Solved,
+                x.SessionProgress.HintsUsed,
+                x.SessionProgress.ScoreEarned,
+                x.SessionProgress.StartedAt,
+                x.SessionProgress.SolvedAt,
+                x.SessionProgress.TimeToSolve,
+                x.SessionProgress.IsDeleted,
+                x.SessionProgress.DeletedAt
+            )).ToList();
 
             return Ok(progress);
         }
@@ -65,32 +73,39 @@ namespace CryptoPuzzles.Server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ASessionProgress>> Get(int id)
         {
-            var progress = await _context.SessionProgress
-                .Include(sp => sp.Session)
-                    .ThenInclude(s => s.User)
-                .Include(sp => sp.Puzzle)
-                .Where(sp => sp.Id == id && !sp.IsDeleted)
-                .Select(sp => new ASessionProgress(
-                    sp.Id,
-                    sp.SessionId,
-                    sp.Session.User.Login,
-                    sp.Session.User.Username,
-                    sp.PuzzleId,
-                    sp.Puzzle.Title,
-                    sp.PuzzleOrder,
-                    sp.Solved,
-                    sp.HintsUsed,
-                    sp.ScoreEarned,
-                    sp.StartedAt,
-                    sp.SolvedAt,
-                    sp.TimeToSolve,
-                    sp.IsDeleted,
-                    sp.DeletedAt
-                ))
-                .FirstOrDefaultAsync();
+            var result = await (from sp in _context.SessionProgress
+                                join s in _context.GameSessions on sp.SessionId equals s.Id
+                                join u in _context.Users on s.UserId equals u.Id
+                                join p in _context.Puzzles on sp.PuzzleId equals p.Id
+                                where sp.Id == id && !sp.IsDeleted && !s.IsDeleted && !u.IsDeleted && !p.IsDeleted
+                                select new
+                                {
+                                    SessionProgress = sp,
+                                    UserLogin = u.Login,
+                                    Username = u.Username,
+                                    PuzzleTitle = p.Title
+                                }).FirstOrDefaultAsync();
 
-            if (progress == null)
+            if (result == null)
                 return NotFound();
+
+            var progress = new ASessionProgress(
+                result.SessionProgress.Id,
+                result.SessionProgress.SessionId,
+                result.UserLogin,
+                result.Username,
+                result.SessionProgress.PuzzleId,
+                result.PuzzleTitle,
+                result.SessionProgress.PuzzleOrder,
+                result.SessionProgress.Solved,
+                result.SessionProgress.HintsUsed,
+                result.SessionProgress.ScoreEarned,
+                result.SessionProgress.StartedAt,
+                result.SessionProgress.SolvedAt,
+                result.SessionProgress.TimeToSolve,
+                result.SessionProgress.IsDeleted,
+                result.SessionProgress.DeletedAt
+            );
 
             return Ok(progress);
         }
@@ -98,29 +113,37 @@ namespace CryptoPuzzles.Server.Controllers
         [HttpGet("session/{sessionId}")]
         public async Task<ActionResult<IEnumerable<ASessionProgress>>> GetBySession(int sessionId)
         {
-            var progress = await _context.SessionProgress
-                .Include(sp => sp.Puzzle)
-                .Include(sp => sp.Session.User)
-                .Where(sp => sp.SessionId == sessionId && !sp.IsDeleted)
-                .OrderBy(sp => sp.PuzzleOrder)
-                .Select(sp => new ASessionProgress(
-                    sp.Id,
-                    sp.SessionId,
-                    sp.Session.User.Login,
-                    sp.Session.User.Username,
-                    sp.PuzzleId,
-                    sp.Puzzle.Title,
-                    sp.PuzzleOrder,
-                    sp.Solved,
-                    sp.HintsUsed,
-                    sp.ScoreEarned,
-                    sp.StartedAt,
-                    sp.SolvedAt,
-                    sp.TimeToSolve,
-                    sp.IsDeleted,
-                    sp.DeletedAt
-                ))
-                .ToListAsync();
+            var results = await (from sp in _context.SessionProgress
+                                 join s in _context.GameSessions on sp.SessionId equals s.Id
+                                 join u in _context.Users on s.UserId equals u.Id
+                                 join p in _context.Puzzles on sp.PuzzleId equals p.Id
+                                 where sp.SessionId == sessionId && !sp.IsDeleted && !s.IsDeleted && !u.IsDeleted && !p.IsDeleted
+                                 orderby sp.PuzzleOrder
+                                 select new
+                                 {
+                                     SessionProgress = sp,
+                                     UserLogin = u.Login,
+                                     Username = u.Username,
+                                     PuzzleTitle = p.Title
+                                 }).ToListAsync();
+
+            var progress = results.Select(x => new ASessionProgress(
+                x.SessionProgress.Id,
+                x.SessionProgress.SessionId,
+                x.UserLogin,
+                x.Username,
+                x.SessionProgress.PuzzleId,
+                x.PuzzleTitle,
+                x.SessionProgress.PuzzleOrder,
+                x.SessionProgress.Solved,
+                x.SessionProgress.HintsUsed,
+                x.SessionProgress.ScoreEarned,
+                x.SessionProgress.StartedAt,
+                x.SessionProgress.SolvedAt,
+                x.SessionProgress.TimeToSolve,
+                x.SessionProgress.IsDeleted,
+                x.SessionProgress.DeletedAt
+            )).ToList();
 
             return Ok(progress);
         }
@@ -205,8 +228,8 @@ namespace CryptoPuzzles.Server.Controllers
                 progress.SessionId,
                 session.User.Login,
                 session.User.Username,
-                progress.PuzzleId,
-                puzzle.Title,
+                progress.PuzzleId,           // Исправлено: передаём PuzzleId
+                puzzle.Title,                // Исправлено: передаём Title
                 progress.PuzzleOrder,
                 progress.Solved,
                 progress.HintsUsed,

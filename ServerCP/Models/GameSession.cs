@@ -1,4 +1,5 @@
-﻿using CryptoPuzzles.Shared;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using CryptoPuzzles.Shared;
 
 namespace CryptoPuzzles.Server.Models
 {
@@ -29,9 +30,15 @@ namespace CryptoPuzzles.Server.Models
         public DateTime? DeletedAt { get; set; }
 
         public virtual User User { get; set; } = null!;
-
         public virtual ICollection<SessionProgress> Progresses { get; set; } = new List<SessionProgress>();
 
+        [NotMapped]
+        public int PuzzlesCount => Progresses?.Count ?? 0;
+
+        [NotMapped]
+        public int SolvedCount => Progresses?.Count(p => p.Solved) ?? 0;
+
+        [NotMapped]
         public TimeSpan? Duration => CompletedAt.HasValue
             ? CompletedAt.Value - SessionStart
             : null;

@@ -61,6 +61,7 @@ namespace CryptoPuzzles.Server.Controllers
                     : query.OrderBy(us => us.TotalScore)
             };
 
+            query = query.OrderByDescending(us => us.TotalScore);
             return Ok(await query.ToListAsync());
         }
 

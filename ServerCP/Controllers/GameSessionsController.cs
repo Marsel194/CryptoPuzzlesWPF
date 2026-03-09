@@ -173,31 +173,38 @@ namespace CryptoPuzzles.Server.Controllers
         [HttpGet("{id}/progress")]
         public async Task<ActionResult<IEnumerable<ASessionProgress>>> GetSessionProgress(int id)
         {
+            // Сначала грузим прогресс
             var progress = await _context.SessionProgress
-                .Include(sp => sp.Puzzle)
-                .Include(sp => sp.Session.User)
                 .Where(sp => sp.SessionId == id && !sp.IsDeleted)
                 .OrderBy(sp => sp.PuzzleOrder)
-                .Select(sp => new ASessionProgress(
-                    sp.Id,
-                    sp.SessionId,
-                    sp.Session.User.Login,
-                    sp.Session.User.Username,
-                    sp.PuzzleId,
-                    sp.Puzzle.Title,
-                    sp.PuzzleOrder,
-                    sp.Solved,
-                    sp.HintsUsed,
-                    sp.ScoreEarned,
-                    sp.StartedAt,
-                    sp.SolvedAt,
-                    sp.TimeToSolve,
-                    sp.IsDeleted,
-                    sp.DeletedAt
-                ))
                 .ToListAsync();
 
-            return Ok(progress);
+            // Потом грузим связанные данные отдельно
+            foreach (var sp in progress)
+            {
+                await _context.Entry(sp).Reference(x => x.Puzzle).LoadAsync();
+                await _context.Entry(sp).Reference(x => x.Session).Query().Include(s => s.User).LoadAsync();
+            }
+
+            var result = progress.Select(sp => new ASessionProgress(
+                sp.Id,
+                sp.SessionId,
+                sp.Session.User.Login,
+                sp.Session.User.Username,
+                sp.PuzzleId,
+                sp.Puzzle.Title,
+                sp.PuzzleOrder,
+                sp.Solved,
+                sp.HintsUsed,
+                sp.ScoreEarned,
+                sp.StartedAt,
+                sp.SolvedAt,
+                sp.TimeToSolve,
+                sp.IsDeleted,
+                sp.DeletedAt
+            )).ToList();
+
+            return Ok(result);
         }
     }
 }

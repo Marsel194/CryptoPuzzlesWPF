@@ -24,7 +24,6 @@ namespace CryptoPuzzles.Server.Controllers
         public virtual async Task<IActionResult> Create(T entity) => Ok(await _repository.CreateAsync(entity));
 
         [HttpPut("{id}")]
-        [HttpPut("{id}")]
         public virtual async Task<IActionResult> Update(int id, T entity)
         {
             var idProperty = typeof(T).GetProperty("Id");

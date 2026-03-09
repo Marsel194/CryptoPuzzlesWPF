@@ -321,8 +321,14 @@ namespace CryptoPuzzles.ViewModels.Base
 
         protected virtual T CloneItem(T item)
         {
-            var json = JsonSerializer.Serialize(item);
-            return JsonSerializer.Deserialize<T>(json) ?? throw new InvalidOperationException("Failed to clone item");
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+            };
+            var json = JsonSerializer.Serialize(item, options);
+            return JsonSerializer.Deserialize<T>(json, options)
+                ?? throw new InvalidOperationException("Failed to clone item");
         }
 
         private void Items_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

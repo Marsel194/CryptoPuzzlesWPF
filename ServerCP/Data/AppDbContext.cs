@@ -26,14 +26,6 @@ namespace CryptoPuzzles.Server.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            foreach (var entity in modelBuilder.Model.GetEntityTypes())
-            {
-                foreach (var property in entity.GetProperties())
-                {
-                    property.SetColumnName(property.GetColumnName().ToLower());
-                }
-            }
-
             // Пользователи
             modelBuilder.Entity<User>(entity =>
             {
@@ -152,24 +144,63 @@ namespace CryptoPuzzles.Server.Data
             modelBuilder.Entity<GameSession>(entity =>
             {
                 entity.ToTable("game_sessions");
-                entity.Property(g => g.Id).HasColumnName("id");
-                entity.Property(g => g.UserId).HasColumnName("user_id");
-                entity.Property(g => g.SessionType).HasColumnName("session_type").HasDefaultValue("training");
-                entity.Property(g => g.TotalScore).HasColumnName("total_score").HasDefaultValue(0);
-                entity.Property(g => g.SessionStart).HasColumnName("session_start").HasDefaultValueSql("CURRENT_TIMESTAMP");
-                entity.Property(g => g.CompletedAt).HasColumnName("completed_at");
-                entity.Property(g => g.IsCompleted).HasColumnName("is_completed").HasDefaultValue(false);
-                entity.Property(g => g.IsDeleted).HasColumnName("is_deleted");
-                entity.Property(g => g.DeletedAt).HasColumnName("deleted_at");
+                entity.HasKey(e => e.Id);
 
-                entity.HasOne(g => g.User)
-                      .WithMany(u => u.GameSessions)
-                      .HasForeignKey(g => g.UserId)
-                      .OnDelete(DeleteBehavior.Cascade);
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .ValueGeneratedOnAdd();
 
-                entity.HasIndex(g => new { g.UserId, g.SessionStart }).HasDatabaseName("idx_game_sessions_user");
-                entity.HasIndex(g => g.CompletedAt).HasDatabaseName("idx_game_sessions_completed");
-                entity.HasIndex(g => g.SessionType).HasDatabaseName("idx_game_sessions_type");
+                entity.Property(e => e.UserId)
+                    .HasColumnName("user_id")
+                    .IsRequired();
+
+                entity.Property(e => e.SessionType)
+                    .HasColumnName("session_type")
+                    .HasMaxLength(20)
+                    .HasDefaultValue("training");
+
+                entity.Property(e => e.TotalScore)
+                    .HasColumnName("total_score")
+                    .HasDefaultValue(0);
+
+                entity.Property(e => e.SessionStart)
+                    .HasColumnName("session_start")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.Property(e => e.CompletedAt)
+                    .HasColumnName("completed_at");
+
+                entity.Property(e => e.IsCompleted)
+                    .HasColumnName("is_completed")
+                    .HasDefaultValue(false);
+
+                entity.Property(e => e.IsDeleted)
+                    .HasColumnName("is_deleted");
+
+                entity.Property(e => e.DeletedAt)
+                    .HasColumnName("deleted_at");
+
+                // ВАЖНО: Игнорируем вычисляемые поля, которых нет в БД
+                entity.Ignore(e => e.PuzzlesCount);
+                entity.Ignore(e => e.SolvedCount);
+                entity.Ignore(e => e.Duration);
+
+                entity.HasOne(e => e.User)
+                    .WithMany(u => u.GameSessions)
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasMany(e => e.Progresses)
+                    .WithOne(p => p.Session)
+                    .HasForeignKey(p => p.SessionId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(e => new { e.UserId, e.SessionStart })
+                    .HasDatabaseName("idx_game_sessions_user");
+                entity.HasIndex(e => e.CompletedAt)
+                    .HasDatabaseName("idx_game_sessions_completed");
+                entity.HasIndex(e => e.SessionType)
+                    .HasDatabaseName("idx_game_sessions_type");
             });
 
             // Прогресс по головоломкам в сессии
