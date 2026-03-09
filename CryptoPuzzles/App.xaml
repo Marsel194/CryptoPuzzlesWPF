@@ -4,7 +4,8 @@
              xmlns:vm="clr-namespace:CryptoPuzzles.ViewModels"
              xmlns:v="clr-namespace:CryptoPuzzles.Views"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:helpers="clr-namespace:CryptoPuzzles.Helpers">
+             xmlns:converts="clr-namespace:CryptoPuzzles.Converters"
+             xmlns:controls="clr-namespace:CryptoPuzzles.Controls">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -16,7 +17,7 @@
             </ResourceDictionary.MergedDictionaries>
 
             <!-- Кастомный конвертер с поддержкой параметра -->
-            <helpers:BooleanToVisibilityConverterWithParameter x:Key="BoolToVis"/>
+            <converts:BooleanToVisibilityConverterWithParameter x:Key="BoolToVis"/>
 
             <DataTemplate DataType="{x:Type vm:LoginViewModel}">
                 <v:LoginView/>
@@ -82,6 +83,14 @@
 
             <DataTemplate DataType="{x:Type vm:AdminProfileViewModel}">
                 <v:AdminProfileView/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:SessionProgressViewModel}">
+                <v:SessionProgressView/>
+            </DataTemplate>
+            
+            <DataTemplate DataType="{x:Type vm:UserStatisticsViewModel}">
+                <v:UserStatisticsView/>
             </DataTemplate>
             
             <Style x:Key="BackgroundCircle" TargetType="Ellipse">

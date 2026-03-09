@@ -1,18 +1,18 @@
-﻿<UserControl x:Class="CryptoPuzzles.Views.DifficultiesView"
+﻿<UserControl x:Class="CryptoPuzzles.Views.SessionProgressView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="clr-namespace:CryptoPuzzles.Controls"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
     <controls:EntityListControl 
-        Title="Уровни сложности"
+        Title="Прогресс по сессиям"
         BackCommand="{Binding BackCommand}"
         AddCommand="{Binding AddCommand}"
         ClearFilterCommand="{Binding ClearFilterCommand}"
         ExportToExcelCommand="{Binding ExportToExcelCommand}"
         SaveCommand="{Binding SaveCommand}"
         FilterText="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
+        AddPanelTitle="Новая запись прогресса"
         IsAddPanelVisible="True"
-        AddPanelTitle="Новый уровень сложности"
         IsSaveButtonVisible="True">
 
         <!-- Панель добавления -->
@@ -20,11 +20,17 @@
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBox Grid.Column="0" Text="{Binding NewItem.DifficultyName, UpdateSourceTrigger=PropertyChanged}" 
-                         materialDesign:HintAssist.Hint="Название" Margin="4"/>
-                <Button Grid.Column="1" Command="{Binding AddCommand}" Content="Добавить" 
+                <TextBox Grid.Column="0" Text="{Binding NewItem.SessionId}" 
+                         materialDesign:HintAssist.Hint="ID сессии" Margin="4"/>
+                <TextBox Grid.Column="1" Text="{Binding NewItem.PuzzleId}" 
+                         materialDesign:HintAssist.Hint="ID головоломки" Margin="4"/>
+                <TextBox Grid.Column="2" Text="{Binding NewItem.PuzzleOrder}" 
+                         materialDesign:HintAssist.Hint="Порядок" Margin="4"/>
+                <Button Grid.Column="3" Command="{Binding AddCommand}" Content="Добавить" 
                         Style="{StaticResource PrimaryButton}" Margin="4,0"/>
             </Grid>
         </controls:EntityListControl.AddPanelContent>
@@ -37,7 +43,18 @@
                       materialDesign:DataGridAssist.ColumnHeaderPadding="8">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="50"/>
-                    <DataGridTextColumn Header="Название" Binding="{Binding DifficultyName, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
+                    <DataGridTextColumn Header="ID сессии" Binding="{Binding SessionId}" Width="70"/>
+                    <DataGridTextColumn Header="Пользователь" Binding="{Binding UserLogin}" Width="100"/>
+                    <DataGridTextColumn Header="Имя" Binding="{Binding Username}" Width="120"/>
+                    <DataGridTextColumn Header="ID головоломки" Binding="{Binding PuzzleId}" Width="80"/>
+                    <DataGridTextColumn Header="Головоломка" Binding="{Binding PuzzleTitle}" Width="150"/>
+                    <DataGridTextColumn Header="Порядок" Binding="{Binding PuzzleOrder}" Width="60"/>
+                    <DataGridCheckBoxColumn Header="Решено" Binding="{Binding Solved}"/>
+                    <DataGridTextColumn Header="Подсказок" Binding="{Binding HintsUsed}" Width="70"/>
+                    <DataGridTextColumn Header="Очки" Binding="{Binding ScoreEarned}" Width="70"/>
+                    <DataGridTextColumn Header="Начало" Binding="{Binding StartedAt, StringFormat='dd.MM.yyyy HH:mm'}" Width="130"/>
+                    <DataGridTextColumn Header="Решено" Binding="{Binding SolvedAt, StringFormat='dd.MM.yyyy HH:mm'}" Width="130"/>
+                    <DataGridTextColumn Header="Время решения" Binding="{Binding TimeToSolve, StringFormat='hh\\:mm\\:ss'}" Width="100"/>
                     <DataGridTemplateColumn Header="Действия" Width="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

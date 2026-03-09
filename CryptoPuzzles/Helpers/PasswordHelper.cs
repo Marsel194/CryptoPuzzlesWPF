@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace CryptoPuzzles.Helpers
+namespace CryptoPuzzles.Converters
 {
     public static class PasswordHelper
     {

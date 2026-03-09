@@ -1,9 +1,8 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace CryptoPuzzles.Helpers
+namespace CryptoPuzzles.Converters
 {
     public class BooleanToVisibilityConverterWithParameter : IValueConverter
     {

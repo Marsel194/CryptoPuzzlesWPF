@@ -51,6 +51,8 @@ namespace CryptoPuzzles.ViewModels
         public ICommand NavigateToTutorialsCommand { get; }
         public ICommand NavigateToStatisticsCommand { get; }
         public ICommand NavigateToDifficultiesCommand { get; }
+        public ICommand NavigateToSessionProgressCommand { get; }
+        public ICommand NavigateToUserStatisticsCommand { get; }
         public ICommand ToggleThemeCommand { get; }
         public ICommand LogoutCommand { get; }
         public ICommand LoadStatsCommand { get; }
@@ -71,6 +73,8 @@ namespace CryptoPuzzles.ViewModels
             NavigateToTutorialsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<TutorialsViewModel>());
             NavigateToStatisticsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<StatisticsViewModel>());
             NavigateToDifficultiesCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<DifficultiesViewModel>());
+            NavigateToSessionProgressCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<SessionProgressViewModel>());
+            NavigateToUserStatisticsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<UserStatisticsViewModel>());
 
             ToggleThemeCommand = new AsyncRelayCommand(async _ => await ThemeHelper.ToggleTheme());
             LogoutCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<LoginViewModel>());

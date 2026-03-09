@@ -8,7 +8,6 @@ public class SessionProgressApiService : BaseEntityApiService<ASessionProgress, 
     {
     }
 
-    // Добавить метод для получения прогресса по пользователю
     public async Task<List<ASessionProgress>> GetAllAsync(int? userId = null, int? sessionId = null, bool? solved = null)
     {
         var query = _endpoint;
@@ -25,5 +24,11 @@ public class SessionProgressApiService : BaseEntityApiService<ASessionProgress, 
             query += "?" + string.Join("&", parameters);
 
         return await SendAsync<List<ASessionProgress>>(() => _httpClient.GetAsync(query));
+    }
+
+    public async Task<List<ASessionProgress>> GetBySessionIdAsync(int sessionId)
+    {
+        return await SendAsync<List<ASessionProgress>>(() =>
+            _httpClient.GetAsync($"{_endpoint}?sessionId={sessionId}"));
     }
 }

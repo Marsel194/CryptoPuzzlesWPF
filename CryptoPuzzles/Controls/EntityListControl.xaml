@@ -1,0 +1,69 @@
+﻿<UserControl x:Class="CryptoPuzzles.Controls.EntityListControl"
+             x:Name="ControlRoot"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок и кнопка "Назад" -->
+        <Grid Grid.Row="0" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Command="{Binding BackCommand, ElementName=ControlRoot}"
+                    Style="{StaticResource MaterialDesignFlatButton}" ToolTip="Вернуться в админ-панель" Margin="0,0,16,0">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="ArrowLeft" Width="24" Height="24" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                    <TextBlock Text="Назад" FontSize="16" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                </StackPanel>
+            </Button>
+            <TextBlock Grid.Column="1" Text="{Binding Title, ElementName=ControlRoot}"
+                       FontSize="28" FontWeight="Bold" VerticalAlignment="Center"/>
+        </Grid>
+
+        <!-- Панель добавления -->
+        <Border Grid.Row="1" Style="{StaticResource InputContainer}" Margin="0,0,0,16"
+                Visibility="{Binding IsAddPanelVisible, ElementName=ControlRoot, Converter={StaticResource BoolToVis}}">
+            <StackPanel>
+                <TextBlock Text="{Binding AddPanelTitle, ElementName=ControlRoot}"
+                           FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                <ContentPresenter x:Name="AddPanelContent"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Фильтр + экспорт -->
+        <Grid Grid.Row="2" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Поиск:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <TextBox Grid.Column="1" Text="{Binding FilterText, ElementName=ControlRoot, UpdateSourceTrigger=PropertyChanged}"
+                     materialDesign:HintAssist.Hint="Введите текст..." Padding="4"/>
+            <Button Grid.Column="2" Command="{Binding ClearFilterCommand, ElementName=ControlRoot}"
+                    Content="Очистить" Style="{StaticResource MaterialDesignFlatButton}" Margin="8,0,0,0"/>
+            <Button Grid.Column="3" Command="{Binding ExportToExcelCommand, ElementName=ControlRoot}"
+                    Content="Экспорт в Excel" Style="{StaticResource PrimaryButton}" Margin="8,0,0,0" MinWidth="140" Padding="8,0"/>
+        </Grid>
+
+        <!-- Основное содержимое (DataGrid) -->
+        <ContentPresenter Grid.Row="3" Content="{Binding MainContent, ElementName=ControlRoot}"/>
+
+        <!-- Кнопка "Сохранить" -->
+        <Button Grid.Row="4" HorizontalAlignment="Right" VerticalAlignment="Center"
+                Command="{Binding SaveCommand, ElementName=ControlRoot}"
+                Content="Сохранить изменения" Style="{StaticResource PrimaryButton}"
+                Margin="0,16,0,0" MinWidth="200" Padding="16,0"
+                Visibility="{Binding IsSaveButtonVisible, ElementName=ControlRoot, Converter={StaticResource BoolToVis}}"/>
+    </Grid>
+</UserControl>

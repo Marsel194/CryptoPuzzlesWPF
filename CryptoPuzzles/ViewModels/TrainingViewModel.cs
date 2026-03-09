@@ -1,4 +1,4 @@
-﻿using CryptoPuzzles.Helpers;
+﻿using CryptoPuzzles.Converters;
 using CryptoPuzzles.Services;
 using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.Shared;

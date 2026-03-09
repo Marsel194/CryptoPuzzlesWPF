@@ -40,6 +40,8 @@ namespace CryptoPuzzles
             services.AddTransient<UserViewModel>();
             services.AddTransient<UserProfileViewModel>();
             services.AddTransient<DifficultiesViewModel>();
+            services.AddTransient<SessionProgressViewModel>();
+            services.AddTransient<UserStatisticsViewModel>();
 
             services.AddTransient<TrainingViewModel>();
             services.AddTransient<PracticeViewModel>();
@@ -51,6 +53,8 @@ namespace CryptoPuzzles
             services.AddSingleton<HintApiService>();
             services.AddSingleton<GameSessionApiService>();
             services.AddSingleton<TutorialApiService>();
+            services.AddSingleton<SessionProgressApiService>();
+            services.AddSingleton<UserStatisticsApiService>();
 
             services.AddSingleton(httpClient);
             services.AddSingleton<AdminApiService>();
@@ -71,8 +75,6 @@ namespace CryptoPuzzles
             };
 
             mainWindow.Show();
-
-            _ = DebugTests.RunAllTests();
         }
     }
 }

@@ -1,96 +1,66 @@
 ﻿<UserControl x:Class="CryptoPuzzles.Views.HintsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:CryptoPuzzles.Controls"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:helpers="clr-namespace:CryptoPuzzles.Helpers">
-    <Grid Margin="24">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-
-        <!-- Верхняя панель -->
-        <Grid Grid.Row="0" Margin="0,0,0,16">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Command="{Binding BackCommand}" Style="{StaticResource MaterialDesignFlatButton}" ToolTip="Вернуться в админ-панель" Margin="0,0,16,0">
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="ArrowLeft" Width="24" Height="24" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                    <TextBlock Text="Назад" FontSize="16" VerticalAlignment="Center" Margin="8,0,0,0" Foreground="{DynamicResource MaterialDesignBody}"/>
-                </StackPanel>
-            </Button>
-            <TextBlock Grid.Column="1" Text="Подсказки" FontSize="28" FontWeight="Bold" VerticalAlignment="Center"/>
-        </Grid>
+             xmlns:helpers="clr-namespace:CryptoPuzzles.Converters">
+    <controls:EntityListControl 
+        Title="Подсказки"
+        BackCommand="{Binding BackCommand}"
+        AddCommand="{Binding AddCommand}"
+        ClearFilterCommand="{Binding ClearFilterCommand}"
+        ExportToExcelCommand="{Binding ExportToExcelCommand}"
+        SaveCommand="{Binding SaveCommand}"
+        FilterText="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
+        IsAddPanelVisible="True"
+        AddPanelTitle="Новая подсказка"
+        IsSaveButtonVisible="True">
 
         <!-- Панель добавления -->
-        <Border Grid.Row="1" Style="{StaticResource InputContainer}" Margin="0,0,0,16">
-            <StackPanel>
-                <TextBlock Text="Новая подсказка" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <ComboBox Grid.Column="0" ItemsSource="{Binding Puzzles}" SelectedValuePath="Id" DisplayMemberPath="Title" 
-                              SelectedValue="{Binding NewItem.PuzzleId}"
-                              helpers:ComboBoxBehavior.AutoOpenOnEdit="True" materialDesign:HintAssist.Hint="Головоломка" Margin="4"/>
-                    <TextBox Grid.Column="1" Text="{Binding NewItem.HintText, UpdateSourceTrigger=PropertyChanged}" 
-                             materialDesign:HintAssist.Hint="Текст подсказки" Margin="4"/>
-                    <TextBox Grid.Column="2" Text="{Binding NewItem.HintOrder, UpdateSourceTrigger=PropertyChanged}" 
-                             materialDesign:HintAssist.Hint="Порядок" Margin="4"/>
-                    <Button Grid.Column="3" Command="{Binding AddCommand}" Content="Добавить" Style="{StaticResource PrimaryButton}" Margin="4,0"/>
-                </Grid>
-            </StackPanel>
-        </Border>
+        <controls:EntityListControl.AddPanelContent>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <ComboBox Grid.Column="0" ItemsSource="{Binding Puzzles}" SelectedValuePath="Id" DisplayMemberPath="Title" 
+                          SelectedValue="{Binding NewItem.PuzzleId}" helpers:ComboBoxBehavior.AutoOpenOnEdit="True" 
+                          materialDesign:HintAssist.Hint="Головоломка" Margin="4"/>
+                <TextBox Grid.Column="1" Text="{Binding NewItem.HintText, UpdateSourceTrigger=PropertyChanged}" 
+                         materialDesign:HintAssist.Hint="Текст подсказки" Margin="4"/>
+                <TextBox Grid.Column="2" Text="{Binding NewItem.HintOrder, UpdateSourceTrigger=PropertyChanged}" 
+                         materialDesign:HintAssist.Hint="Порядок" Margin="4"/>
+                <Button Grid.Column="3" Command="{Binding AddCommand}" Content="Добавить" 
+                        Style="{StaticResource PrimaryButton}" Margin="4,0"/>
+            </Grid>
+        </controls:EntityListControl.AddPanelContent>
 
-        <!-- Фильтр + экспорт -->
-        <Grid Grid.Row="2" Margin="0,0,0,16">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" Text="Поиск:" VerticalAlignment="Center" Margin="0,0,8,0"/>
-            <TextBox Grid.Column="1" Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Введите текст..." Padding="4"/>
-            <Button Grid.Column="2" Command="{Binding ClearFilterCommand}" Content="Очистить" Style="{StaticResource MaterialDesignFlatButton}" Margin="8,0,0,0"/>
-            <Button Grid.Column="3" Command="{Binding ExportToExcelCommand}" Content="Экспорт в Excel" 
-                Style="{StaticResource PrimaryButton}" Margin="8,0,0,0" MinWidth="140" Padding="8,0"/>
-        </Grid>
-
-        <!-- DataGrid -->
-        <DataGrid Grid.Row="3" ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
-                  AutoGenerateColumns="False" IsReadOnly="False" CanUserAddRows="False"
-                  materialDesign:DataGridAssist.CellPadding="13 8 8 8"
-                  materialDesign:DataGridAssist.ColumnHeaderPadding="8">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" Width="50"/>
-                <DataGridTextColumn Header="Головоломка" Binding="{Binding PuzzleTitle, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" Width="150"/>
-                <DataGridTextColumn Header="Текст подсказки" Binding="{Binding HintText, UpdateSourceTrigger=PropertyChanged}" Width="300"/>
-                <DataGridTextColumn Header="Порядок" Binding="{Binding HintOrder, UpdateSourceTrigger=PropertyChanged}" Width="80"/>
-                <DataGridTextColumn Header="Дата создания" Binding="{Binding CreatedAt, UpdateSourceTrigger=PropertyChanged, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="150"/>
-                <DataGridTemplateColumn Header="Действия" Width="100">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
-                                CommandParameter="{Binding Id}" Content="Удалить" Style="{StaticResource MaterialDesignFlatButton}" 
-                                Foreground="Red" MinWidth="70" Padding="4,0"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>
-        </DataGrid>
-
-        <!-- Кнопка Сохранить -->
-        <Button Grid.Row="4" HorizontalAlignment="Right" VerticalAlignment="Center" 
-            Command="{Binding SaveCommand}" Content="Сохранить изменения" 
-            Style="{StaticResource PrimaryButton}" Margin="0,16,0,0" MinWidth="200" Padding="16,0"/>
-    </Grid>
+        <!-- Основное содержимое (DataGrid) -->
+        <controls:EntityListControl.MainContent>
+            <DataGrid ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
+                      AutoGenerateColumns="False" IsReadOnly="False" CanUserAddRows="False"
+                      materialDesign:DataGridAssist.CellPadding="13 8 8 8"
+                      materialDesign:DataGridAssist.ColumnHeaderPadding="8">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="50"/>
+                    <DataGridTextColumn Header="Головоломка" Binding="{Binding PuzzleTitle}" IsReadOnly="True" Width="150"/>
+                    <DataGridTextColumn Header="Текст подсказки" Binding="{Binding HintText, UpdateSourceTrigger=PropertyChanged}" Width="300"/>
+                    <DataGridTextColumn Header="Порядок" Binding="{Binding HintOrder, UpdateSourceTrigger=PropertyChanged}" Width="80"/>
+                    <DataGridTextColumn Header="Дата создания" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="150"/>
+                    <DataGridTemplateColumn Header="Действия" Width="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                        CommandParameter="{Binding Id}" Content="Удалить" 
+                                        Style="{StaticResource MaterialDesignFlatButton}" Foreground="Red" 
+                                        MinWidth="70" Padding="4,0"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </controls:EntityListControl.MainContent>
+    </controls:EntityListControl>
 </UserControl>
