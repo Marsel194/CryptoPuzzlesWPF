@@ -4,6 +4,7 @@ using CryptoPuzzles.Shared;
 using CryptoPuzzles.ViewModels.Base;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace CryptoPuzzles.ViewModels
@@ -108,46 +109,85 @@ namespace CryptoPuzzles.ViewModels
         {
             if (IsBusy || e == null) return;
 
-            if (e.Key == Key.Enter)
-            {
-                if (e.OriginalSource is FrameworkElement element)
-                {
-                    element.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+            var element = e.OriginalSource as FrameworkElement;
+            if (element == null) return;
 
-                    if (element.Name == "txtConfirmPassword")
-                    {
-                        await Task.Delay(50);
-                        await RegisterAsync();
-                    }
+            // Навигация по стрелкам вниз/вверх
+            if (e.Key == Key.Down)
+            {
+                var request = new TraversalRequest(FocusNavigationDirection.Next);
+                element.MoveFocus(request);
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Up)
+            {
+                var request = new TraversalRequest(FocusNavigationDirection.Previous);
+                element.MoveFocus(request);
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Enter)
+            {
+                string elementName = GetElementName(element);
+
+                // Если это последнее поле - регистрируемся
+                if (elementName == "txtConfirmPassword" || elementName == "txtConfirmPasswordVisible")
+                {
+                    await Task.Delay(50);
+                    await RegisterAsync();
+                }
+                else
+                {
+                    // Иначе переходим к следующему полю
+                    var request = new TraversalRequest(FocusNavigationDirection.Next);
+                    element.MoveFocus(request);
                 }
                 e.Handled = true;
             }
+        }
+
+        private string GetElementName(FrameworkElement element)
+        {
+            if (element is TextBox textBox)
+                return textBox.Name;
+            else if (element is PasswordBox passwordBox)
+                return passwordBox.Name;
+            else
+                return string.Empty;
         }
 
         private async Task OnTextInputEmailAsync(TextCompositionEventArgs? e)
         {
             if (IsBusy || e == null) return;
 
-            if (string.IsNullOrWhiteSpace(Email) || !Email.Contains('@') || !Email.Contains('.'))
-            {
-                IsEmailWarningVisible = true;
-            }
-            else
-            {
-                IsEmailWarningVisible = false;
-            }
-
+            ValidateEmail();
             await Task.CompletedTask;
         }
 
         private async Task OnEmailLostFocusAsync(RoutedEventArgs? e)
         {
-            if (string.IsNullOrWhiteSpace(Email) || !Email.Contains('@') || !Email.Contains('.'))
-                IsEmailWarningVisible = true;
-            else
-                IsEmailWarningVisible = false;
-
+            ValidateEmail();
             await Task.CompletedTask;
+        }
+
+        private void ValidateEmail()
+        {
+            IsEmailWarningVisible = !IsValidEmail(Email);
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return false;
+
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private async Task OnPasswordLostFocusAsync(RoutedEventArgs? e)
@@ -175,7 +215,7 @@ namespace CryptoPuzzles.ViewModels
             }
 
             // Валидация email
-            if (string.IsNullOrWhiteSpace(Email) || !Email.Contains('@') || !Email.Contains('.'))
+            if (!IsValidEmail(Email))
             {
                 IsEmailWarningVisible = true;
                 await DialogService.ShowError("Введите корректный email!");

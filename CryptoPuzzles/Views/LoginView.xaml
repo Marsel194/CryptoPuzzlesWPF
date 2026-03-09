@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:helpers="clr-namespace:CryptoPuzzles.Converters"
+             xmlns:helpers="clr-namespace:CryptoPuzzles.Helpers"
              xmlns:converters="clr-namespace:CryptoPuzzles.Converters">
     <UserControl.Resources>
         <converters:InverseBooleanConverter x:Key="InverseBool"/>
@@ -12,7 +12,11 @@
     </UserControl.Resources>
 
     <Grid FocusManager.FocusedElement="{Binding ElementName=txtLogin}" 
-          Background="{DynamicResource MaterialDesignPaper}">
+          Background="{DynamicResource MaterialDesignPaper}"
+          KeyboardNavigation.TabNavigation="Local"
+          KeyboardNavigation.DirectionalNavigation="Contained">
+
+        <!-- Фоновые круги -->
         <Ellipse Width="400" Height="400" Style="{StaticResource BackgroundCircle}"
                  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-100,-100,0,0"/>
         <Ellipse Width="300" Height="300" Style="{StaticResource BackgroundCircle}"
@@ -46,6 +50,7 @@
                     <Border Background="{DynamicResource MaterialDesignCardBackground}"
                             CornerRadius="20" Padding="20" Margin="0,0,0,24">
                         <StackPanel>
+                            <!-- Логин -->
                             <Grid Margin="0,8,0,16">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
@@ -75,6 +80,7 @@
                                 </TextBox>
                             </Grid>
 
+                            <!-- Пароль с глазиком -->
                             <Grid Margin="0,8,0,16">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
@@ -89,34 +95,102 @@
                                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
 
-                                <PasswordBox x:Name="txtPassword"
-                                           Grid.Column="1"
-                                           materialDesign:HintAssist.Hint="Пароль"
-                                           MaxLength="64"
-                                           Style="{StaticResource MaterialDesignFloatingHintPasswordBox}">
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="KeyDown">
-                                            <i:InvokeCommandAction Command="{Binding KeyDownCommand}"
-                                                                  PassEventArgsToCommand="True"/>
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                </PasswordBox>
+                                <Grid Grid.Column="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- PasswordBox (скрыт при показе) -->
+                                    <PasswordBox x:Name="txtPassword"
+                                                 Grid.Column="0"
+                                                 materialDesign:HintAssist.Hint="Пароль"
+                                                 helpers:PasswordHelper.Attach="True"
+                                                 helpers:PasswordHelper.Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 MaxLength="64"
+                                                 VerticalContentAlignment="Center">
+                                        <PasswordBox.Style>
+                                            <Style TargetType="PasswordBox" BasedOn="{StaticResource MaterialDesignFloatingHintPasswordBox}">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsChecked, ElementName=toggleLoginPassword}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </PasswordBox.Style>
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="KeyDown">
+                                                <i:InvokeCommandAction Command="{Binding KeyDownCommand}"
+                                                                      PassEventArgsToCommand="True"/>
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                    </PasswordBox>
+
+                                    <!-- TextBox (видим при показе) -->
+                                    <TextBox x:Name="txtPasswordVisible"
+                                             Grid.Column="0"
+                                             Text="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             materialDesign:HintAssist.Hint="Пароль"
+                                             MaxLength="64"
+                                             VerticalContentAlignment="Center">
+                                        <TextBox.Style>
+                                            <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsChecked, ElementName=toggleLoginPassword}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBox.Style>
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="KeyDown">
+                                                <i:InvokeCommandAction Command="{Binding KeyDownCommand}"
+                                                                      PassEventArgsToCommand="True"/>
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                    </TextBox>
+
+                                    <!-- Кнопка глазик с поведением для сохранения фокуса -->
+                                    <ToggleButton x:Name="toggleLoginPassword"
+                                                  Grid.Column="1"
+                                                  Width="30" Height="30"
+                                                  Margin="4,0,0,0"
+                                                  Style="{StaticResource MaterialDesignFlatToggleButton}"
+                                                  IsTabStop="False">
+                                        <i:Interaction.Behaviors>
+                                            <helpers:ToggleButtonFocusBehavior/>
+                                        </i:Interaction.Behaviors>
+                                        <materialDesign:PackIcon>
+                                            <materialDesign:PackIcon.Style>
+                                                <Style TargetType="materialDesign:PackIcon">
+                                                    <Setter Property="Kind" Value="EyeOff"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsChecked, ElementName=toggleLoginPassword}" Value="True">
+                                                            <Setter Property="Kind" Value="Eye"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </materialDesign:PackIcon.Style>
+                                        </materialDesign:PackIcon>
+                                    </ToggleButton>
+                                </Grid>
                             </Grid>
                         </StackPanel>
                     </Border>
 
-                    <!-- Кнопка входа (убрали ProgressAssist) -->
+                    <!-- Кнопка входа -->
                     <Button x:Name="btnLogin" 
                           Content="{Binding IsBusy, Converter={StaticResource BusyToTextConverter}, ConverterParameter='ВОЙТИ|Вход...'}"
                           Background="{DynamicResource PrimaryHueMidBrush}"
                           Command="{Binding LoginCommand}"
-                          CommandParameter="{Binding ElementName=txtPassword}"
                           Foreground="Black" Height="52" FontSize="16" FontWeight="Bold"
                           Margin="0,16,0,24" Cursor="Hand"
                           materialDesign:ButtonAssist.CornerRadius="26"
                           IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBool}}"/>
 
-                    <!-- ИНДИКАТОР ЗАГРУЗКИ (видимый) -->
+                    <!-- Индикатор загрузки -->
                     <Grid Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"
                           Margin="0,0,0,10">
                         <ProgressBar IsIndeterminate="True" 
@@ -128,6 +202,7 @@
                                    Margin="0,8,0,0"/>
                     </Grid>
 
+                    <!-- Разделитель -->
                     <Grid Margin="0,0,0,24">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -140,6 +215,7 @@
                         <Border Grid.Column="2" Height="1" Background="{DynamicResource MaterialDesignDivider}" VerticalAlignment="Center"/>
                     </Grid>
 
+                    <!-- Кнопка регистрации -->
                     <Button Content="Зарегистрироваться"
                           Command="{Binding ShowRegisterCommand}"
                           Foreground="{DynamicResource PrimaryHueMidBrush}"

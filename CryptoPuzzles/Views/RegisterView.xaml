@@ -4,17 +4,20 @@
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:converters="clr-namespace:CryptoPuzzles.Converters"
-             xmlns:helpers="clr-namespace:CryptoPuzzles.Converters">
+             xmlns:helpers="clr-namespace:CryptoPuzzles.Helpers">
     <UserControl.Resources>
         <converters:InverseBooleanConverter x:Key="InverseBool"/>
         <converters:BusyToTextConverter x:Key="BusyToTextConverter"/>
         <converters:NullToVisibilityConverter x:Key="NullToVisibility"/>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converters:BooleanToVisibilityConverterWithParameter x:Key="BooleanToVisibilityConverter"/>
     </UserControl.Resources>
 
     <Grid x:Name="RootGrid" 
           FocusManager.FocusedElement="{Binding ElementName=txtLogin}"
-          Background="{DynamicResource MaterialDesignPaper}">
+          Background="{DynamicResource MaterialDesignPaper}"
+          KeyboardNavigation.TabNavigation="Local"
+          KeyboardNavigation.DirectionalNavigation="Contained">
+
         <!-- Фоновые круги (декор) -->
         <Ellipse Width="500" Height="500" Style="{StaticResource BackgroundCircle}"
                  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-150,-150,0,0"/>
@@ -171,24 +174,96 @@
                                                                  Foreground="{DynamicResource PrimaryHueMidBrush}"
                                                                  HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
-                                    <PasswordBox x:Name="txtPassword"
-                                                 Grid.Column="1" Grid.Row="0"
+
+                                    <!-- Контейнер поля с кнопкой-глазиком -->
+                                    <Grid Grid.Column="1" Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- PasswordBox (скрыт, когда показан текст) -->
+                                        <PasswordBox x:Name="txtPassword"
+                                                     Grid.Column="0"
+                                                     materialDesign:HintAssist.Hint="Придумайте пароль (мин. 8 символов)"
+                                                     helpers:PasswordHelper.Attach="True"
+                                                     helpers:PasswordHelper.Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                     MaxLength="64">
+                                            <PasswordBox.Style>
+                                                <Style TargetType="PasswordBox" BasedOn="{StaticResource MaterialDesignFloatingHintPasswordBox}">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsChecked, ElementName=togglePassword}" Value="True">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </PasswordBox.Style>
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="KeyDown">
+                                                    <i:InvokeCommandAction Command="{Binding KeyDownCommand}"
+                                                                          PassEventArgsToCommand="True"/>
+                                                </i:EventTrigger>
+                                                <i:EventTrigger EventName="LostFocus">
+                                                    <i:InvokeCommandAction Command="{Binding PasswordLostFocusCommand}"
+                                                                          PassEventArgsToCommand="True"/>
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                        </PasswordBox>
+
+                                        <!-- TextBox (видим, когда пароль показывается) -->
+                                        <TextBox x:Name="txtPasswordVisible"
+                                                 Grid.Column="0"
+                                                 Text="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                  materialDesign:HintAssist.Hint="Придумайте пароль (мин. 8 символов)"
-                                                 helpers:PasswordHelper.Attach="True"
-                                                 helpers:PasswordHelper.Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                 MaxLength="64"
-                                                 Style="{StaticResource MaterialDesignFloatingHintPasswordBox}">
-                                        <i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="KeyDown">
-                                                <i:InvokeCommandAction Command="{Binding KeyDownCommand}"
-                                                                      PassEventArgsToCommand="True"/>
-                                            </i:EventTrigger>
-                                            <i:EventTrigger EventName="LostFocus">
-                                                <i:InvokeCommandAction Command="{Binding PasswordLostFocusCommand}"
-                                                                      PassEventArgsToCommand="True"/>
-                                            </i:EventTrigger>
-                                        </i:Interaction.Triggers>
-                                    </PasswordBox>
+                                                 MaxLength="64">
+                                            <TextBox.Style>
+                                                <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsChecked, ElementName=togglePassword}" Value="True">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="KeyDown">
+                                                    <i:InvokeCommandAction Command="{Binding KeyDownCommand}"
+                                                                          PassEventArgsToCommand="True"/>
+                                                </i:EventTrigger>
+                                                <i:EventTrigger EventName="LostFocus">
+                                                    <i:InvokeCommandAction Command="{Binding PasswordLostFocusCommand}"
+                                                                          PassEventArgsToCommand="True"/>
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                        </TextBox>
+
+                                        <!-- Кнопка переключения видимости пароля с поведением -->
+                                        <ToggleButton x:Name="togglePassword"
+                                                      Grid.Column="1"
+                                                      Width="30" Height="30"
+                                                      Margin="0,0,4,0"
+                                                      Style="{StaticResource MaterialDesignFlatToggleButton}"
+                                                      IsTabStop="False">
+                                            <i:Interaction.Behaviors>
+                                                <helpers:ToggleButtonFocusBehavior/>
+                                            </i:Interaction.Behaviors>
+                                            <materialDesign:PackIcon>
+                                                <materialDesign:PackIcon.Style>
+                                                    <Style TargetType="materialDesign:PackIcon">
+                                                        <Setter Property="Kind" Value="EyeOff"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsChecked, ElementName=togglePassword}" Value="True">
+                                                                <Setter Property="Kind" Value="Eye"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </materialDesign:PackIcon.Style>
+                                            </materialDesign:PackIcon>
+                                        </ToggleButton>
+                                    </Grid>
+
                                     <TextBlock Grid.Row="1" Grid.Column="1" 
                                                Text="Пароль должен содержать минимум 8 символов"
                                                HorizontalAlignment="Center" 
@@ -213,24 +288,94 @@
                                                                  Foreground="{DynamicResource PrimaryHueMidBrush}"
                                                                  HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
-                                    <PasswordBox x:Name="txtConfirmPassword"
-                                                 Grid.Column="1" Grid.Row="0"
+
+                                    <!-- Контейнер поля с кнопкой-глазиком -->
+                                    <Grid Grid.Column="1" Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <PasswordBox x:Name="txtConfirmPassword"
+                                                     Grid.Column="0"
+                                                     materialDesign:HintAssist.Hint="Повторите пароль"
+                                                     helpers:PasswordHelper.Attach="True"
+                                                     helpers:PasswordHelper.Password="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                     MaxLength="64">
+                                            <PasswordBox.Style>
+                                                <Style TargetType="PasswordBox" BasedOn="{StaticResource MaterialDesignFloatingHintPasswordBox}">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsChecked, ElementName=toggleConfirmPassword}" Value="True">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </PasswordBox.Style>
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="KeyDown">
+                                                    <i:InvokeCommandAction Command="{Binding KeyDownCommand}"
+                                                                          PassEventArgsToCommand="True"/>
+                                                </i:EventTrigger>
+                                                <i:EventTrigger EventName="LostFocus">
+                                                    <i:InvokeCommandAction Command="{Binding ConfirmPasswordLostFocusCommand}"
+                                                                          PassEventArgsToCommand="True"/>
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                        </PasswordBox>
+
+                                        <TextBox x:Name="txtConfirmPasswordVisible"
+                                                 Grid.Column="0"
+                                                 Text="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                  materialDesign:HintAssist.Hint="Повторите пароль"
-                                                 helpers:PasswordHelper.Attach="True"
-                                                 helpers:PasswordHelper.Password="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                 MaxLength="64"
-                                                 Style="{StaticResource MaterialDesignFloatingHintPasswordBox}">
-                                        <i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="KeyDown">
-                                                <i:InvokeCommandAction Command="{Binding KeyDownCommand}"
-                                                                      PassEventArgsToCommand="True"/>
-                                            </i:EventTrigger>
-                                            <i:EventTrigger EventName="LostFocus">
-                                                <i:InvokeCommandAction Command="{Binding ConfirmPasswordLostFocusCommand}"
-                                                                      PassEventArgsToCommand="True"/>
-                                            </i:EventTrigger>
-                                        </i:Interaction.Triggers>
-                                    </PasswordBox>
+                                                 MaxLength="64">
+                                            <TextBox.Style>
+                                                <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsChecked, ElementName=toggleConfirmPassword}" Value="True">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="KeyDown">
+                                                    <i:InvokeCommandAction Command="{Binding KeyDownCommand}"
+                                                                          PassEventArgsToCommand="True"/>
+                                                </i:EventTrigger>
+                                                <i:EventTrigger EventName="LostFocus">
+                                                    <i:InvokeCommandAction Command="{Binding ConfirmPasswordLostFocusCommand}"
+                                                                          PassEventArgsToCommand="True"/>
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                        </TextBox>
+
+                                        <!-- Кнопка переключения видимости пароля с поведением -->
+                                        <ToggleButton x:Name="toggleConfirmPassword"
+                                                      Grid.Column="1"
+                                                      Width="30" Height="30"
+                                                      Margin="0,0,4,0"
+                                                      Style="{StaticResource MaterialDesignFlatToggleButton}"
+                                                      IsTabStop="False">
+                                            <i:Interaction.Behaviors>
+                                                <helpers:ToggleButtonFocusBehavior/>
+                                            </i:Interaction.Behaviors>
+                                            <materialDesign:PackIcon>
+                                                <materialDesign:PackIcon.Style>
+                                                    <Style TargetType="materialDesign:PackIcon">
+                                                        <Setter Property="Kind" Value="EyeOff"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsChecked, ElementName=toggleConfirmPassword}" Value="True">
+                                                                <Setter Property="Kind" Value="Eye"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </materialDesign:PackIcon.Style>
+                                            </materialDesign:PackIcon>
+                                        </ToggleButton>
+                                    </Grid>
+
                                     <TextBlock Grid.Row="1" Grid.Column="1" 
                                                Text="Пароли не совпадают"
                                                HorizontalAlignment="Center" 

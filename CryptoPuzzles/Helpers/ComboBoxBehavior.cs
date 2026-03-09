@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace CryptoPuzzles.Converters
+namespace CryptoPuzzles.Helpers
 {
     public static class ComboBoxBehavior
     {

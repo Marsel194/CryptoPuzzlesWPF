@@ -13,6 +13,7 @@ namespace CryptoPuzzles.ViewModels
         private readonly NavigationService _navigationService;
 
         private string _login = string.Empty;
+        private string _password = string.Empty;
         private bool _isBusy;
 
         public AsyncRelayCommand LoginCommand { get; }
@@ -23,6 +24,12 @@ namespace CryptoPuzzles.ViewModels
         {
             get => _login;
             set { _login = value ?? string.Empty; OnPropertyChanged(); }
+        }
+
+        public string Password
+        {
+            get => _password;
+            set { _password = value; OnPropertyChanged(); }
         }
 
         public bool IsBusy
@@ -49,14 +56,11 @@ namespace CryptoPuzzles.ViewModels
             KeyDownCommand = new AsyncRelayCommand<KeyEventArgs>(OnKeyDownAsync, _ => !IsBusy);
         }
 
-        private async Task OnLoginAsync(object? parameter)
+        private async Task OnLoginAsync(object? parameter = null)
         {
             if (IsBusy) return;
 
-            var passwordBox = parameter as PasswordBox;
-            string password = passwordBox?.Password ?? string.Empty;
-
-            if (string.IsNullOrWhiteSpace(Login) || string.IsNullOrWhiteSpace(password))
+            if (string.IsNullOrWhiteSpace(Login) || string.IsNullOrWhiteSpace(Password))
             {
                 await DialogService.ShowError("Введите логин и пароль!");
                 return;
@@ -65,7 +69,7 @@ namespace CryptoPuzzles.ViewModels
             try
             {
                 IsBusy = true;
-                var response = await _apiService.LoginAsync(Login, password);
+                var response = await _apiService.LoginAsync(Login, Password);
                 if (response == null)
                     return;
 
@@ -94,19 +98,43 @@ namespace CryptoPuzzles.ViewModels
         {
             if (IsBusy || e == null) return;
 
-            if (e.Key == Key.Enter)
+            var element = e.OriginalSource as System.Windows.UIElement;
+            if (element == null) return;
+
+            // Навигация по стрелкам вверх/вниз
+            if (e.Key == Key.Down)
             {
-                var element = e.OriginalSource as System.Windows.UIElement;
+                var request = new TraversalRequest(FocusNavigationDirection.Next);
+                element.MoveFocus(request);
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Up)
+            {
+                var request = new TraversalRequest(FocusNavigationDirection.Previous);
+                element.MoveFocus(request);
+                e.Handled = true;
+            }
+            // Enter - переход к следующему полю или вход
+            else if (e.Key == Key.Enter)
+            {
+                // Определяем тип элемента и его имя
+                string elementName = string.Empty;
+                if (element is TextBox textBox)
+                    elementName = textBox.Name;
+                else if (element is PasswordBox passwordBox)
+                    elementName = passwordBox.Name;
 
-                if (element != null)
+                if (elementName == "txtLogin")
                 {
-                    element.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
-
-                    if (element is PasswordBox passwordBox)
-                    {
-                        await Task.Delay(50);
-                        await OnLoginAsync(passwordBox);
-                    }
+                    // С логина переходим на пароль
+                    var request = new TraversalRequest(FocusNavigationDirection.Next);
+                    element.MoveFocus(request);
+                }
+                else if (elementName == "txtPassword" || elementName == "txtPasswordVisible")
+                {
+                    // На поле пароля - делаем вход
+                    await Task.Delay(50);
+                    await OnLoginAsync();
                 }
                 e.Handled = true;
             }
