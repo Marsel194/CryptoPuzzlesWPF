@@ -18,7 +18,6 @@ namespace CryptoPuzzles.Server.Data
         public DbSet<GameSession> GameSessions { get; set; }
         public DbSet<Tutorial> Tutorials { get; set; }
 
-        // Новые таблицы
         public DbSet<SessionProgress> SessionProgress { get; set; }
         public DbSet<UserStatistic> UserStatistics { get; set; }
 
@@ -26,7 +25,6 @@ namespace CryptoPuzzles.Server.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Пользователи
             modelBuilder.Entity<User>(entity =>
             {
                 entity.ToTable("users");
@@ -43,7 +41,6 @@ namespace CryptoPuzzles.Server.Data
                 entity.HasIndex(u => u.Email).IsUnique().HasDatabaseName("idx_users_email");
             });
 
-            // Администраторы
             modelBuilder.Entity<Admin>(entity =>
             {
                 entity.ToTable("admins");
@@ -59,7 +56,6 @@ namespace CryptoPuzzles.Server.Data
                 entity.HasIndex(a => a.Login).IsUnique().HasDatabaseName("idx_admins_login");
             });
 
-            // Сложности
             modelBuilder.Entity<Difficulty>(entity =>
             {
                 entity.ToTable("difficulties");
@@ -70,7 +66,6 @@ namespace CryptoPuzzles.Server.Data
                 entity.HasIndex(d => d.DifficultyName).IsUnique().HasDatabaseName("idx_difficulties_name");
             });
 
-            // Методы шифрования
             modelBuilder.Entity<EncryptionMethod>(entity =>
             {
                 entity.ToTable("encryption_methods");
@@ -81,7 +76,6 @@ namespace CryptoPuzzles.Server.Data
                 entity.HasIndex(e => e.Name).IsUnique().HasDatabaseName("idx_methods_name");
             });
 
-            // Головоломки
             modelBuilder.Entity<Puzzle>(entity =>
             {
                 entity.ToTable("puzzles");
@@ -120,7 +114,6 @@ namespace CryptoPuzzles.Server.Data
                 entity.HasIndex(p => new { p.IsTraining, p.TutorialOrder }).HasDatabaseName("idx_puzzles_training");
             });
 
-            // Подсказки
             modelBuilder.Entity<Hint>(entity =>
             {
                 entity.ToTable("hints");
@@ -140,7 +133,6 @@ namespace CryptoPuzzles.Server.Data
                 entity.HasIndex(h => new { h.PuzzleId, h.HintOrder }).HasDatabaseName("idx_hints_puzzle");
             });
 
-            // Игровые сессии
             modelBuilder.Entity<GameSession>(entity =>
             {
                 entity.ToTable("game_sessions");
@@ -179,8 +171,6 @@ namespace CryptoPuzzles.Server.Data
 
                 entity.Property(e => e.DeletedAt)
                     .HasColumnName("deleted_at");
-
-                // ВАЖНО: Игнорируем вычисляемые поля, которых нет в БД
                 entity.Ignore(e => e.PuzzlesCount);
                 entity.Ignore(e => e.SolvedCount);
                 entity.Ignore(e => e.Duration);
@@ -203,7 +193,6 @@ namespace CryptoPuzzles.Server.Data
                     .HasDatabaseName("idx_game_sessions_type");
             });
 
-            // Прогресс по головоломкам в сессии
             modelBuilder.Entity<SessionProgress>(entity =>
             {
                 entity.ToTable("session_progress");
@@ -238,7 +227,6 @@ namespace CryptoPuzzles.Server.Data
                       .HasDatabaseName("idx_session_progress_unique");
             });
 
-            // Статистика пользователей
             modelBuilder.Entity<UserStatistic>(entity =>
             {
                 entity.ToTable("user_statistics");
@@ -261,7 +249,6 @@ namespace CryptoPuzzles.Server.Data
                 entity.HasIndex(us => us.LastActive).HasDatabaseName("idx_user_stats_active");
             });
 
-            // Туториалы
             modelBuilder.Entity<Tutorial>(entity =>
             {
                 entity.ToTable("tutorials");

@@ -14,7 +14,7 @@ namespace CryptoPuzzles.Shared
         private string? _middleName;
         private DateTime _createdAt;
         private bool _isDeleted;
-        private DateTime? _deletedAt;  // Добавить
+        private DateTime? _deletedAt;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
         public string Login { get => _login; set { _login = value; OnPropertyChanged(); } }
@@ -25,7 +25,6 @@ namespace CryptoPuzzles.Shared
         public bool IsDeleted { get => _isDeleted; set { _isDeleted = value; OnPropertyChanged(); } }
         public DateTime? DeletedAt { get => _deletedAt; set { _deletedAt = value; OnPropertyChanged(); } }
 
-        // Вычисляемое поле для отображения ФИО
         public string FullName => $"{LastName} {FirstName} {MiddleName}".Trim();
 
         public AAdmin(int id, string login, string firstName, string lastName, string? middleName,
@@ -52,7 +51,7 @@ namespace CryptoPuzzles.Shared
         private int _id;
         private string _difficultyName = string.Empty;
         private bool _isDeleted;
-        private DateTime? _deletedAt;  // Добавить
+        private DateTime? _deletedAt;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
         public string DifficultyName { get => _difficultyName; set { _difficultyName = value; OnPropertyChanged(); } }
@@ -78,7 +77,7 @@ namespace CryptoPuzzles.Shared
         private int _id;
         private string _name = string.Empty;
         private bool _isDeleted;
-        private DateTime? _deletedAt;  // Добавить
+        private DateTime? _deletedAt;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
         public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
@@ -113,10 +112,10 @@ namespace CryptoPuzzles.Shared
         private bool _isTraining;
         private int? _tutorialOrder;
         private int? _createdByAdminId;
-        private string? _createdByAdminName;  // Добавить для отображения
+        private string? _createdByAdminName;
         private DateTime _createdAt;
         private bool _isDeleted;
-        private DateTime? _deletedAt;  // Добавить
+        private DateTime? _deletedAt;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
         public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
@@ -135,7 +134,6 @@ namespace CryptoPuzzles.Shared
         public bool IsDeleted { get => _isDeleted; set { _isDeleted = value; OnPropertyChanged(); } }
         public DateTime? DeletedAt { get => _deletedAt; set { _deletedAt = value; OnPropertyChanged(); } }
 
-        // Вычисляемые поля для удобства
         public string PuzzleType => IsTraining ? "Обучение" : "Практика";
         public string HasMethod => MethodId.HasValue ? "Да" : "Нет";
 
@@ -175,9 +173,9 @@ namespace CryptoPuzzles.Shared
         private string _puzzleTitle = string.Empty;
         private string _hintText = string.Empty;
         private int _hintOrder;
-        private DateTime _createdAt;  // Добавить
+        private DateTime _createdAt;
         private bool _isDeleted;
-        private DateTime? _deletedAt;  // Добавить
+        private DateTime? _deletedAt;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
         public int PuzzleId { get => _puzzleId; set { _puzzleId = value; OnPropertyChanged(); } }
@@ -212,16 +210,16 @@ namespace CryptoPuzzles.Shared
         private int _id;
         private int _userId;
         private string _userLogin = string.Empty;
-        private string _username = string.Empty;  // Добавить
-        private string _sessionType = string.Empty;  // Добавить
-        private int _totalScore;  // Переименовать с Score
-        private DateTime _sessionStart;  // Переименовать с SessionStartTime
+        private string _username = string.Empty;
+        private string _sessionType = string.Empty;
+        private int _totalScore;
+        private DateTime _sessionStart;
         private DateTime? _completedAt;
-        private bool _isCompleted;  // Переименовать с TrainingCompleted
+        private bool _isCompleted;
         private bool _isDeleted;
-        private DateTime? _deletedAt;  // Добавить
-        private int _puzzlesCount;  // Добавить для отображения
-        private int _solvedCount;  // Добавить для отображения
+        private DateTime? _deletedAt;
+        private int _puzzlesCount;
+        private int _solvedCount;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
         public int UserId { get => _userId; set { _userId = value; OnPropertyChanged(); } }
@@ -237,14 +235,9 @@ namespace CryptoPuzzles.Shared
         public int PuzzlesCount { get => _puzzlesCount; set { _puzzlesCount = value; OnPropertyChanged(); } }
         public int SolvedCount { get => _solvedCount; set { _solvedCount = value; OnPropertyChanged(); } }
 
-        // Вычисляемые поля
         public string Status => IsCompleted ? "Завершена" : "Активна";
-        public string Duration => CompletedAt.HasValue
-            ? (CompletedAt.Value - SessionStart).ToString(@"hh\:mm\:ss")
-            : "—";
-        public double Progress => PuzzlesCount > 0
-            ? (double)SolvedCount / PuzzlesCount * 100
-            : 0;
+        public string Duration => CompletedAt.HasValue ? (CompletedAt.Value - SessionStart).ToString(@"hh\:mm\:ss") : "—";
+        public double Progress => PuzzlesCount > 0 ? (double)SolvedCount / PuzzlesCount * 100 : 0;
 
         public AGameSession(int id, int userId, string userLogin, string username, string sessionType,
             int totalScore, DateTime sessionStart, DateTime? completedAt, bool isCompleted,
@@ -281,7 +274,7 @@ namespace CryptoPuzzles.Shared
         private int _sortOrder;
         private DateTime _createdAt;
         private bool _isDeleted;
-        private DateTime? _deletedAt;  // Добавить
+        private DateTime? _deletedAt;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
         public int MethodId { get => _methodId; set { _methodId = value; OnPropertyChanged(); } }
@@ -322,10 +315,10 @@ namespace CryptoPuzzles.Shared
         private string _email = string.Empty;
         private DateTime? _createdAt;
         private bool _isDeleted;
-        private DateTime? _deletedAt;  // Добавить
-        private int _totalSessions;  // Добавить из статистики
-        private int _totalScore;  // Добавить из статистики
-        private int _puzzlesSolved;  // Добавить из статистики
+        private DateTime? _deletedAt;
+        private int _totalSessions;
+        private int _totalScore;
+        private int _puzzlesSolved;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
         public string Login { get => _login; set { _login = value; OnPropertyChanged(); } }
@@ -360,14 +353,12 @@ namespace CryptoPuzzles.Shared
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    // ---- SessionProgress DTOs ----
-
     public class ASessionProgress : INotifyPropertyChanged
     {
         private int _id;
         private int _sessionId;
         private string _userLogin = string.Empty;
-        private string _username = string.Empty;  // Добавить
+        private string _username = string.Empty;
         private int _puzzleId;
         private string _puzzleTitle = string.Empty;
         private int _puzzleOrder;
@@ -378,7 +369,7 @@ namespace CryptoPuzzles.Shared
         private DateTime? _solvedAt;
         private TimeSpan? _timeToSolve;
         private bool _isDeleted;
-        private DateTime? _deletedAt;  // Добавить
+        private DateTime? _deletedAt;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
         public int SessionId { get => _sessionId; set { _sessionId = value; OnPropertyChanged(); } }
@@ -396,7 +387,6 @@ namespace CryptoPuzzles.Shared
         public bool IsDeleted { get => _isDeleted; set { _isDeleted = value; OnPropertyChanged(); } }
         public DateTime? DeletedAt { get => _deletedAt; set { _deletedAt = value; OnPropertyChanged(); } }
 
-        // Вычисляемое поле
         public string Status => Solved ? "Решено" : "Не решено";
         public string TimeSpent => TimeToSolve?.ToString(@"hh\:mm\:ss") ?? "—";
 
@@ -428,21 +418,19 @@ namespace CryptoPuzzles.Shared
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    // ---- UserStatistics DTOs ----
-
     public class AUserStatistic : INotifyPropertyChanged
     {
         private int _userId;
         private string _userLogin = string.Empty;
         private string _username = string.Empty;
-        private string _email = string.Empty;  // Добавить
+        private string _email = string.Empty;
         private int _totalSessions;
         private int _totalPuzzlesSolved;
         private int _totalScore;
         private int _totalHintsUsed;
         private decimal _avgScorePerSession;
         private DateTime? _lastActive;
-        private DateTime? _registeredAt;  // Добавить
+        private DateTime? _registeredAt;
 
         public int UserId { get => _userId; set { _userId = value; OnPropertyChanged(); } }
         public string UserLogin { get => _userLogin; set { _userLogin = value; OnPropertyChanged(); } }
@@ -456,7 +444,6 @@ namespace CryptoPuzzles.Shared
         public DateTime? LastActive { get => _lastActive; set { _lastActive = value; OnPropertyChanged(); } }
         public DateTime? RegisteredAt { get => _registeredAt; set { _registeredAt = value; OnPropertyChanged(); } }
 
-        // Вычисляемые поля
         public double SuccessRate => TotalPuzzlesSolved > 0
             ? (double)TotalPuzzlesSolved / (TotalPuzzlesSolved + TotalHintsUsed) * 100
             : 0;
@@ -516,7 +503,7 @@ namespace CryptoPuzzles.Shared
     public record ASessionProgressCreate(int SessionId, int PuzzleId, int PuzzleOrder, int HintsUsed, int ScoreEarned);
     public record ASessionProgressUpdate(int Id, int? HintsUsed, int? ScoreEarned, bool? Solved, DateTime? SolvedAt);
 
-    public record AUserStatisticRefresh(int UserId);  // Для принудительного обновления
+    public record AUserStatisticRefresh(int UserId);
 
     // ---- Auth records ----
 

@@ -16,18 +16,15 @@ namespace CryptoPuzzles.ViewModels
         private readonly Action _goBack;
         private readonly int _userId;
 
-        // Данные пользователя
         private string _login = string.Empty;
         private string _email = string.Empty;
         private string _username = string.Empty;
         private string _newPassword = string.Empty;
         private string _confirmPassword = string.Empty;
 
-        // Прогресс
         private int _trainingProgress;
         private int _practiceProgress;
 
-        // Режим редактирования
         private bool _isEditMode;
 
         public UserProfileViewModel(
@@ -51,7 +48,6 @@ namespace CryptoPuzzles.ViewModels
             LoadUserDataAsync().SafeFireAndForget();
         }
 
-        // Свойства пользователя
         public string Login
         {
             get => _login;
@@ -90,7 +86,6 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
-        // Прогресс
         public int TrainingProgress
         {
             get => _trainingProgress;
@@ -103,25 +98,21 @@ namespace CryptoPuzzles.ViewModels
             set => SetProperty(ref _practiceProgress, value);
         }
 
-        // Режим редактирования
         public bool IsEditMode
         {
             get => _isEditMode;
             set => SetProperty(ref _isEditMode, value);
         }
 
-        // Команды
         public ICommand CloseCommand { get; }
         public ICommand EditCommand { get; }
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
 
-        // Загрузка данных пользователя и статистики прогресса
         private async Task LoadUserDataAsync()
         {
             try
             {
-                // 1. Загружаем данные пользователя
                 var user = await _userApi.GetByIdAsync(_userId);
                 if (user != null)
                 {
@@ -130,12 +121,10 @@ namespace CryptoPuzzles.ViewModels
                     Username = user.Username;
                 }
 
-                // 2. Загружаем все пазлы (для расчёта общего количества)
                 var allPuzzles = await _puzzleApi.GetAllAsync();
                 int totalTraining = allPuzzles.Count(p => p.IsTraining);
                 int totalPractice = allPuzzles.Count(p => !p.IsTraining);
 
-                // 3. Загружаем прогресс пользователя (решённые пазлы)
                 var solvedProgress = await _sessionProgressApi.GetAllAsync(userId: _userId, solved: true);
                 int solvedTraining = solvedProgress.Count(sp =>
                 {
@@ -148,7 +137,6 @@ namespace CryptoPuzzles.ViewModels
                     return puzzle != null && !puzzle.IsTraining;
                 });
 
-                // 4. Вычисляем проценты
                 TrainingProgress = totalTraining > 0 ? (solvedTraining * 100 / totalTraining) : 0;
                 PracticeProgress = totalPractice > 0 ? (solvedPractice * 100 / totalPractice) : 0;
             }
@@ -158,26 +146,22 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
-        // Отмена редактирования
         private void CancelEdit()
         {
             IsEditMode = false;
             NewPassword = string.Empty;
             ConfirmPassword = string.Empty;
-            // Перезагружаем оригинальные данные
             _ = LoadUserDataAsync();
         }
 
-        // Проверка возможности сохранения
         private bool CanSave()
         {
             if (!IsEditMode) return false;
             if (string.IsNullOrWhiteSpace(NewPassword) && string.IsNullOrWhiteSpace(ConfirmPassword))
-                return true; // можно сохранить без смены пароля
+                return true;
             return NewPassword == ConfirmPassword && !string.IsNullOrWhiteSpace(NewPassword);
         }
 
-        // Сохранение изменений
         private async Task SaveAsync()
         {
             try

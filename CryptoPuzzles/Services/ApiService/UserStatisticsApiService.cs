@@ -5,11 +5,8 @@ namespace CryptoPuzzles.Services.ApiService
 {
     public class UserStatisticsApiService : BaseEntityApiService<AUserStatistic, object, object>
     {
-        public UserStatisticsApiService(HttpClient httpClient) : base(httpClient, "api/userstatistics")
-        {
-        }
+        public UserStatisticsApiService(HttpClient httpClient) : base(httpClient, "api/userstatistics") { }
 
-        // Специальные методы для статистики
         public async Task<AUserStatistic?> GetByUserIdAsync(int userId)
         {
             return await SendAsync<AUserStatistic?>(() => _httpClient.GetAsync($"{_endpoint}/user/{userId}"));

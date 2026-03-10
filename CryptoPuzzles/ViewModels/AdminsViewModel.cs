@@ -9,10 +9,7 @@ namespace CryptoPuzzles.ViewModels
     {
         private string _newPassword = string.Empty;
 
-        public AdminsViewModel(AdminApiService apiService) : base(apiService)
-        {
-            // Команды инициализируются в базовом классе
-        }
+        public AdminsViewModel(AdminApiService apiService) : base(apiService) { }
 
         public string NewPassword
         {

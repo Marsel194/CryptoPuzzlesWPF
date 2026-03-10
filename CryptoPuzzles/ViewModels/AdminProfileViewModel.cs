@@ -90,14 +90,10 @@ namespace CryptoPuzzles.ViewModels
 
         public AdminProfileViewModel(AdminApiService adminApiService, AAdmin admin, Action closeAction)
         {
-            Debug.WriteLine("==========================================");
-            Debug.WriteLine("[AdminProfile] CONSTRUCTOR START");
-
             _adminApiService = adminApiService;
             _closeAction = closeAction;
             _adminId = admin.Id;
 
-            // Инициализация данными администратора
             Login = admin.Login;
             FirstName = admin.FirstName;
             LastName = admin.LastName;
@@ -107,32 +103,20 @@ namespace CryptoPuzzles.ViewModels
             _originalLastName = admin.LastName;
             _originalMiddleName = admin.MiddleName ?? string.Empty;
 
-            Debug.WriteLine($"[AdminProfile] Admin ID: {_adminId}");
-            Debug.WriteLine($"[AdminProfile] Login: {Login}");
-            Debug.WriteLine($"[AdminProfile] Name: {FirstName} {LastName} {MiddleName}");
-
-            // Команды с AsyncRelayCommand
             CloseCommand = new AsyncRelayCommand(CloseAsync);
             EditCommand = new AsyncRelayCommand(EditAsync, () => !IsLoading && !IsEditMode);
             SaveCommand = new AsyncRelayCommand(SaveAsync, () => !IsLoading && IsEditMode);
             CancelCommand = new AsyncRelayCommand(CancelAsync, () => !IsLoading && IsEditMode);
-
-            Debug.WriteLine("[AdminProfile] CONSTRUCTOR END");
-            Debug.WriteLine("==========================================");
         }
 
         private Task CloseAsync()
         {
-            Debug.WriteLine("[AdminProfile] Close executed");
             _closeAction?.Invoke();
             return Task.CompletedTask;
         }
 
         private Task EditAsync()
         {
-            Debug.WriteLine("==========================================");
-            Debug.WriteLine("[AdminProfile] Edit EXECUTED");
-
             _originalFirstName = FirstName;
             _originalLastName = LastName;
             _originalMiddleName = MiddleName;
@@ -142,18 +126,11 @@ namespace CryptoPuzzles.ViewModels
 
             IsEditMode = true;
 
-            Debug.WriteLine($"[AdminProfile] Edit completed, IsEditMode = {IsEditMode}");
-            Debug.WriteLine("==========================================");
-
             return Task.CompletedTask;
         }
 
         private async Task SaveAsync()
         {
-            Debug.WriteLine("==========================================");
-            Debug.WriteLine("[AdminProfile] Save EXECUTED");
-
-            // Валидация
             if (string.IsNullOrWhiteSpace(FirstName))
             {
                 await DialogService.ShowError("Имя не может быть пустым.");
@@ -184,7 +161,6 @@ namespace CryptoPuzzles.ViewModels
             try
             {
                 IsLoading = true;
-                Debug.WriteLine("[AdminProfile] Sending update to API...");
 
                 var updateDto = new AAdminUpdate(
                     Id: _adminId,
@@ -196,7 +172,6 @@ namespace CryptoPuzzles.ViewModels
                 );
 
                 await _adminApiService.UpdateAsync(_adminId, updateDto);
-                Debug.WriteLine("[AdminProfile] API update successful");
 
                 _originalFirstName = FirstName;
                 _originalLastName = LastName;
@@ -217,16 +192,10 @@ namespace CryptoPuzzles.ViewModels
             {
                 IsLoading = false;
             }
-
-            Debug.WriteLine("[AdminProfile] Save completed");
-            Debug.WriteLine("==========================================");
         }
 
         private Task CancelAsync()
         {
-            Debug.WriteLine("==========================================");
-            Debug.WriteLine("[AdminProfile] Cancel EXECUTED");
-
             FirstName = _originalFirstName;
             LastName = _originalLastName;
             MiddleName = _originalMiddleName;
@@ -235,9 +204,6 @@ namespace CryptoPuzzles.ViewModels
             ConfirmPassword = string.Empty;
 
             IsEditMode = false;
-
-            Debug.WriteLine("[AdminProfile] Cancel completed");
-            Debug.WriteLine("==========================================");
 
             return Task.CompletedTask;
         }

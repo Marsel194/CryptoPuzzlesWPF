@@ -277,7 +277,7 @@ namespace CryptoPuzzles.ViewModels.Base
                     return;
 
                 var data = ItemsView?.Cast<T>().ToList() ?? Items.ToList();
-                if (!data.Any())
+                if (data.Count == 0)
                 {
                     await DialogService.ShowMessage("Нет данных для экспорта.");
                     return;
@@ -347,17 +347,13 @@ namespace CryptoPuzzles.ViewModels.Base
         private void SubscribeItem(T item)
         {
             if (item is INotifyPropertyChanged notify)
-            {
                 notify.PropertyChanged += Item_PropertyChanged;
-            }
         }
 
         private void UnsubscribeItem(T item)
         {
             if (item is INotifyPropertyChanged notify)
-            {
                 notify.PropertyChanged -= Item_PropertyChanged;
-            }
         }
 
         private void Item_PropertyChanged(object? sender, PropertyChangedEventArgs e)

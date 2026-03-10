@@ -1,5 +1,4 @@
-﻿using CryptoPuzzles.Converters;
-using CryptoPuzzles.Helpers;
+﻿using CryptoPuzzles.Helpers;
 using CryptoPuzzles.Services;
 using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.Shared;
@@ -38,7 +37,6 @@ namespace CryptoPuzzles.ViewModels
         private bool _hasHints;
         private string _userAnswer = string.Empty;
 
-        // Поля для сессии
         private int? _currentSessionId;
         private int _totalScore;
         private int _totalHintsUsed;
@@ -67,7 +65,6 @@ namespace CryptoPuzzles.ViewModels
             LoadDataAsync().SafeFireAndForget();
         }
 
-        // Свойства (без изменений, кроме добавленных)
         public ObservableCollection<ATutorial> Tutorials
         {
             get => _tutorials;
@@ -99,9 +96,7 @@ namespace CryptoPuzzles.ViewModels
             set
             {
                 if (SetProperty(ref _currentPuzzleIndex, value))
-                {
                     UpdatePuzzleDisplay();
-                }
             }
         }
 
@@ -213,7 +208,6 @@ namespace CryptoPuzzles.ViewModels
         public ICommand CheckAnswerCommand { get; }
         public ICommand GoBackCommand { get; }
 
-        // Обновление команд навигации
         private void UpdateNavigationCommands()
         {
             OnPropertyChanged(nameof(CanGoPrevious));
@@ -222,7 +216,6 @@ namespace CryptoPuzzles.ViewModels
             ((AsyncRelayCommand)NextTheoryCommand).RaiseCanExecuteChanged();
         }
 
-        // Загрузка данных
         private async Task LoadDataAsync()
         {
             try
@@ -239,14 +232,12 @@ namespace CryptoPuzzles.ViewModels
                     Tutorials = new ObservableCollection<ATutorial>(tutorials.OrderBy(t => t.SortOrder));
                     Puzzles = new ObservableCollection<APuzzle>(trainingPuzzles);
 
-                    // Создаем игровую сессию
                     await CreateSessionAsync();
 
                     if (Tutorials.Any())
                     {
                         IsTheoryMode = true;
                         CurrentTutorialIndex = 0;
-                        // Явно устанавливаем первый туториал
                         var firstTutorial = Tutorials[0];
                         TheoryTitle = firstTutorial.TheoryTitle ?? string.Empty;
                         TheoryContent = firstTutorial.TheoryContent ?? string.Empty;
@@ -258,9 +249,7 @@ namespace CryptoPuzzles.ViewModels
                         CurrentPuzzleIndex = 0;
                     }
                     else
-                    {
                         IsCompleted = true;
-                    }
 
                     UpdateNavigationCommands();
                 });
@@ -272,7 +261,6 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
-        // Создание сессии
         private async Task CreateSessionAsync()
         {
             try
@@ -293,7 +281,6 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
-        // ИСПРАВЛЕНО: Убрал newPuzzleId из параметров
         private async Task UpdateSessionAsync(int? newScore = null, int? newHintsUsed = null, bool? completed = null)
         {
             if (!_currentSessionId.HasValue) return;
@@ -310,7 +297,6 @@ namespace CryptoPuzzles.ViewModels
             catch { /* игнорируем ошибки обновления */ }
         }
 
-        // Обновление теории
         private void UpdateTheoryDisplay()
         {
             if (CurrentTutorialIndex >= 0 && CurrentTutorialIndex < Tutorials.Count)
@@ -329,38 +315,33 @@ namespace CryptoPuzzles.ViewModels
             await Task.CompletedTask;
         }
 
-        // ИСПРАВЛЕНО: Убрал newPuzzleId из вызова
         private async Task NextTheoryAsync()
         {
             if (CanGoNext)
-            {
                 CurrentTutorialIndex++;
-            }
             else if (CurrentTutorialIndex == Tutorials.Count - 1)
             {
-                // Завершили теорию, переходим к пазлам
                 IsTheoryMode = false;
                 if (Puzzles.Any())
                 {
                     IsPuzzleMode = true;
                     CurrentPuzzleIndex = 0;
-                    // Принудительно обновляем отображение
+
+                    UpdatePuzzleDisplay();
+
                     OnPropertyChanged(nameof(PuzzleTitle));
                     OnPropertyChanged(nameof(PuzzleContent));
-                    // Обновляем сессию: просто обновляем, без newPuzzleId
                     await UpdateSessionAsync();
                 }
                 else
                 {
                     IsCompleted = true;
-                    // Завершаем сессию, так как нет пазлов
                     await UpdateSessionAsync(completed: true);
                 }
             }
             await Task.CompletedTask;
         }
 
-        // Подсказки
         private async Task LoadHintsForPuzzleAsync(int puzzleId)
         {
             try
@@ -418,13 +399,11 @@ namespace CryptoPuzzles.ViewModels
             {
                 CurrentHintIndex++;
                 _totalHintsUsed++;
-                // Обновляем сессию
                 await UpdateSessionAsync(newHintsUsed: _totalHintsUsed);
             }
             await Task.CompletedTask;
         }
 
-        // ИСПРАВЛЕНО: Убрал newPuzzleId из вызова
         private async Task CheckAnswerAsync()
         {
             if (string.IsNullOrWhiteSpace(UserAnswer) || CurrentPuzzleIndex < 0 || CurrentPuzzleIndex >= Puzzles.Count)
@@ -438,15 +417,11 @@ namespace CryptoPuzzles.ViewModels
                 _totalScore += puzzle.MaxScore;
                 await DialogService.ShowMessage($"Правильно! +{puzzle.MaxScore} очков");
 
-                // Обновляем сессию: новый счет и, возможно, завершение
                 bool completed = false;
                 if (CurrentPuzzleIndex < Puzzles.Count - 1)
-                {
                     CurrentPuzzleIndex++;
-                }
                 else
                 {
-                    // Все пазлы решены
                     IsPuzzleMode = false;
                     IsCompleted = true;
                     completed = true;
@@ -455,9 +430,7 @@ namespace CryptoPuzzles.ViewModels
                 await UpdateSessionAsync(newScore: _totalScore, completed: completed);
             }
             else
-            {
                 await DialogService.ShowError("Неправильный ответ. Попробуйте ещё раз.");
-            }
         }
     }
 }

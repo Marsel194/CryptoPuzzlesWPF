@@ -92,9 +92,7 @@ namespace CryptoPuzzles.ViewModels
             {
                 var admin = await App.Services.GetRequiredService<AdminApiService>().GetByIdAsync(1); // TODO: заменить на ID текущего админа
                 if (admin != null)
-                {
                     Username = $"{admin.FirstName} {admin.LastName}";
-                }
             }
             catch { }
         }

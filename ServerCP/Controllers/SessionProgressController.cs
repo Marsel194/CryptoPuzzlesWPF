@@ -228,8 +228,8 @@ namespace CryptoPuzzles.Server.Controllers
                 progress.SessionId,
                 session.User.Login,
                 session.User.Username,
-                progress.PuzzleId,           // Исправлено: передаём PuzzleId
-                puzzle.Title,                // Исправлено: передаём Title
+                progress.PuzzleId,
+                puzzle.Title,
                 progress.PuzzleOrder,
                 progress.Solved,
                 progress.HintsUsed,
@@ -270,9 +270,7 @@ namespace CryptoPuzzles.Server.Controllers
 
                 var session = await _context.GameSessions.FindAsync(progress.SessionId);
                 if (session != null)
-                {
                     session.TotalScore += progress.ScoreEarned;
-                }
             }
 
             await _context.SaveChangesAsync();

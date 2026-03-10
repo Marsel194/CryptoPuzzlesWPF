@@ -72,7 +72,7 @@
                                        MaxLength="40"
                                        Style="{StaticResource MaterialDesignFloatingHintTextBox}">
                                     <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="KeyDown">
+                                        <i:EventTrigger EventName="PreviewKeyDown">
                                             <i:InvokeCommandAction Command="{Binding KeyDownCommand}"
                                                                   PassEventArgsToCommand="True"/>
                                         </i:EventTrigger>
@@ -120,7 +120,7 @@
                                             </Style>
                                         </PasswordBox.Style>
                                         <i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="KeyDown">
+                                            <i:EventTrigger EventName="PreviewKeyDown">
                                                 <i:InvokeCommandAction Command="{Binding KeyDownCommand}"
                                                                       PassEventArgsToCommand="True"/>
                                             </i:EventTrigger>
@@ -145,7 +145,7 @@
                                             </Style>
                                         </TextBox.Style>
                                         <i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="KeyDown">
+                                            <i:EventTrigger EventName="PreviewKeyDown">
                                                 <i:InvokeCommandAction Command="{Binding KeyDownCommand}"
                                                                       PassEventArgsToCommand="True"/>
                                             </i:EventTrigger>

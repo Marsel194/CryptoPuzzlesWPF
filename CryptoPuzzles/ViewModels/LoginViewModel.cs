@@ -2,6 +2,7 @@
 using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.ViewModels.Base;
 using Microsoft.Extensions.DependencyInjection;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -98,10 +99,8 @@ namespace CryptoPuzzles.ViewModels
         {
             if (IsBusy || e == null) return;
 
-            var element = e.OriginalSource as System.Windows.UIElement;
-            if (element == null) return;
+            if (e.OriginalSource is not System.Windows.UIElement element) return;
 
-            // Навигация по стрелкам вверх/вниз
             if (e.Key == Key.Down)
             {
                 var request = new TraversalRequest(FocusNavigationDirection.Next);
@@ -114,10 +113,8 @@ namespace CryptoPuzzles.ViewModels
                 element.MoveFocus(request);
                 e.Handled = true;
             }
-            // Enter - переход к следующему полю или вход
             else if (e.Key == Key.Enter)
             {
-                // Определяем тип элемента и его имя
                 string elementName = string.Empty;
                 if (element is TextBox textBox)
                     elementName = textBox.Name;
@@ -126,13 +123,11 @@ namespace CryptoPuzzles.ViewModels
 
                 if (elementName == "txtLogin")
                 {
-                    // С логина переходим на пароль
                     var request = new TraversalRequest(FocusNavigationDirection.Next);
                     element.MoveFocus(request);
                 }
                 else if (elementName == "txtPassword" || elementName == "txtPasswordVisible")
                 {
-                    // На поле пароля - делаем вход
                     await Task.Delay(50);
                     await OnLoginAsync();
                 }

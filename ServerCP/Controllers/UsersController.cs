@@ -48,7 +48,7 @@ namespace CryptoPuzzles.Server.Controllers
                 Login = dto.Login,
                 Username = dto.Username,
                 Email = dto.Email,
-                PasswordHash = Argon2PasswordActions.HashPassword(dto.Password), // используйте ваш метод хеширования
+                PasswordHash = Argon2PasswordActions.HashPassword(dto.Password),
                 CreatedAt = DateTime.UtcNow
             };
             _context.Users.Add(user);

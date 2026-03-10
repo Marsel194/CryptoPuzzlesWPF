@@ -4,9 +4,7 @@ using System.Net.Http;
 
 public class SessionProgressApiService : BaseEntityApiService<ASessionProgress, ASessionProgressCreate, ASessionProgressUpdate>
 {
-    public SessionProgressApiService(HttpClient httpClient) : base(httpClient, "api/sessionprogress")
-    {
-    }
+    public SessionProgressApiService(HttpClient httpClient) : base(httpClient, "api/sessionprogress") { }
 
     public async Task<List<ASessionProgress>> GetAllAsync(int? userId = null, int? sessionId = null, bool? solved = null)
     {
@@ -20,7 +18,7 @@ public class SessionProgressApiService : BaseEntityApiService<ASessionProgress, 
         if (solved.HasValue)
             parameters.Add($"solved={solved.Value}");
 
-        if (parameters.Any())
+        if (parameters.Count != 0)
             query += "?" + string.Join("&", parameters);
 
         return await SendAsync<List<ASessionProgress>>(() => _httpClient.GetAsync(query));

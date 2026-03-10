@@ -6,9 +6,7 @@ namespace CryptoPuzzles.Server.Repositories
 {
     public class UserRepository : Repository<User>, IUserRepository
     {
-        public UserRepository(AppDbContext context) : base(context)
-        {
-        }
+        public UserRepository(AppDbContext context) : base(context) { }
 
         public async Task<User?> GetByLoginAsync(string login)
         {

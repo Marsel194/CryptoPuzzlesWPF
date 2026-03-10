@@ -7,10 +7,7 @@ namespace CryptoPuzzles.ViewModels
 {
     public class UserStatisticsViewModel : EntityViewModelBase<AUserStatistic, object, object>
     {
-        public UserStatisticsViewModel(UserStatisticsApiService apiService) : base(apiService)
-        {
-            // Отключаем панель добавления и кнопку сохранения через свойства (будет установлено в View)
-        }
+        public UserStatisticsViewModel(UserStatisticsApiService apiService) : base(apiService) { }
 
         protected override AUserStatistic CreateNewItem() =>
             throw new NotSupportedException("Статистика только для чтения");

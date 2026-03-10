@@ -125,8 +125,8 @@ namespace CryptoPuzzles.Server.Controllers
                 session.SessionStart,
                 session.CompletedAt,
                 session.IsCompleted,
-                0, // PuzzlesCount
-                0, // SolvedCount
+                0,
+                0,
                 session.IsDeleted,
                 session.DeletedAt
             );
@@ -173,13 +173,11 @@ namespace CryptoPuzzles.Server.Controllers
         [HttpGet("{id}/progress")]
         public async Task<ActionResult<IEnumerable<ASessionProgress>>> GetSessionProgress(int id)
         {
-            // Сначала грузим прогресс
             var progress = await _context.SessionProgress
                 .Where(sp => sp.SessionId == id && !sp.IsDeleted)
                 .OrderBy(sp => sp.PuzzleOrder)
                 .ToListAsync();
 
-            // Потом грузим связанные данные отдельно
             foreach (var sp in progress)
             {
                 await _context.Entry(sp).Reference(x => x.Puzzle).LoadAsync();

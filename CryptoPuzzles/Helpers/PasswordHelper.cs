@@ -61,14 +61,10 @@ namespace CryptoPuzzles.Helpers
                 return;
 
             if ((bool)e.OldValue)
-            {
                 passwordBox.PasswordChanged -= PasswordBox_PasswordChanged;
-            }
 
             if ((bool)e.NewValue)
-            {
                 passwordBox.PasswordChanged += PasswordBox_PasswordChanged;
-            }
         }
 
         private static void OnPasswordPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
@@ -78,9 +74,7 @@ namespace CryptoPuzzles.Helpers
             passwordBox.PasswordChanged -= PasswordBox_PasswordChanged;
 
             if (!GetIsUpdating(passwordBox))
-            {
                 passwordBox.Password = (string)e.NewValue;
-            }
 
             passwordBox.PasswordChanged += PasswordBox_PasswordChanged;
         }

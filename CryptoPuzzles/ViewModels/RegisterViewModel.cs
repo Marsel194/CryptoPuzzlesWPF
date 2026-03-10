@@ -109,10 +109,8 @@ namespace CryptoPuzzles.ViewModels
         {
             if (IsBusy || e == null) return;
 
-            var element = e.OriginalSource as FrameworkElement;
-            if (element == null) return;
+            if (e.OriginalSource is not FrameworkElement element) return;
 
-            // Навигация по стрелкам вниз/вверх
             if (e.Key == Key.Down)
             {
                 var request = new TraversalRequest(FocusNavigationDirection.Next);
@@ -129,7 +127,6 @@ namespace CryptoPuzzles.ViewModels
             {
                 string elementName = GetElementName(element);
 
-                // Если это последнее поле - регистрируемся
                 if (elementName == "txtConfirmPassword" || elementName == "txtConfirmPasswordVisible")
                 {
                     await Task.Delay(50);
@@ -137,7 +134,6 @@ namespace CryptoPuzzles.ViewModels
                 }
                 else
                 {
-                    // Иначе переходим к следующему полю
                     var request = new TraversalRequest(FocusNavigationDirection.Next);
                     element.MoveFocus(request);
                 }
@@ -145,7 +141,7 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
-        private string GetElementName(FrameworkElement element)
+        private static string GetElementName(FrameworkElement element)
         {
             if (element is TextBox textBox)
                 return textBox.Name;
@@ -206,7 +202,6 @@ namespace CryptoPuzzles.ViewModels
         {
             if (IsBusy) return;
 
-            // Проверка заполнения всех полей
             if (string.IsNullOrWhiteSpace(Login) || string.IsNullOrWhiteSpace(Password) ||
                 string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email))
             {
@@ -214,7 +209,6 @@ namespace CryptoPuzzles.ViewModels
                 return;
             }
 
-            // Валидация email
             if (!IsValidEmail(Email))
             {
                 IsEmailWarningVisible = true;
@@ -222,7 +216,6 @@ namespace CryptoPuzzles.ViewModels
                 return;
             }
 
-            // Валидация длины пароля
             if (Password.Length < 8)
             {
                 IsPasswordWarningVisible = true;
@@ -230,7 +223,6 @@ namespace CryptoPuzzles.ViewModels
                 return;
             }
 
-            // Проверка совпадения паролей
             if (Password != ConfirmPassword)
             {
                 IsConfirmPasswordWarningVisible = true;

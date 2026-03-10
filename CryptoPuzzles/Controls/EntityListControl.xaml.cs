@@ -6,7 +6,6 @@ namespace CryptoPuzzles.Controls
 {
     public partial class EntityListControl : UserControl
     {
-        // Основные dependency-свойства
         public static readonly DependencyProperty TitleProperty =
             DependencyProperty.Register(nameof(Title), typeof(string), typeof(EntityListControl));
 
@@ -38,11 +37,9 @@ namespace CryptoPuzzles.Controls
         public static readonly DependencyProperty IsSaveButtonVisibleProperty =
             DependencyProperty.Register(nameof(IsSaveButtonVisible), typeof(bool), typeof(EntityListControl), new PropertyMetadata(true));
 
-        // Новое свойство для основного содержимого (DataGrid)
         public static readonly DependencyProperty MainContentProperty =
             DependencyProperty.Register(nameof(MainContent), typeof(object), typeof(EntityListControl), new PropertyMetadata(null));
 
-        // Присоединённое свойство для панели добавления
         public static readonly DependencyProperty AddPanelContentProperty =
             DependencyProperty.RegisterAttached(
                 "AddPanelContent",
@@ -50,7 +47,6 @@ namespace CryptoPuzzles.Controls
                 typeof(EntityListControl),
                 new PropertyMetadata(null, OnAddPanelContentChanged));
 
-        // CLR-обёртки
         public string Title
         {
             get => (string)GetValue(TitleProperty);
@@ -117,26 +113,23 @@ namespace CryptoPuzzles.Controls
             set => SetValue(MainContentProperty, value);
         }
 
-        // Методы доступа к присоединённому свойству
+        public EntityListControl()
+        {
+            InitializeComponent();
+        }
+
         public static object GetAddPanelContent(DependencyObject obj) => obj.GetValue(AddPanelContentProperty);
         public static void SetAddPanelContent(DependencyObject obj, object value) => obj.SetValue(AddPanelContentProperty, value);
 
         private static void OnAddPanelContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is EntityListControl control)
-            {
                 control.UpdateAddPanelContent(e.NewValue);
-            }
         }
 
         private void UpdateAddPanelContent(object content)
         {
             AddPanelContent.Content = content;
-        }
-
-        public EntityListControl()
-        {
-            InitializeComponent();
         }
     }
 }

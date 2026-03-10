@@ -7,9 +7,7 @@ namespace CryptoPuzzles.ViewModels
 {
     public class SessionProgressViewModel : EntityViewModelBase<ASessionProgress, ASessionProgressCreate, ASessionProgressUpdate>
     {
-        public SessionProgressViewModel(SessionProgressApiService apiService) : base(apiService)
-        {
-        }
+        public SessionProgressViewModel(SessionProgressApiService apiService) : base(apiService) { }
 
         protected override ASessionProgress CreateNewItem() => new()
         {

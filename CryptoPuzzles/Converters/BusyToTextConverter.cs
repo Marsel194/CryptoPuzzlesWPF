@@ -11,9 +11,7 @@ namespace CryptoPuzzles.Converters
             {
                 var parts = param.Split('|');
                 if (parts.Length == 2)
-                {
                     return (value is bool busy && busy) ? parts[1] : parts[0];
-                }
             }
             return value is bool b && b ? "Загрузка..." : "ВОЙТИ";
         }
