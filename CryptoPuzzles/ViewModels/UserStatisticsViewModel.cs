@@ -9,8 +9,7 @@ namespace CryptoPuzzles.ViewModels
     {
         public UserStatisticsViewModel(UserStatisticsApiService apiService) : base(apiService) { }
 
-        protected override AUserStatistic CreateNewItem() =>
-            throw new NotSupportedException("Статистика только для чтения");
+        protected override AUserStatistic CreateNewItem() => new();
 
         protected override object MapToCreateDto(AUserStatistic item) =>
             throw new NotSupportedException();

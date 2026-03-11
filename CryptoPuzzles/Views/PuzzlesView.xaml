@@ -16,7 +16,6 @@
         AddPanelTitle="Новая головоломка"
         IsSaveButtonVisible="True">
 
-        <!-- Панель добавления -->
         <controls:EntityListControl.AddPanelContent>
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -44,66 +43,66 @@
             </Grid>
         </controls:EntityListControl.AddPanelContent>
 
-        <!-- Основное содержимое (DataGrid) -->
         <controls:EntityListControl.MainContent>
-            <DataGrid ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
-                      AutoGenerateColumns="False" IsReadOnly="False" CanUserAddRows="False"
-                      materialDesign:DataGridAssist.CellPadding="13 8 8 8"
-                      materialDesign:DataGridAssist.ColumnHeaderPadding="8">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="50"/>
-                    <DataGridTextColumn Header="Название" Binding="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
-                    <DataGridTextColumn Header="Содержание" Binding="{Binding Content, UpdateSourceTrigger=PropertyChanged}" Width="200"/>
-                    <DataGridTextColumn Header="Ответ" Binding="{Binding Answer, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
-                    <DataGridTextColumn Header="Макс. балл" Binding="{Binding MaxScore, UpdateSourceTrigger=PropertyChanged}" Width="80"/>
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                <DataGrid ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
+                          AutoGenerateColumns="False" IsReadOnly="False" CanUserAddRows="False"
+                          materialDesign:DataGridAssist.CellPadding="13 8 8 8"
+                          materialDesign:DataGridAssist.ColumnHeaderPadding="8"
+                          HorizontalScrollBarVisibility="Disabled">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="SizeToHeader" MinWidth="50"/>
+                        <DataGridTextColumn Header="Название" Binding="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Width="*" MinWidth="150"/>
+                        <DataGridTextColumn Header="Содержание" Binding="{Binding Content, UpdateSourceTrigger=PropertyChanged}" Width="2*" MinWidth="200"/>
+                        <DataGridTextColumn Header="Ответ" Binding="{Binding Answer, UpdateSourceTrigger=PropertyChanged}" Width="SizeToHeader" MinWidth="100"/>
+                        <DataGridTextColumn Header="Макс. балл" Binding="{Binding MaxScore, UpdateSourceTrigger=PropertyChanged}" Width="SizeToHeader" MinWidth="100"/>
 
-                    <!-- Сложность -->
-                    <DataGridTemplateColumn Header="Сложность" Width="120">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding DifficultyName}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                        <DataGridTemplateColumn.CellEditingTemplate>
-                            <DataTemplate>
-                                <ComboBox ItemsSource="{Binding DataContext.Difficulties, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                          SelectedValuePath="Id" DisplayMemberPath="DifficultyName"
-                                          SelectedValue="{Binding DifficultyId, UpdateSourceTrigger=PropertyChanged}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellEditingTemplate>
-                    </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Сложность" Width="SizeToHeader" MinWidth="120">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding DifficultyName}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                            <DataGridTemplateColumn.CellEditingTemplate>
+                                <DataTemplate>
+                                    <ComboBox ItemsSource="{Binding DataContext.Difficulties, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                              SelectedValuePath="Id" DisplayMemberPath="DifficultyName"
+                                              SelectedValue="{Binding DifficultyId, UpdateSourceTrigger=PropertyChanged}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellEditingTemplate>
+                        </DataGridTemplateColumn>
 
-                    <!-- Метод -->
-                    <DataGridTemplateColumn Header="Метод" Width="120">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding MethodName}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                        <DataGridTemplateColumn.CellEditingTemplate>
-                            <DataTemplate>
-                                <ComboBox ItemsSource="{Binding DataContext.Methods, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                          SelectedValuePath="Id" DisplayMemberPath="Name"
-                                          SelectedValue="{Binding MethodId, UpdateSourceTrigger=PropertyChanged}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellEditingTemplate>
-                    </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Метод" Width="SizeToHeader" MinWidth="120">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding MethodName}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                            <DataGridTemplateColumn.CellEditingTemplate>
+                                <DataTemplate>
+                                    <ComboBox ItemsSource="{Binding DataContext.Methods, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                              SelectedValuePath="Id" DisplayMemberPath="Name"
+                                              SelectedValue="{Binding MethodId, UpdateSourceTrigger=PropertyChanged}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellEditingTemplate>
+                        </DataGridTemplateColumn>
 
-                    <DataGridCheckBoxColumn Header="Обучение" Binding="{Binding IsTraining}"/>
-                    <DataGridTextColumn Header="Порядок в обуч." Binding="{Binding TutorialOrder}"/>
+                        <DataGridCheckBoxColumn Header="Обучение" Binding="{Binding IsTraining}" Width="SizeToHeader" MinWidth="90"/>
+                        <DataGridTextColumn Header="Порядок в обуч." Binding="{Binding TutorialOrder}" Width="SizeToHeader" MinWidth="130"/>
 
-                    <DataGridTemplateColumn Header="Действия" Width="100">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
-                                        CommandParameter="{Binding Id}" Content="Удалить" 
-                                        Style="{StaticResource MaterialDesignFlatButton}" Foreground="Red" 
-                                        MinWidth="70" Padding="4,0"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
+                        <DataGridTemplateColumn Header="Действия" Width="SizeToHeader" MinWidth="110">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                            CommandParameter="{Binding Id}" Content="Удалить" 
+                                            Style="{StaticResource MaterialDesignFlatButton}" Foreground="Red" 
+                                            MinWidth="70" Padding="4,0"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </ScrollViewer>
         </controls:EntityListControl.MainContent>
     </controls:EntityListControl>
 </UserControl>

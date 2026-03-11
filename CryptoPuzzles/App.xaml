@@ -174,8 +174,6 @@
             <!-- Стиль карточки администратора с анимацией при наведении -->
             <Style x:Key="AdminCardStyle" TargetType="Border">
                 <Setter Property="Background" Value="{DynamicResource MaterialDesignPaper}"/>
-                <Setter Property="Width" Value="300"/>
-                <Setter Property="Height" Value="200"/>
                 <Setter Property="CornerRadius" Value="20"/>
                 <Setter Property="Margin" Value="12"/>
                 <Setter Property="Padding" Value="16"/>
@@ -235,6 +233,24 @@
                 <Setter Property="BorderThickness" Value="1"/>
                 <Setter Property="materialDesign:DataGridAssist.CornerRadius" Value="26"/>
                 <Setter Property="Margin" Value="0,8,0,0"/>
+            </Style>
+
+            <Style x:Key="CardIcon" TargetType="materialDesign:PackIcon">
+                <Setter Property="Width"          Value="32" />
+                <Setter Property="Height"         Value="32" />
+                <Setter Property="Margin"         Value="0 0 12 12" />
+                <Setter Property="Foreground"     Value="{DynamicResource PrimaryHueMidBrush}" />
+            </Style>
+
+            <Style x:Key="CardStatRow" TargetType="StackPanel">
+                <Setter Property="Orientation"    Value="Horizontal" />
+                <Setter Property="Margin"         Value="0 0 0 12" />
+            </Style>
+
+            <Style x:Key="CardStatValue" TargetType="TextBlock">
+                <Setter Property="HorizontalAlignment" Value="Right" />
+                <Setter Property="FontWeight"          Value="Bold" />
+                <Setter Property="Foreground"          Value="{DynamicResource PrimaryHueMidBrush}" />
             </Style>
         </ResourceDictionary>
     </Application.Resources>

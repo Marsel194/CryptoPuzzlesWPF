@@ -9,23 +9,7 @@ namespace CryptoPuzzles.ViewModels
     {
         public SessionsViewModel(GameSessionApiService apiService) : base(apiService) { }
 
-        protected override AGameSession CreateNewItem()
-        {
-            return new AGameSession
-            {
-                Id = 0,
-                UserId = 0,
-                UserLogin = "",
-                Username = "",
-                SessionType = "training",
-                TotalScore = 0,
-                SessionStart = DateTime.Now,
-                CompletedAt = null,
-                IsCompleted = false,
-                PuzzlesCount = 0,
-                SolvedCount = 0
-            };
-        }
+        protected override AGameSession CreateNewItem() => new();
 
         protected override AGameSessionCreate MapToCreateDto(AGameSession item)
         {
