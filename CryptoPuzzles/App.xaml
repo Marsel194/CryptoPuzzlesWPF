@@ -4,16 +4,15 @@
              xmlns:vm="clr-namespace:CryptoPuzzles.ViewModels"
              xmlns:v="clr-namespace:CryptoPuzzles.Views"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:converts="clr-namespace:CryptoPuzzles.Converters"
-             xmlns:controls="clr-namespace:CryptoPuzzles.Controls">
+             xmlns:converts="clr-namespace:CryptoPuzzles.Converters">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <materialDesign:BundledTheme 
-                    BaseTheme="Light"
-                    PrimaryColor="DeepPurple"
+                    BaseTheme="Light" 
+                    PrimaryColor="DeepPurple" 
                     SecondaryColor="Teal" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign2.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <!-- Кастомный конвертер с поддержкой параметра -->
@@ -44,7 +43,6 @@
             </DataTemplate>
 
             <!-- Для админки -->
-
             <DataTemplate DataType="{x:Type vm:AdminViewModel}">
                 <v:AdminView/>
             </DataTemplate>
@@ -88,11 +86,11 @@
             <DataTemplate DataType="{x:Type vm:SessionProgressViewModel}">
                 <v:SessionProgressView/>
             </DataTemplate>
-            
+
             <DataTemplate DataType="{x:Type vm:UserStatisticsViewModel}">
                 <v:UserStatisticsView/>
             </DataTemplate>
-            
+
             <Style x:Key="BackgroundCircle" TargetType="Ellipse">
                 <Setter Property="Fill" Value="{DynamicResource PrimaryHueLightBrush}"/>
                 <Setter Property="Opacity" Value="0.15"/>
@@ -104,7 +102,7 @@
                 <Setter Property="Height" Value="100"/>
                 <Setter Property="Background" Value="{DynamicResource PrimaryHueMidBrush}"/>
                 <Setter Property="CornerRadius" Value="50"/>
-                <Setter Property="BorderBrush" Value="White"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignBody}"/>
                 <Setter Property="BorderThickness" Value="3"/>
                 <Setter Property="HorizontalAlignment" Value="Center"/>
             </Style>
@@ -138,7 +136,7 @@
 
             <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
                 <Setter Property="Background" Value="{DynamicResource PrimaryHueMidBrush}"/>
-                <Setter Property="Foreground" Value="Black"/>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidForegroundBrush}"/>
                 <Setter Property="Height" Value="52"/>
                 <Setter Property="FontSize" Value="16"/>
                 <Setter Property="FontWeight" Value="Bold"/>
@@ -216,23 +214,13 @@
 
             <Style x:Key="AdminActionButton" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
                 <Setter Property="Background" Value="{DynamicResource PrimaryHueMidBrush}"/>
-                <Setter Property="Foreground" Value="Black"/>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidForegroundBrush}"/>
                 <Setter Property="Height" Value="44"/>
                 <Setter Property="FontSize" Value="14"/>
                 <Setter Property="FontWeight" Value="Bold"/>
                 <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="22"/>
                 <Setter Property="Padding" Value="8,0"/>
                 <Setter Property="Cursor" Value="Hand"/>
-            </Style>
-
-            <Style TargetType="DataGrid" BasedOn="{StaticResource MaterialDesignDataGrid}">
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="RowBackground" Value="{DynamicResource MaterialDesignCardBackground}"/>
-                <Setter Property="AlternatingRowBackground" Value="{DynamicResource MaterialDesignPaper}"/>
-                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="materialDesign:DataGridAssist.CornerRadius" Value="26"/>
-                <Setter Property="Margin" Value="0,8,0,0"/>
             </Style>
 
             <Style x:Key="CardIcon" TargetType="materialDesign:PackIcon">
@@ -251,6 +239,63 @@
                 <Setter Property="HorizontalAlignment" Value="Right" />
                 <Setter Property="FontWeight"          Value="Bold" />
                 <Setter Property="Foreground"          Value="{DynamicResource PrimaryHueMidBrush}" />
+            </Style>
+
+            <!-- Исправленный стиль DataGrid для темной темы -->
+            <Style TargetType="DataGrid" BasedOn="{StaticResource MaterialDesignDataGrid}">
+                <Setter Property="Background" Value="{DynamicResource MaterialDesignPaper}"/>
+                <Setter Property="RowBackground" Value="{DynamicResource MaterialDesignPaper}"/>
+                <Setter Property="AlternatingRowBackground" Value="{DynamicResource MaterialDesignCardBackground}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="materialDesign:DataGridAssist.CornerRadius" Value="26"/>
+                <Setter Property="Margin" Value="0,8,0,0"/>
+                <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+                <Setter Property="GridLinesVisibility" Value="None"/>
+                <Style.Resources>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                        <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidForegroundBrush}"/>
+                        <Setter Property="FontWeight" Value="Bold"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignDivider}"/>
+                        <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                    </Style>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignDivider}"/>
+                        <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="Padding" Value="8"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource PrimaryHueLightBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidForegroundBrush}"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="Background" Value="{DynamicResource MaterialDesignPaper}"/>
+                        <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignDivider}"/>
+                        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                        <Style.Triggers>
+                            <Trigger Property="AlternationIndex" Value="1">
+                                <Setter Property="Background" Value="{DynamicResource MaterialDesignCardBackground}"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource PrimaryHueLightBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidForegroundBrush}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Style.Resources>
             </Style>
         </ResourceDictionary>
     </Application.Resources>

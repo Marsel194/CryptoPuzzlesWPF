@@ -69,6 +69,8 @@ namespace CryptoPuzzles
 
             var mainVM = Services.GetRequiredService<MainViewModel>();
 
+            ThemeHelper.ApplyTheme();
+
             var mainWindow = new MainWindow
             {
                 DataContext = mainVM

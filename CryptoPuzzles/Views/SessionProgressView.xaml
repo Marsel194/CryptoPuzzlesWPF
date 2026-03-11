@@ -60,7 +60,8 @@
                             <DataTemplate>
                                 <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
                                         CommandParameter="{Binding Id}" Content="Удалить" 
-                                        Style="{StaticResource MaterialDesignFlatButton}" Foreground="Red" 
+                                        Style="{StaticResource MaterialDesignFlatButton}" 
+                                        Foreground="{DynamicResource MaterialDesignValidationErrorBrush}" 
                                         MinWidth="70" Padding="4,0"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>

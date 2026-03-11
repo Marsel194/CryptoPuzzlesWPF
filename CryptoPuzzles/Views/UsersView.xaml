@@ -105,7 +105,7 @@
                                         CommandParameter="{Binding Id}" 
                                         Content="Удалить" 
                                         Style="{StaticResource MaterialDesignFlatButton}" 
-                                        Foreground="Red" 
+                                        Foreground="{DynamicResource MaterialDesignValidationErrorBrush}" 
                                         MinWidth="70" 
                                         Padding="4,0"/>
                             </DataTemplate>
