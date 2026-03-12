@@ -55,17 +55,6 @@
                     <DataGridTextColumn Header="Начало" Binding="{Binding StartedAt, StringFormat='dd.MM.yyyy HH:mm'}" Width="130"/>
                     <DataGridTextColumn Header="Решено" Binding="{Binding SolvedAt, StringFormat='dd.MM.yyyy HH:mm'}" Width="130"/>
                     <DataGridTextColumn Header="Время решения" Binding="{Binding TimeToSolve, StringFormat='hh\\:mm\\:ss'}" Width="100"/>
-                    <DataGridTemplateColumn Header="Действия" Width="100">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
-                                        CommandParameter="{Binding Id}" Content="Удалить" 
-                                        Style="{StaticResource MaterialDesignFlatButton}" 
-                                        Foreground="{DynamicResource MaterialDesignValidationErrorBrush}" 
-                                        MinWidth="70" Padding="4,0"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </controls:EntityListControl.MainContent>

@@ -26,7 +26,6 @@ namespace CryptoPuzzles.ViewModels
         private bool _isLoading;
         private AUser? _currentUser;
 
-        // Свойство для получения ID текущего пользователя из сессии
         private int CurrentUserId => _userSessionService.CurrentUserId ??
             throw new InvalidOperationException("Пользователь не авторизован");
 
@@ -93,14 +92,13 @@ namespace CryptoPuzzles.ViewModels
             _navigationService = App.Services.GetRequiredService<NavigationService>();
 
             LogoutCommand = new AsyncRelayCommand(LogoutAsync);
-            ToggleThemeCommand = new AsyncRelayCommand(async _ => await ThemeHelper.ToggleTheme());
+            ToggleThemeCommand = new AsyncRelayCommand(_ => ThemeHelper.ToggleTheme());
             OpenProfileCommand = new AsyncRelayCommand(OpenProfileAsync);
             StartTrainingCommand = new AsyncRelayCommand(StartTrainingAsync);
             StartPracticeCommand = new AsyncRelayCommand(StartPracticeAsync);
             GoBackCommand = new AsyncRelayCommand(GoBackAsync);
             RefreshStatsCommand = new AsyncRelayCommand(LoadUserStatsAsync);
 
-            // Загружаем данные при инициализации
             _ = LoadUserDataAsync();
         }
 
@@ -110,14 +108,12 @@ namespace CryptoPuzzles.ViewModels
             {
                 IsLoading = true;
 
-                // Проверяем авторизацию
                 if (!_userSessionService.IsAuthenticated)
                 {
                     await _navigationService.NavigateToAsync<LoginViewModel>();
                     return;
                 }
 
-                // Загружаем данные пользователя и статистику параллельно
                 var userTask = _userApiService.GetByIdAsync(CurrentUserId);
                 var statsTask = LoadUserStatsAsync();
 
@@ -134,7 +130,6 @@ namespace CryptoPuzzles.ViewModels
                 Debug.WriteLine($"[UserViewModel] Error loading data: {ex.Message}");
                 await DialogService.ShowError($"Ошибка загрузки данных: {ex.Message}");
 
-                // Если ошибка авторизации - выходим
                 if (ex.Message.Contains("авторизован") || ex.Message.Contains("Unauthorized"))
                 {
                     await LogoutAsync();
@@ -146,37 +141,24 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
-        private async Task LoadUserStatsAsync()
+        private async Task LoadUserStatsAsync(object? parameter = null)
         {
             try
             {
-                // Получаем статистику пользователя
                 var userStats = await _userStatisticsApiService.GetByUserIdAsync(CurrentUserId);
                 if (userStats != null)
                 {
                     Score = userStats.TotalScore;
-                    // Если в AUserStatistic есть поле SolvedPuzzlesCount, используем его
-                    // SolvedCount = userStats.SolvedPuzzlesCount;
                 }
 
-                // Считаем решенные задачи через SessionProgressApiService
                 var solvedProgress = await _sessionProgressApiService.GetAllAsync(
                     userId: CurrentUserId,
                     solved: true
                 );
 
-                // Убираем дубликаты (если одна задача решена несколько раз)
                 SolvedCount = solvedProgress
                     .GroupBy(p => p.PuzzleId)
                     .Count();
-
-                // Получаем активные сессии пользователя
-                var allSessions = await _sessionApiService.GetAllAsync();
-                var userActiveSessions = allSessions.Count(s =>
-                    s.UserId == CurrentUserId && s.CompletedAt == null);
-
-                // Можно добавить свойство для отображения активных сессий
-                // ActiveSessions = userActiveSessions;
             }
             catch (Exception ex)
             {
@@ -185,7 +167,7 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
-        private async Task LogoutAsync()
+        private async Task LogoutAsync(object? parameter = null)
         {
             try
             {
@@ -199,7 +181,7 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
-        private async Task OpenProfileAsync()
+        private async Task OpenProfileAsync(object? parameter = null)
         {
             try
             {
@@ -212,11 +194,12 @@ namespace CryptoPuzzles.ViewModels
 
                 var profileVM = ActivatorUtilities.CreateInstance<UserProfileViewModel>(
                     _serviceProvider,
-                    CurrentUser,
+                    CurrentUserId,
                     (Action)(() => CurrentSection = null)
                 );
 
                 CurrentSection = profileVM;
+                await profileVM.LoadDataAsync();
             }
             catch (Exception ex)
             {
@@ -224,13 +207,13 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
-        private Task GoBackAsync()
+        private Task GoBackAsync(object? parameter = null)
         {
             CurrentSection = null;
             return Task.CompletedTask;
         }
 
-        private async Task StartTrainingAsync()
+        private async Task StartTrainingAsync(object? parameter = null)
         {
             try
             {
@@ -240,7 +223,6 @@ namespace CryptoPuzzles.ViewModels
                     (Action)(async () =>
                     {
                         CurrentSection = null;
-                        // Обновляем статистику после завершения тренировки
                         await LoadUserStatsAsync();
                     })
                 );
@@ -252,7 +234,7 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
-        private async Task StartPracticeAsync()
+        private async Task StartPracticeAsync(object? parameter = null)
         {
             try
             {
@@ -262,7 +244,6 @@ namespace CryptoPuzzles.ViewModels
                     (Action)(async () =>
                     {
                         CurrentSection = null;
-                        // Обновляем статистику после завершения практики
                         await LoadUserStatsAsync();
                     })
                 );

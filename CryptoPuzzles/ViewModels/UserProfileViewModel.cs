@@ -15,16 +15,15 @@ namespace CryptoPuzzles.ViewModels
         private readonly SessionProgressApiService _sessionProgressApi;
         private readonly Action _goBack;
         private readonly int _userId;
+        private readonly AsyncRelayCommand _saveCommand;
 
         private string _login = string.Empty;
         private string _email = string.Empty;
         private string _username = string.Empty;
         private string _newPassword = string.Empty;
         private string _confirmPassword = string.Empty;
-
         private int _trainingProgress;
         private int _practiceProgress;
-
         private bool _isEditMode;
 
         public UserProfileViewModel(
@@ -40,12 +39,11 @@ namespace CryptoPuzzles.ViewModels
             _userId = userId;
             _goBack = goBack;
 
-            CloseCommand = new AsyncRelayCommand(async _ => { _goBack(); await Task.CompletedTask; });
-            EditCommand = new AsyncRelayCommand(_ => { IsEditMode = true; return Task.CompletedTask; });
-            CancelCommand = new AsyncRelayCommand(_ => { CancelEdit(); return Task.CompletedTask; });
-            SaveCommand = new AsyncRelayCommand(async _ => await SaveAsync(), _ => CanSave());
-
-            LoadUserDataAsync().SafeFireAndForget();
+            CloseCommand = new AsyncRelayCommand(CloseAsync);
+            EditCommand = new AsyncRelayCommand(EditAsync);
+            CancelCommand = new AsyncRelayCommand(CancelAsync);
+            _saveCommand = new AsyncRelayCommand(SaveAsync, _ => CanSave());
+            SaveCommand = _saveCommand;
         }
 
         public string Login
@@ -72,7 +70,7 @@ namespace CryptoPuzzles.ViewModels
             set
             {
                 if (SetProperty(ref _newPassword, value))
-                    ((AsyncRelayCommand)SaveCommand).RaiseCanExecuteChanged();
+                    _saveCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -82,7 +80,7 @@ namespace CryptoPuzzles.ViewModels
             set
             {
                 if (SetProperty(ref _confirmPassword, value))
-                    ((AsyncRelayCommand)SaveCommand).RaiseCanExecuteChanged();
+                    _saveCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -109,7 +107,7 @@ namespace CryptoPuzzles.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
 
-        private async Task LoadUserDataAsync()
+        public async Task LoadDataAsync()
         {
             try
             {
@@ -146,15 +144,28 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
-        private void CancelEdit()
+        private Task CloseAsync(object? parameter = null)
+        {
+            _goBack?.Invoke();
+            return Task.CompletedTask;
+        }
+
+        private Task EditAsync(object? parameter = null)
+        {
+            IsEditMode = true;
+            return Task.CompletedTask;
+        }
+
+        private Task CancelAsync(object? parameter = null)
         {
             IsEditMode = false;
             NewPassword = string.Empty;
             ConfirmPassword = string.Empty;
-            _ = LoadUserDataAsync();
+            _ = LoadDataAsync();
+            return Task.CompletedTask;
         }
 
-        private bool CanSave()
+        private bool CanSave(object? parameter = null)
         {
             if (!IsEditMode) return false;
             if (string.IsNullOrWhiteSpace(NewPassword) && string.IsNullOrWhiteSpace(ConfirmPassword))
@@ -162,7 +173,7 @@ namespace CryptoPuzzles.ViewModels
             return NewPassword == ConfirmPassword && !string.IsNullOrWhiteSpace(NewPassword);
         }
 
-        private async Task SaveAsync()
+        private async Task SaveAsync(object? parameter = null)
         {
             try
             {

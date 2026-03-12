@@ -22,7 +22,6 @@ namespace CryptoPuzzles
                 Timeout = TimeSpan.FromSeconds(20)
             };
 
-            services.AddSingleton<DialogService>();
             services.AddSingleton<NavigationService>();
             services.AddSingleton<AdminStatsService>();
             services.AddSingleton<UserSessionService>();
@@ -60,7 +59,7 @@ namespace CryptoPuzzles
             services.AddSingleton(httpClient);
             services.AddSingleton<AdminApiService>();
             services.AddSingleton<AuthApiService>();
-
+            services.AddSingleton<IAuthService, AuthService>();
             Services = services.BuildServiceProvider();
         }
 

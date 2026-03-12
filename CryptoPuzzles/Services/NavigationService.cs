@@ -21,10 +21,8 @@ namespace CryptoPuzzles.Services
             }
             catch (Exception ex)
             {
-                await DialogService.ShowError($"Общая ошибка навигации: {ex.Message}");
-                throw;
+                await DialogService.ShowError($"Ошибка навигации: {ex.Message}");
             }
-            await Task.CompletedTask;
         }
     }
 }

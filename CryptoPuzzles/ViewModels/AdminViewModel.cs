@@ -3,6 +3,7 @@ using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.ViewModels.Base;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows.Input;
 
 namespace CryptoPuzzles.ViewModels
@@ -11,6 +12,8 @@ namespace CryptoPuzzles.ViewModels
     {
         private readonly NavigationService _navigationService;
         private readonly AdminStatsService _statsService;
+        private readonly IAuthService _authService;
+        private readonly AdminApiService _adminApiService;
 
         private int _totalUsers;
         private int _newUsersToday;
@@ -26,7 +29,7 @@ namespace CryptoPuzzles.ViewModels
         private int _totalSolved;
         private int _solvedToday;
         private int _totalDifficulties;
-        private ObservableCollection<RecentAction> _recentActions = new();
+        private bool _isInitialized;
 
         private ViewModelBase? _currentSection;
         public ViewModelBase? CurrentSection
@@ -63,6 +66,8 @@ namespace CryptoPuzzles.ViewModels
         {
             _statsService = App.Services.GetRequiredService<AdminStatsService>();
             _navigationService = App.Services.GetRequiredService<NavigationService>();
+            _authService = App.Services.GetRequiredService<IAuthService>();
+            _adminApiService = App.Services.GetRequiredService<AdminApiService>();
 
             NavigateToUsersCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<UsersViewModel>());
             NavigateToAdminsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<AdminsViewModel>());
@@ -77,32 +82,66 @@ namespace CryptoPuzzles.ViewModels
             NavigateToUserStatisticsCommand = new AsyncRelayCommand(async () => await _navigationService.NavigateToAsync<UserStatisticsViewModel>());
 
             ToggleThemeCommand = new AsyncRelayCommand(async _ => await ThemeHelper.ToggleTheme());
-            LogoutCommand = new AsyncRelayCommand(async _ => await _navigationService.NavigateToAsync<LoginViewModel>());
+            LogoutCommand = new AsyncRelayCommand(LogoutAsync);
             LoadStatsCommand = new AsyncRelayCommand(async _ => await LoadStatsAsync());
             OpenProfileCommand = new AsyncRelayCommand(OpenProfileAsync);
             GoBackCommand = new AsyncRelayCommand(_ => { CurrentSection = null; return Task.CompletedTask; });
 
-            _ = LoadStatsAsync();
-            _ = LoadAdminDataAsync();
+            // Загружаем данные при создании ViewModel
+            _ = InitializeAsync();
+        }
+
+        private async Task InitializeAsync()
+        {
+            if (_isInitialized) return;
+
+            try
+            {
+                await Task.WhenAll(
+                    LoadAdminDataAsync(),
+                    LoadStatsAsync()
+                );
+            }
+            catch (Exception ex)
+            {
+                await DialogService.ShowError($"Ошибка при загрузке данных: {ex.Message}");
+            }
+            finally
+            {
+                _isInitialized = true;
+            }
         }
 
         private async Task LoadAdminDataAsync()
         {
             try
             {
-                var admin = await App.Services.GetRequiredService<AdminApiService>().GetByIdAsync(1); // TODO: заменить на ID текущего админа
-                if (admin != null)
-                    Username = $"{admin.FirstName} {admin.LastName}";
+                var admin = _authService.CurrentAdmin;
+                if (admin == null)
+                {
+                    // Если в сессии нет админа, пробуем загрузить по ID из токена
+                    // Здесь должна быть логика получения ID из токена
+                    return;
+                }
+
+                Username = $"{admin.FirstName} {admin.LastName}";
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[AdminViewModel] Error loading admin data: {ex.Message}");
+            }
         }
 
         private async Task OpenProfileAsync()
         {
             try
             {
-                var admin = await App.Services.GetRequiredService<AdminApiService>().GetByIdAsync(1); // TODO: заменить на ID текущего админа
-                if (admin == null) return;
+                var admin = _authService.CurrentAdmin;
+                if (admin == null)
+                {
+                    await DialogService.ShowError("Не удалось загрузить данные профиля");
+                    return;
+                }
 
                 var profileVM = ActivatorUtilities.CreateInstance<AdminProfileViewModel>(
                     App.Services,
@@ -114,6 +153,19 @@ namespace CryptoPuzzles.ViewModels
             catch (Exception ex)
             {
                 await DialogService.ShowError($"Ошибка загрузки профиля: {ex.Message}");
+            }
+        }
+
+        private async Task LogoutAsync()
+        {
+            try
+            {
+                _authService.Clear();
+                await _navigationService.NavigateToAsync<LoginViewModel>();
+            }
+            catch (Exception ex)
+            {
+                await DialogService.ShowError($"Ошибка при выходе: {ex.Message}");
             }
         }
 
@@ -131,12 +183,6 @@ namespace CryptoPuzzles.ViewModels
         public int TotalSolved { get => _totalSolved; set => SetProperty(ref _totalSolved, value); }
         public int SolvedToday { get => _solvedToday; set => SetProperty(ref _solvedToday, value); }
         public int TotalDifficulties { get => _totalDifficulties; set => SetProperty(ref _totalDifficulties, value); }
-
-        public ObservableCollection<RecentAction> RecentActions
-        {
-            get => _recentActions;
-            set => SetProperty(ref _recentActions, value);
-        }
 
         private async Task LoadStatsAsync()
         {

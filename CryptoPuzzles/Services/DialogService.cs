@@ -3,21 +3,24 @@ using System.Windows;
 
 namespace CryptoPuzzles.Services
 {
-    public class DialogService
+    public static class DialogService
     {
-        public static async Task ShowMessage(string message)
+        public static Task ShowMessage(string message)
         {
             MessageBox.Show(message, "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+            return Task.CompletedTask;
         }
 
-        public static async Task ShowWarning(string message)
+        public static Task ShowWarning(string message)
         {
             MessageBox.Show(message, "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return Task.CompletedTask;
         }
 
-        public static async Task ShowError(string message)
+        public static Task ShowError(string message)
         {
             MessageBox.Show(message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return Task.CompletedTask;
         }
 
         public static async Task<bool> ShowConfirmation(string message)

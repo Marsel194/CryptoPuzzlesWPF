@@ -12,6 +12,7 @@ namespace CryptoPuzzles.ViewModels
         private readonly AdminApiService _adminApiService;
         private readonly Action _closeAction;
         private readonly int _adminId;
+        private readonly AsyncRelayCommand _saveCommand;
 
         private string _login = string.Empty;
         private string _firstName = string.Empty;
@@ -53,13 +54,21 @@ namespace CryptoPuzzles.ViewModels
         public string NewPassword
         {
             get => _newPassword;
-            set => SetProperty(ref _newPassword, value);
+            set
+            {
+                if (SetProperty(ref _newPassword, value))
+                    _saveCommand.RaiseCanExecuteChanged();
+            }
         }
 
         public string ConfirmPassword
         {
             get => _confirmPassword;
-            set => SetProperty(ref _confirmPassword, value);
+            set
+            {
+                if (SetProperty(ref _confirmPassword, value))
+                    _saveCommand.RaiseCanExecuteChanged();
+            }
         }
 
         public bool IsEditMode
@@ -67,11 +76,8 @@ namespace CryptoPuzzles.ViewModels
             get => _isEditMode;
             set
             {
-                if (_isEditMode != value)
+                if (SetProperty(ref _isEditMode, value))
                 {
-                    _isEditMode = value;
-                    OnPropertyChanged();
-                    CommandManager.InvalidateRequerySuggested();
                     Debug.WriteLine($"[AdminProfile] IsEditMode changed to: {value}");
                 }
             }
@@ -88,11 +94,14 @@ namespace CryptoPuzzles.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
 
-        public AdminProfileViewModel(AdminApiService adminApiService, AAdmin admin, Action closeAction)
+        public AdminProfileViewModel(
+            AdminApiService adminApiService,
+            AAdmin admin,
+            Action closeAction)
         {
-            _adminApiService = adminApiService;
-            _closeAction = closeAction;
-            _adminId = admin.Id;
+            _adminApiService = adminApiService ?? throw new ArgumentNullException(nameof(adminApiService));
+            _closeAction = closeAction ?? throw new ArgumentNullException(nameof(closeAction));
+            _adminId = admin?.Id ?? throw new ArgumentNullException(nameof(admin));
 
             Login = admin.Login;
             FirstName = admin.FirstName;
@@ -104,18 +113,36 @@ namespace CryptoPuzzles.ViewModels
             _originalMiddleName = admin.MiddleName ?? string.Empty;
 
             CloseCommand = new AsyncRelayCommand(CloseAsync);
-            EditCommand = new AsyncRelayCommand(EditAsync, () => !IsLoading && !IsEditMode);
-            SaveCommand = new AsyncRelayCommand(SaveAsync, () => !IsLoading && IsEditMode);
-            CancelCommand = new AsyncRelayCommand(CancelAsync, () => !IsLoading && IsEditMode);
+            EditCommand = new AsyncRelayCommand(EditAsync, _ => !IsLoading && !IsEditMode);
+            _saveCommand = new AsyncRelayCommand(SaveAsync, _ => !IsLoading && IsEditMode && CanSave());
+            SaveCommand = _saveCommand;
+            CancelCommand = new AsyncRelayCommand(CancelAsync, _ => !IsLoading && IsEditMode);
         }
 
-        private Task CloseAsync()
+        private bool CanSave()
+        {
+            if (string.IsNullOrWhiteSpace(FirstName) || string.IsNullOrWhiteSpace(LastName))
+                return false;
+
+            bool changePassword = !string.IsNullOrWhiteSpace(NewPassword);
+            if (changePassword)
+            {
+                if (NewPassword != ConfirmPassword)
+                    return false;
+                if (NewPassword.Length < 6)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private Task CloseAsync(object? parameter = null)
         {
             _closeAction?.Invoke();
             return Task.CompletedTask;
         }
 
-        private Task EditAsync()
+        private Task EditAsync(object? parameter = null)
         {
             _originalFirstName = FirstName;
             _originalLastName = LastName;
@@ -129,7 +156,7 @@ namespace CryptoPuzzles.ViewModels
             return Task.CompletedTask;
         }
 
-        private async Task SaveAsync()
+        private async Task SaveAsync(object? parameter = null)
         {
             if (string.IsNullOrWhiteSpace(FirstName))
             {
@@ -179,6 +206,7 @@ namespace CryptoPuzzles.ViewModels
 
                 NewPassword = string.Empty;
                 ConfirmPassword = string.Empty;
+
                 IsEditMode = false;
 
                 await DialogService.ShowMessage("Данные успешно сохранены.");
@@ -194,7 +222,7 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
-        private Task CancelAsync()
+        private Task CancelAsync(object? parameter = null)
         {
             FirstName = _originalFirstName;
             LastName = _originalLastName;

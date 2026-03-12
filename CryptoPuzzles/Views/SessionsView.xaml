@@ -29,17 +29,6 @@
                     <DataGridCheckBoxColumn Header="Завершена" Binding="{Binding IsCompleted}"/>
                     <DataGridTextColumn Header="Головоломок" Binding="{Binding PuzzlesCount}" Width="80"/>
                     <DataGridTextColumn Header="Решено" Binding="{Binding SolvedCount}" Width="80"/>
-                    <DataGridTemplateColumn Header="Действия" Width="100">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
-                                        CommandParameter="{Binding Id}" Content="Удалить" 
-                                        Style="{StaticResource MaterialDesignFlatButton}" 
-                                        Foreground="{DynamicResource MaterialDesignValidationErrorBrush}" 
-                                        MinWidth="70" Padding="4,0"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </controls:EntityListControl.MainContent>
