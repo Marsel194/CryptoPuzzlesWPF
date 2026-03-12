@@ -32,7 +32,7 @@
 
             <TextBlock Grid.Column="1" Text="Практика"
                    FontSize="28" FontWeight="Bold"
-                   Foreground="{DynamicResource SecondaryHueMidBrush}"
+                   Foreground="{DynamicResource MaterialDesignBody}"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"/>
         </Grid>
@@ -45,7 +45,7 @@
                 <StackPanel Visibility="{Binding IsSelectingDifficulty, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="Выберите сложность"
                                FontSize="22" FontWeight="SemiBold"
-                               Foreground="{DynamicResource SecondaryHueMidBrush}"
+                               Foreground="{DynamicResource MaterialDesignBody}"
                                HorizontalAlignment="Center"
                                Margin="0,0,0,24"/>
 
@@ -71,7 +71,7 @@
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
                                         <materialDesign:PackIcon Grid.Column="0" Kind="Star" Width="24" Height="24"
-                                                               Foreground="{DynamicResource SecondaryHueMidBrush}"/>
+                                                               Foreground="{DynamicResource MaterialDesignBody}"/>
                                         <TextBlock Grid.Column="1" Text="{Binding DifficultyName}"
                                                    FontSize="18" FontWeight="SemiBold"
                                                    Foreground="{DynamicResource MaterialDesignBody}"
@@ -94,22 +94,22 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <materialDesign:PackIcon Grid.Column="0" Kind="Timer" Width="24" Height="24"
-                                               Foreground="{DynamicResource SecondaryHueMidBrush}"/>
+                                               Foreground="{DynamicResource MaterialDesignBody}"/>
                         <TextBlock Grid.Column="1" Text="{Binding ElapsedTime}"
                                    FontSize="18" FontWeight="Bold"
-                                   Foreground="{DynamicResource SecondaryHueMidBrush}"
+                                   Foreground="{DynamicResource MaterialDesignBody}"
                                    Margin="8,0,0,0"/>
                     </Grid>
 
                     <TextBlock Text="{Binding CurrentPuzzle.Title, FallbackValue='Загрузка...'}"
                        FontSize="22" FontWeight="SemiBold"
-                       Foreground="{DynamicResource PrimaryHueMidBrush}"
+                       Foreground="{DynamicResource MaterialDesignBody}"
                        Margin="0,0,0,16"/>
                     <TextBlock Text="{Binding CurrentPuzzle.Content, FallbackValue='Загрузка...'}"
                        FontSize="16"
                        Foreground="{DynamicResource MaterialDesignBody}"
                        TextWrapping="Wrap"
-                       Background="{DynamicResource MaterialDesignPaper}"
+                       Background="{DynamicResource MaterialDesignBody}"
                        Margin="0,0,0,24"/>
 
                     <!-- Подсказки -->
@@ -153,12 +153,12 @@
                                Margin="0,16,0,8"/>
                     <TextBlock Text="{Binding EarnedScore, StringFormat='Начислено очков: {0}'}"
                                FontSize="16"
-                               Foreground="{DynamicResource MaterialDesignBodyLight}"
+                               Foreground="{DynamicResource MaterialDesignBody}"
                                HorizontalAlignment="Center"
                                Margin="0,0,0,4"/>
                     <TextBlock Text="{Binding ElapsedTime, StringFormat='Время решения: {0}'}"
                                FontSize="16"
-                               Foreground="{DynamicResource MaterialDesignBodyLight}"
+                               Foreground="{DynamicResource MaterialDesignBody}"
                                HorizontalAlignment="Center"
                                Margin="0,0,0,24"/>
 
@@ -176,7 +176,7 @@
                         <Button Grid.Column="1" Command="{Binding FinishModuleCommand}"
                                 Content="Завершить"
                                 Style="{StaticResource MaterialDesignFlatButton}"
-                                Foreground="{DynamicResource SecondaryHueMidBrush}"
+                                Foreground="{DynamicResource MaterialDesignBody}"
                                 BorderBrush="{DynamicResource SecondaryHueMidBrush}"
                                 BorderThickness="1"
                                 materialDesign:ButtonAssist.CornerRadius="26"/>
@@ -190,17 +190,17 @@
                                            Foreground="Gold" HorizontalAlignment="Center"/>
                     <TextBlock Text="Поздравляем!" 
                                FontSize="28" FontWeight="Bold"
-                               Foreground="{DynamicResource SecondaryHueMidBrush}"
+                               Foreground="{DynamicResource MaterialDesignBody}"
                                HorizontalAlignment="Center"
                                Margin="0,24,0,12"/>
                     <TextBlock Text="Вы прошли модуль"
                                FontSize="18"
-                               Foreground="{DynamicResource MaterialDesignBodyLight}"
+                               Foreground="{DynamicResource MaterialDesignBody}"
                                HorizontalAlignment="Center"
                                Margin="0,0,0,32"/>
                     <TextBlock Text="{Binding CompletionMessage}" 
                                FontSize="16"
-                               Foreground="{DynamicResource MaterialDesignBodyLight}"
+                               Foreground="{DynamicResource MaterialDesignBody}"
                                HorizontalAlignment="Center"
                                Margin="0,0,0,32"/>
                     <Button Command="{Binding GoBackCommand}"

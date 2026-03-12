@@ -55,8 +55,8 @@
 
         <!-- Основное содержимое (DataGrid) -->
         <controls:EntityListControl.MainContent>
-            <DataGrid ItemsSource="{Binding ItemsView}" 
-                      SelectedItem="{Binding SelectedItem}" 
+            <DataGrid ItemsSource="{Binding ItemsView}"
+                      SelectedItem="{Binding SelectedItem}"
                       AutoGenerateColumns="False" 
                       IsReadOnly="False" 
                       CanUserAddRows="False"
@@ -64,49 +64,49 @@
                       materialDesign:DataGridAssist.ColumnHeaderPadding="8">
 
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID" 
-                                        Binding="{Binding Id}" 
-                                        IsReadOnly="True" 
+                    <DataGridTextColumn Header="ID"
+                                        Binding="{Binding Id}"
+                                        IsReadOnly="True"
                                         Width="50"/>
 
-                    <DataGridTextColumn Header="Логин" 
-                                        Binding="{Binding Login, UpdateSourceTrigger=PropertyChanged}" 
+                    <DataGridTextColumn Header="Логин"
+                                        Binding="{Binding Login, UpdateSourceTrigger=PropertyChanged}"
                                         Width="120"/>
 
-                    <DataGridTextColumn Header="Имя" 
-                                        Binding="{Binding Username, UpdateSourceTrigger=PropertyChanged}" 
+                    <DataGridTextColumn Header="Имя"
+                                        Binding="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
                                         Width="120"/>
 
-                    <DataGridTextColumn Header="Email" 
-                                        Binding="{Binding Email, UpdateSourceTrigger=PropertyChanged}" 
+                    <DataGridTextColumn Header="Email"
+                                        Binding="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
                                         Width="200"/>
 
-                    <DataGridTextColumn Header="Дата создания" 
-                                        Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" 
-                                        IsReadOnly="True" 
+                    <DataGridTextColumn Header="Дата создания"
+                                        Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}"
+                                        IsReadOnly="True"
                                         Width="150"/>
 
-                    <DataGridTextColumn Header="Сессий" 
-                                        Binding="{Binding TotalSessions}" 
+                    <DataGridTextColumn Header="Сессий"
+                                        Binding="{Binding TotalSessions}"
                                         Width="70"/>
 
                     <DataGridTextColumn Header="Очки" 
                                         Binding="{Binding TotalScore}" 
                                         Width="80"/>
 
-                    <DataGridTextColumn Header="Решено" 
-                                        Binding="{Binding PuzzlesSolved}" 
+                    <DataGridTextColumn Header="Решено"
+                                        Binding="{Binding PuzzlesSolved}"
                                         Width="70"/>
 
                     <DataGridTemplateColumn Header="Действия" Width="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
-                                        CommandParameter="{Binding Id}" 
-                                        Content="Удалить" 
-                                        Style="{StaticResource MaterialDesignFlatButton}" 
-                                        Foreground="{DynamicResource MaterialDesignValidationErrorBrush}" 
-                                        MinWidth="70" 
+                                <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        CommandParameter="{Binding Id}"
+                                        Content="Удалить"
+                                        Style="{StaticResource MaterialDesignFlatButton}"
+                                        Foreground="{DynamicResource MaterialDesignValidationErrorBrush}"
+                                        MinWidth="70"
                                         Padding="4,0"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>

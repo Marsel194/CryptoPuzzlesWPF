@@ -30,9 +30,9 @@
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Puzzle" Width="32" Height="32" 
-                                              Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"/>
+                                              Foreground="{DynamicResource MaterialDesignBody}"/>
                     <TextBlock Text="CryptoPuzzles" 
-                               Foreground="{DynamicResource PrimaryHueMidForegroundBrush}" 
+                               Foreground="{DynamicResource MaterialDesignBody}" 
                                FontSize="22" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
                 </StackPanel>
 
@@ -50,7 +50,7 @@
                             Style="{StaticResource MaterialDesignFlatButton}"
                             Margin="0,0,8,0">
                         <materialDesign:PackIcon Kind="AccountCircle" Width="24" Height="24" 
-                                                  Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"/>
+                                                  Foreground="{DynamicResource MaterialDesignBody}"/>
                     </Button>
 
                     <Button Command="{Binding ToggleThemeCommand}"
@@ -58,9 +58,9 @@
                             Style="{StaticResource MaterialDesignFlatButton}">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="ThemeLightDark" Width="20" Height="20"
-                                                      Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"/>
+                                                      Foreground="{DynamicResource MaterialDesignBody}"/>
                             <TextBlock Text="Тема" 
-                                       Foreground="{DynamicResource PrimaryHueMidForegroundBrush}" 
+                                       Foreground="{DynamicResource MaterialDesignBody}" 
                                        Margin="5,0,0,0"/>
                         </StackPanel>
                     </Button>
@@ -70,9 +70,9 @@
                             Style="{StaticResource MaterialDesignFlatButton}">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="Logout" Width="20" Height="20"
-                                                      Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"/>
+                                                      Foreground="{DynamicResource MaterialDesignBody}"/>
                             <TextBlock Text="Выход" 
-                                       Foreground="{DynamicResource PrimaryHueMidForegroundBrush}" 
+                                       Foreground="{DynamicResource MaterialDesignBody}" 
                                        Margin="5,0,0,0"/>
                         </StackPanel>
                     </Button>
