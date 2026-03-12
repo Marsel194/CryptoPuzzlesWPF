@@ -103,6 +103,18 @@ namespace CryptoPuzzles.ViewModels
             _closeAction = closeAction ?? throw new ArgumentNullException(nameof(closeAction));
             _adminId = admin?.Id ?? throw new ArgumentNullException(nameof(admin));
 
+            // Инициализируем данными из переданного admin
+            UpdateFromAdmin(admin);
+
+            CloseCommand = new AsyncRelayCommand(CloseAsync);
+            EditCommand = new AsyncRelayCommand(EditAsync, _ => !IsLoading && !IsEditMode);
+            _saveCommand = new AsyncRelayCommand(SaveAsync, _ => !IsLoading && IsEditMode && CanSave());
+            SaveCommand = _saveCommand;
+            CancelCommand = new AsyncRelayCommand(CancelAsync, _ => !IsLoading && IsEditMode);
+        }
+
+        private void UpdateFromAdmin(AAdmin admin)
+        {
             Login = admin.Login;
             FirstName = admin.FirstName;
             LastName = admin.LastName;
@@ -111,12 +123,28 @@ namespace CryptoPuzzles.ViewModels
             _originalFirstName = admin.FirstName;
             _originalLastName = admin.LastName;
             _originalMiddleName = admin.MiddleName ?? string.Empty;
+        }
 
-            CloseCommand = new AsyncRelayCommand(CloseAsync);
-            EditCommand = new AsyncRelayCommand(EditAsync, _ => !IsLoading && !IsEditMode);
-            _saveCommand = new AsyncRelayCommand(SaveAsync, _ => !IsLoading && IsEditMode && CanSave());
-            SaveCommand = _saveCommand;
-            CancelCommand = new AsyncRelayCommand(CancelAsync, _ => !IsLoading && IsEditMode);
+        public async Task LoadAdminDataAsync()
+        {
+            try
+            {
+                IsLoading = true;
+                var admin = await _adminApiService.GetByIdAsync(_adminId);
+                if (admin != null)
+                {
+                    UpdateFromAdmin(admin);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[AdminProfile] Error loading data: {ex.Message}");
+                await DialogService.ShowError($"Ошибка загрузки данных: {ex.Message}");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
 
         private bool CanSave()
@@ -222,7 +250,7 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
-        private Task CancelAsync(object? parameter = null)
+        private async Task CancelAsync(object? parameter = null)
         {
             FirstName = _originalFirstName;
             LastName = _originalLastName;
@@ -233,7 +261,8 @@ namespace CryptoPuzzles.ViewModels
 
             IsEditMode = false;
 
-            return Task.CompletedTask;
+            // Перезагружаем актуальные данные с сервера
+            await LoadAdminDataAsync();
         }
     }
 }

@@ -268,7 +268,7 @@
                 </ScrollViewer>
             </Grid>
 
-            <ContentControl Content=""
+            <ContentControl Content="{Binding CurrentSection}"
                             Visibility="{Binding CurrentSection, Converter={StaticResource NullToVis}, ConverterParameter=invert}">
                 <ContentControl.Resources>
                     <DataTemplate DataType="{x:Type vm:AdminProfileViewModel}">

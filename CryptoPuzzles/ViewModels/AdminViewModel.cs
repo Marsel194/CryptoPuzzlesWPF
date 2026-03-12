@@ -132,13 +132,15 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
-        private async Task OpenProfileAsync()
+        private async Task OpenProfileAsync(object? parameter = null)
         {
             try
             {
                 var admin = _authService.CurrentAdmin;
                 if (admin == null)
                 {
+                    // Пробуем получить ID из UserSessionService или другого источника
+                    // Например, если есть метод получения ID текущего администратора
                     await DialogService.ShowError("Не удалось загрузить данные профиля");
                     return;
                 }
@@ -148,7 +150,11 @@ namespace CryptoPuzzles.ViewModels
                     admin,
                     (Action)(() => CurrentSection = null)
                 );
+
                 CurrentSection = profileVM;
+
+                // Дополнительно загружаем свежие данные с сервера
+                await profileVM.LoadAdminDataAsync();
             }
             catch (Exception ex)
             {
