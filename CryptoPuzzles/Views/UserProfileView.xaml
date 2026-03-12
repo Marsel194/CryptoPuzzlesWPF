@@ -24,7 +24,7 @@
             <!-- Заголовок -->
             <TextBlock Text="Профиль пользователя"
                        FontSize="28" FontWeight="Bold"
-                       Foreground="{DynamicResource MaterialDesignBody}"
+                       Foreground="{DynamicResource PrimaryHueMidBrush}"
                        Margin="0,0,0,24"/>
 
             <!-- Прогресс (без изменений) -->
@@ -38,7 +38,7 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0">
                         <TextBlock Text="Обучение" FontSize="18" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource MaterialDesignBody}" Margin="0,0,0,12"/>
+                                   Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,0,12"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -50,7 +50,7 @@
                             </Grid.RowDefinitions>
                             <materialDesign:PackIcon Grid.Row="0" Grid.Column="0"
                                                    Kind="BookOpenOutline" Width="24" Height="24"
-                                                   Foreground="{DynamicResource MaterialDesignBody}"
+                                                   Foreground="{DynamicResource PrimaryHueMidBrush}"
                                                    Margin="0,0,12,0"/>
                             <TextBlock Grid.Row="0" Grid.Column="1"
                                        Text="{Binding TrainingProgress, StringFormat={}{0}%}"
@@ -67,7 +67,7 @@
                     </StackPanel>
                     <StackPanel Grid.Column="1" Margin="24,0,0,0">
                         <TextBlock Text="Практика" FontSize="18" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource MaterialDesignBody}" Margin="0,0,0,12"/>
+                                   Foreground="{DynamicResource SecondaryHueMidBrush}" Margin="0,0,0,12"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -79,7 +79,7 @@
                             </Grid.RowDefinitions>
                             <materialDesign:PackIcon Grid.Row="0" Grid.Column="0"
                                                    Kind="PuzzleOutline" Width="24" Height="24"
-                                                   Foreground="{DynamicResource MaterialDesignBody}"
+                                                   Foreground="{DynamicResource SecondaryHueMidBrush}"
                                                    Margin="0,0,12,0"/>
                             <TextBlock Grid.Row="0" Grid.Column="1"
                                        Text="{Binding PracticeProgress, StringFormat={}{0}%}"
@@ -111,7 +111,7 @@
                         <TextBlock Grid.Column="0"
                                    Text="Личные данные"
                                    FontSize="22" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource MaterialDesignBody}"/>
+                                   Foreground="{DynamicResource PrimaryHueMidBrush}"/>
                         <Button Grid.Column="1"
                                 Command="{Binding EditCommand}"
                                 Style="{StaticResource MaterialDesignFlatButton}">
@@ -139,7 +139,7 @@
                         <!-- Логин -->
                         <TextBlock Grid.Row="0" Grid.Column="0"
                                    Text="Логин:" FontSize="16"
-                                   Foreground="{DynamicResource MaterialDesignBody}"
+                                   Foreground="{DynamicResource MaterialDesignBodyLight}"
                                    VerticalAlignment="Center" Margin="0,0,16,16"/>
                         <TextBlock Grid.Row="0" Grid.Column="1"
                                    Text="{Binding Login}" FontSize="16"
@@ -149,7 +149,7 @@
                         <!-- Email -->
                         <TextBlock Grid.Row="1" Grid.Column="0"
                                    Text="Email:" FontSize="16"
-                                   Foreground="{DynamicResource MaterialDesignBody}"
+                                   Foreground="{DynamicResource MaterialDesignBodyLight}"
                                    VerticalAlignment="Center" Margin="0,0,16,16"/>
                         <TextBlock Grid.Row="1" Grid.Column="1"
                                    Text="{Binding Email}" FontSize="16"
@@ -165,7 +165,7 @@
                         <!-- Имя -->
                         <TextBlock Grid.Row="2" Grid.Column="0"
                                    Text="Имя:" FontSize="16"
-                                   Foreground="{DynamicResource MaterialDesignBody}"
+                                   Foreground="{DynamicResource MaterialDesignBodyLight}"
                                    VerticalAlignment="Center" Margin="0,0,16,16"/>
                         <TextBlock Grid.Row="2" Grid.Column="1"
                                    Text="{Binding Username}" FontSize="16"
@@ -189,7 +189,7 @@
                                     Background="{DynamicResource PrimaryHueLightBrush}"
                                     CornerRadius="22" Margin="0,0,12,0">
                                 <materialDesign:PackIcon Kind="Lock" Width="22" Height="22" 
-                                                       Foreground="{DynamicResource MaterialDesignBody}"
+                                                       Foreground="{DynamicResource PrimaryHueMidBrush}"
                                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <PasswordBox x:Name="txtNewPassword"
@@ -212,7 +212,7 @@
                                     Background="{DynamicResource PrimaryHueLightBrush}"
                                     CornerRadius="22" Margin="0,0,12,0">
                                 <materialDesign:PackIcon Kind="LockCheck" Width="22" Height="22" 
-                                                       Foreground="{DynamicResource MaterialDesignBody}"
+                                                       Foreground="{DynamicResource PrimaryHueMidBrush}"
                                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <PasswordBox x:Name="txtConfirmPassword"

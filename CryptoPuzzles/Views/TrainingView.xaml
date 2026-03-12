@@ -30,7 +30,7 @@
             </Button>
             <TextBlock Grid.Column="1" Text="Обучение"
                        FontSize="28" FontWeight="Bold"
-                       Foreground="{DynamicResource MaterialDesignBody}"
+                       Foreground="{DynamicResource PrimaryHueMidBrush}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"/>
         </Grid>
@@ -43,7 +43,7 @@
                 <StackPanel Visibility="{Binding IsTheoryMode, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="{Binding TheoryTitle, FallbackValue='Загрузка...'}"
                                FontSize="22" FontWeight="SemiBold"
-                               Foreground="{DynamicResource MaterialDesignBody}"
+                               Foreground="{DynamicResource PrimaryHueMidBrush}"
                                Margin="0,0,0,16"/>
                     <TextBlock Text="{Binding TheoryContent, FallbackValue='Загрузка...'}"
                                FontSize="16"
@@ -84,7 +84,7 @@
                 <StackPanel Visibility="{Binding IsPuzzleMode, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="{Binding PuzzleTitle, FallbackValue='Загрузка...'}"
                                FontSize="22" FontWeight="SemiBold"
-                               Foreground="{DynamicResource MaterialDesignBody}"
+                               Foreground="{DynamicResource PrimaryHueMidBrush}"
                                Margin="0,0,0,16"/>
                     <TextBlock Text="{Binding PuzzleContent, FallbackValue='Загрузка...'}"
                                FontSize="16"
@@ -136,12 +136,12 @@
                                            Foreground="Gold" HorizontalAlignment="Center"/>
                     <TextBlock Text="Поздравляем!" 
                                FontSize="28" FontWeight="Bold"
-                               Foreground="{DynamicResource MaterialDesignBody}"
+                               Foreground="{DynamicResource PrimaryHueMidBrush}"
                                HorizontalAlignment="Center"
                                Margin="0,24,0,12"/>
                     <TextBlock Text="Вы успешно завершили обучение"
                                FontSize="18"
-                               Foreground="{DynamicResource MaterialDesignBody}"
+                               Foreground="{DynamicResource MaterialDesignBodyLight}"
                                HorizontalAlignment="Center"
                                Margin="0,0,0,32"/>
                     <Button Command="{Binding GoBackCommand}"
