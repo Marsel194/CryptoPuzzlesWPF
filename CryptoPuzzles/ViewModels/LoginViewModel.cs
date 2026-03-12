@@ -12,6 +12,7 @@ namespace CryptoPuzzles.ViewModels
     {
         private readonly AuthApiService _apiService;
         private readonly NavigationService _navigationService;
+        private readonly UserSessionService _userSessionService;
 
         private string _login = string.Empty;
         private string _password = string.Empty;
@@ -51,6 +52,7 @@ namespace CryptoPuzzles.ViewModels
         {
             _apiService = App.Services.GetService<AuthApiService>() ?? throw new Exception("ApiService not registered");
             _navigationService = App.Services.GetService<NavigationService>() ?? throw new Exception("NavigationService not registered");
+            _userSessionService = App.Services.GetService<UserSessionService>() ?? throw new Exception("UserSessionService not registered");
 
             LoginCommand = new AsyncRelayCommand(OnLoginAsync, _ => !IsBusy);
             ShowRegisterCommand = new AsyncRelayCommand(_ => _navigationService.NavigateToAsync<RegisterViewModel>());
@@ -74,14 +76,22 @@ namespace CryptoPuzzles.ViewModels
                 if (response == null)
                     return;
 
+                // Сохраняем информацию о пользователе в сессию
+                _userSessionService.SetUser(
+                    userId: response.Id,
+                    login: response.Login,
+                    username: response.Username,
+                    isAdmin: response.IsAdmin
+                );
+
+                await DialogService.ShowMessage($"Добро пожаловать, {response.Username}!");
+
                 if (response.IsAdmin)
                 {
-                    await DialogService.ShowMessage($"Добро пожаловать, {response.Username}!");
                     await _navigationService.NavigateToAsync<AdminViewModel>();
                 }
                 else
                 {
-                    await DialogService.ShowMessage($"Добро пожаловать, {response.Username}!");
                     await _navigationService.NavigateToAsync<UserViewModel>();
                 }
             }

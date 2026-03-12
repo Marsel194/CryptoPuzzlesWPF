@@ -25,6 +25,7 @@ namespace CryptoPuzzles
             services.AddSingleton<DialogService>();
             services.AddSingleton<NavigationService>();
             services.AddSingleton<AdminStatsService>();
+            services.AddSingleton<UserSessionService>();
 
             services.AddTransient<MainViewModel>();
             services.AddTransient<LoginViewModel>();
