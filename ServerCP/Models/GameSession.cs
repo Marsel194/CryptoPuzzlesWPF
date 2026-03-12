@@ -26,6 +26,9 @@ namespace CryptoPuzzles.Server.Models
         [ExportName("Завершена")]
         public bool IsCompleted { get; set; } = false;
 
+        [ExportName("Текущая теория")]
+        public int? CurrentTutorialIndex { get; set; }
+
         public bool IsDeleted { get; set; }
         public DateTime? DeletedAt { get; set; }
 

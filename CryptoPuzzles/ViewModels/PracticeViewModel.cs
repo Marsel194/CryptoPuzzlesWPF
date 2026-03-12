@@ -38,7 +38,7 @@ namespace CryptoPuzzles.ViewModels
         private APuzzle _currentPuzzle = new();
         private string _elapsedTime = "00:00";
         private string _userAnswer = string.Empty;
-        private ObservableCollection<AHint> _hints = new();
+        private ObservableCollection<AHint> _hints = [];
         private int _currentHintIndex;
         private string _currentHint = string.Empty;
         private bool _hasHints;
@@ -250,6 +250,7 @@ namespace CryptoPuzzles.ViewModels
             {
                 await CreateSessionAsync();
                 var difficulties = await _difficultyApi.GetAllAsync();
+                difficulties = difficulties.Where(d => !d.IsDeleted).ToList();
                 await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
                     Difficulties = new ObservableCollection<ADifficulty>(difficulties);
@@ -289,7 +290,8 @@ namespace CryptoPuzzles.ViewModels
                     _currentSessionId.Value,
                     newScore,
                     completed,
-                    completed == true ? DateTime.UtcNow : null
+                    completed == true ? DateTime.UtcNow : null,
+                    CurrentTutorialIndex: null
                 );
                 await _sessionApi.UpdateAsync(_currentSessionId.Value, update);
             }
@@ -389,6 +391,7 @@ namespace CryptoPuzzles.ViewModels
             try
             {
                 var allPuzzles = await _puzzleApi.GetAllAsync();
+                allPuzzles = allPuzzles.Where(p => !p.IsDeleted).ToList();
                 var filtered = allPuzzles.Where(p => p.DifficultyId == difficultyId && !p.IsTraining).ToList();
                 var rnd = new Random();
                 var shuffled = filtered.OrderBy(x => rnd.Next()).ToList();
@@ -423,7 +426,10 @@ namespace CryptoPuzzles.ViewModels
             try
             {
                 var allHints = await _hintApi.GetAllAsync();
-                var hints = allHints.Where(h => h.PuzzleId == puzzleId).OrderBy(h => h.HintOrder).ToList();
+                var hints = allHints
+                    .Where(h => h.PuzzleId == puzzleId && !h.IsDeleted)
+                    .OrderBy(h => h.HintOrder)
+                    .ToList();
 
                 await Application.Current.Dispatcher.InvokeAsync(() =>
                 {

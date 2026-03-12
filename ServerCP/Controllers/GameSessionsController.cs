@@ -12,10 +12,7 @@ namespace CryptoPuzzles.Server.Controllers
     {
         private readonly AppDbContext _context;
 
-        public GameSessionsController(AppDbContext context)
-        {
-            _context = context;
-        }
+        public GameSessionsController(AppDbContext context) => _context = context;
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AGameSession>>> GetAll()
@@ -37,6 +34,7 @@ namespace CryptoPuzzles.Server.Controllers
                     s.IsCompleted,
                     s.Progresses.Count,
                     s.Progresses.Count(p => p.Solved),
+                    s.CurrentTutorialIndex,   // добавлено
                     s.IsDeleted,
                     s.DeletedAt
                 ))
@@ -63,6 +61,7 @@ namespace CryptoPuzzles.Server.Controllers
                     s.IsCompleted,
                     s.Progresses.Count,
                     s.Progresses.Count(p => p.Solved),
+                    s.CurrentTutorialIndex,   // добавлено
                     s.IsDeleted,
                     s.DeletedAt
                 ))
@@ -91,6 +90,7 @@ namespace CryptoPuzzles.Server.Controllers
                     s.IsCompleted,
                     s.Progresses.Count,
                     s.Progresses.Count(p => p.Solved),
+                    s.CurrentTutorialIndex,   // добавлено
                     s.IsDeleted,
                     s.DeletedAt
                 ))
@@ -107,12 +107,12 @@ namespace CryptoPuzzles.Server.Controllers
                 SessionType = dto.SessionType,
                 TotalScore = dto.TotalScore,
                 SessionStart = DateTime.UtcNow,
-                IsCompleted = false
+                IsCompleted = false,
+                CurrentTutorialIndex = null   // по умолчанию null
             };
 
             _context.GameSessions.Add(session);
             await _context.SaveChangesAsync();
-
             await _context.Entry(session).Reference(s => s.User).LoadAsync();
 
             var result = new AGameSession(
@@ -127,6 +127,7 @@ namespace CryptoPuzzles.Server.Controllers
                 session.IsCompleted,
                 0,
                 0,
+                session.CurrentTutorialIndex,   // добавлено
                 session.IsDeleted,
                 session.DeletedAt
             );
@@ -153,6 +154,11 @@ namespace CryptoPuzzles.Server.Controllers
 
             if (dto.CompletedAt.HasValue)
                 session.CompletedAt = dto.CompletedAt;
+
+            if (dto.CurrentTutorialIndex.HasValue)   // добавлено
+                session.CurrentTutorialIndex = dto.CurrentTutorialIndex.Value;
+            else if (dto.CurrentTutorialIndex == null)
+                session.CurrentTutorialIndex = null;
 
             await _context.SaveChangesAsync();
             return NoContent();

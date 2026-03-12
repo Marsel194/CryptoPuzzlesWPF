@@ -15,24 +15,26 @@ namespace CryptoPuzzles.ViewModels
         private readonly PuzzleApiService _puzzleApi;
         private readonly HintApiService _hintApi;
         private readonly GameSessionApiService _sessionApi;
+        private readonly SessionProgressApiService _sessionProgressApi;
         private readonly Action _goBack;
         private readonly int _userId;
 
         private ObservableCollection<ATutorial> _tutorials = [];
         private ObservableCollection<APuzzle> _puzzles = [];
-        private int _currentTutorialIndex;
-        private int _currentPuzzleIndex;
+        private int _currentTutorialIndex = -1;
+        private int _currentPuzzleIndex = -1;
         private bool _isTheoryMode;
         private bool _isPuzzleMode;
         private bool _isCompleted;
+        private bool _isButtonCanVisible;
         private string _theoryTitle = string.Empty;
         private string _theoryContent = string.Empty;
         private string _theoryProgress = string.Empty;
         private string _puzzleTitle = string.Empty;
         private string _puzzleContent = string.Empty;
         private string _puzzleProgress = string.Empty;
-        private ObservableCollection<AHint> _hints = new();
-        private int _currentHintIndex;
+        private ObservableCollection<AHint> _hints = [];
+        private int _currentHintIndex = -1;
         private string _currentHint = string.Empty;
         private bool _hasHints;
         private string _userAnswer = string.Empty;
@@ -41,11 +43,15 @@ namespace CryptoPuzzles.ViewModels
         private int _totalScore;
         private int _totalHintsUsed;
 
+        private ObservableCollection<ASessionProgress> _sessionProgress = [];
+        private Dictionary<int, ASessionProgress> _progressByPuzzleId = [];
+
         public TrainingViewModel(
             TutorialApiService tutorialApi,
             PuzzleApiService puzzleApi,
             HintApiService hintApi,
             GameSessionApiService sessionApi,
+            SessionProgressApiService sessionProgressApi,
             int userId,
             Action goBack)
         {
@@ -53,6 +59,7 @@ namespace CryptoPuzzles.ViewModels
             _puzzleApi = puzzleApi;
             _hintApi = hintApi;
             _sessionApi = sessionApi;
+            _sessionProgressApi = sessionProgressApi;
             _userId = userId;
             _goBack = goBack;
 
@@ -61,6 +68,7 @@ namespace CryptoPuzzles.ViewModels
             NextHintCommand = new AsyncRelayCommand(async _ => await NextHintAsync(), _ => HasNextHint);
             CheckAnswerCommand = new AsyncRelayCommand(async _ => await CheckAnswerAsync(), _ => !string.IsNullOrWhiteSpace(UserAnswer));
             GoBackCommand = new AsyncRelayCommand(async _ => { _goBack(); await Task.CompletedTask; });
+            StartTrainingPracticeCommand = new AsyncRelayCommand(async _ => await StartTrainingPracticeAsync(), _ => Puzzles.Any());
 
             LoadDataAsync().SafeFireAndForget();
         }
@@ -74,7 +82,11 @@ namespace CryptoPuzzles.ViewModels
         public ObservableCollection<APuzzle> Puzzles
         {
             get => _puzzles;
-            set => SetProperty(ref _puzzles, value);
+            set
+            {
+                if (SetProperty(ref _puzzles, value))
+                    UpdateButtonVisibility();
+            }
         }
 
         public int CurrentTutorialIndex
@@ -105,7 +117,11 @@ namespace CryptoPuzzles.ViewModels
         public bool IsTheoryMode
         {
             get => _isTheoryMode;
-            set => SetProperty(ref _isTheoryMode, value);
+            set
+            {
+                if (SetProperty(ref _isTheoryMode, value))
+                    UpdateButtonVisibility();
+            }
         }
 
         public bool IsPuzzleMode
@@ -118,6 +134,12 @@ namespace CryptoPuzzles.ViewModels
         {
             get => _isCompleted;
             set => SetProperty(ref _isCompleted, value);
+        }
+
+        public bool IsButtonCanVisible
+        {
+            get => _isButtonCanVisible;
+            set => SetProperty(ref _isButtonCanVisible, value);
         }
 
         public string TheoryTitle
@@ -207,6 +229,7 @@ namespace CryptoPuzzles.ViewModels
         public ICommand NextHintCommand { get; }
         public ICommand CheckAnswerCommand { get; }
         public ICommand GoBackCommand { get; }
+        public ICommand StartTrainingPracticeCommand { get; }
 
         private void UpdateNavigationCommands()
         {
@@ -214,6 +237,12 @@ namespace CryptoPuzzles.ViewModels
             OnPropertyChanged(nameof(CanGoNext));
             ((AsyncRelayCommand)PreviousTheoryCommand).RaiseCanExecuteChanged();
             ((AsyncRelayCommand)NextTheoryCommand).RaiseCanExecuteChanged();
+            UpdateButtonVisibility();
+        }
+
+        private void UpdateButtonVisibility()
+        {
+            IsButtonCanVisible = IsTheoryMode && !CanGoNext && Puzzles.Any();
         }
 
         private async Task LoadDataAsync()
@@ -221,7 +250,10 @@ namespace CryptoPuzzles.ViewModels
             try
             {
                 var tutorials = await _tutorialApi.GetAllAsync();
+                tutorials = tutorials.Where(t => !t.IsDeleted).OrderBy(t => t.SortOrder).ToList();
+
                 var allPuzzles = await _puzzleApi.GetAllAsync();
+                allPuzzles = allPuzzles.Where(p => !p.IsDeleted).ToList();
                 var trainingPuzzles = allPuzzles
                     .Where(p => p.IsTraining)
                     .OrderBy(p => p.TutorialOrder ?? 0)
@@ -229,27 +261,84 @@ namespace CryptoPuzzles.ViewModels
 
                 await Application.Current.Dispatcher.InvokeAsync(async () =>
                 {
-                    Tutorials = new ObservableCollection<ATutorial>(tutorials.OrderBy(t => t.SortOrder));
+                    Tutorials = new ObservableCollection<ATutorial>(tutorials);
                     Puzzles = new ObservableCollection<APuzzle>(trainingPuzzles);
 
-                    await CreateSessionAsync();
+                    var sessions = await _sessionApi.GetAllAsync(userId: _userId, sessionType: "training", isCompleted: false);
+                    var existingSession = sessions?.OrderByDescending(s => s.SessionStart).FirstOrDefault();
 
-                    if (Tutorials.Any())
+                    if (existingSession != null)
                     {
-                        IsTheoryMode = true;
-                        CurrentTutorialIndex = 0;
-                        var firstTutorial = Tutorials[0];
-                        TheoryTitle = firstTutorial.TheoryTitle ?? string.Empty;
-                        TheoryContent = firstTutorial.TheoryContent ?? string.Empty;
-                        TheoryProgress = $"1/{Tutorials.Count}";
-                    }
-                    else if (Puzzles.Any())
-                    {
-                        IsPuzzleMode = true;
-                        CurrentPuzzleIndex = 0;
+                        var progressList = await _sessionProgressApi.GetBySessionIdAsync(existingSession.Id);
+                        if (progressList != null && progressList.Any())
+                        {
+                            var solvedPuzzleIds = progressList.Where(p => p.Solved).Select(p => p.PuzzleId).ToHashSet();
+                            int firstUnsolvedIndex = -1;
+                            for (int i = 0; i < Puzzles.Count; i++)
+                                if (!solvedPuzzleIds.Contains(Puzzles[i].Id))
+                                {
+                                    firstUnsolvedIndex = i;
+                                    break;
+                                }
+
+                            if (firstUnsolvedIndex >= 0)
+                            {
+                                _currentSessionId = existingSession.Id;
+                                _sessionProgress = new ObservableCollection<ASessionProgress>(progressList);
+                                foreach (var p in progressList)
+                                    _progressByPuzzleId[p.PuzzleId] = p;
+
+                                _totalScore = progressList.Sum(p => p.ScoreEarned);
+                                _totalHintsUsed = progressList.Sum(p => p.HintsUsed);
+
+                                if (existingSession.CurrentTutorialIndex.HasValue && existingSession.CurrentTutorialIndex.Value < Tutorials.Count)
+                                {
+                                    IsTheoryMode = true;
+                                    IsPuzzleMode = false;
+                                    CurrentTutorialIndex = existingSession.CurrentTutorialIndex.Value;
+                                }
+                                else
+                                {
+                                    IsTheoryMode = false;
+                                    IsPuzzleMode = true;
+                                    CurrentPuzzleIndex = firstUnsolvedIndex;
+                                }
+                            }
+                            else
+                            {
+                                await _sessionApi.UpdateAsync(existingSession.Id, new AGameSessionUpdate(
+                                    Id: existingSession.Id,
+                                    TotalScore: null,
+                                    IsCompleted: true,
+                                    CompletedAt: DateTime.UtcNow,
+                                    CurrentTutorialIndex: null
+                                ));
+                            }
+                        }
+                        else
+                        {
+                            await CreateNewSessionAsync();
+                        }
                     }
                     else
+                    {
+                        await CreateNewSessionAsync();
+                    }
+
+                    if (IsTheoryMode)
+                    {
+                        if (Tutorials.Any() && CurrentTutorialIndex == -1)
+                            CurrentTutorialIndex = 0;
+                        UpdateTheoryDisplay();
+                    }
+                    else if (IsPuzzleMode && CurrentPuzzleIndex == -1 && Puzzles.Any())
+                    {
+                        CurrentPuzzleIndex = 0;
+                    }
+                    else if (!IsTheoryMode && !IsPuzzleMode && !IsCompleted)
+                    {
                         IsCompleted = true;
+                    }
 
                     UpdateNavigationCommands();
                 });
@@ -261,7 +350,7 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
-        private async Task CreateSessionAsync()
+        private async Task CreateNewSessionAsync()
         {
             try
             {
@@ -274,6 +363,41 @@ namespace CryptoPuzzles.ViewModels
                 _currentSessionId = session.Id;
                 _totalScore = 0;
                 _totalHintsUsed = 0;
+                _sessionProgress.Clear();
+                _progressByPuzzleId.Clear();
+
+                for (int i = 0; i < Puzzles.Count; i++)
+                {
+                    var puzzle = Puzzles[i];
+                    var progressCreate = new ASessionProgressCreate(
+                        SessionId: _currentSessionId.Value,
+                        PuzzleId: puzzle.Id,
+                        PuzzleOrder: i,
+                        HintsUsed: 0,
+                        ScoreEarned: 0
+                    );
+                    var progress = await _sessionProgressApi.CreateAsync(progressCreate);
+                    _sessionProgress.Add(progress);
+                    _progressByPuzzleId[puzzle.Id] = progress;
+                }
+
+                if (Tutorials.Any())
+                {
+                    IsTheoryMode = true;
+                    IsPuzzleMode = false;
+                    CurrentTutorialIndex = 0;
+                    await UpdateSessionAsync(tutorialIndex: 0);
+                }
+                else if (Puzzles.Any())
+                {
+                    IsTheoryMode = false;
+                    IsPuzzleMode = true;
+                    CurrentPuzzleIndex = 0;
+                }
+                else
+                    IsCompleted = true;
+
+                UpdateButtonVisibility();
             }
             catch (Exception ex)
             {
@@ -281,7 +405,7 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
-        private async Task UpdateSessionAsync(int? newScore = null, int? newHintsUsed = null, bool? completed = null)
+        private async Task UpdateSessionAsync(int? newScore = null, bool? completed = null, int? tutorialIndex = null)
         {
             if (!_currentSessionId.HasValue) return;
             try
@@ -290,11 +414,12 @@ namespace CryptoPuzzles.ViewModels
                     Id: _currentSessionId.Value,
                     TotalScore: newScore,
                     IsCompleted: completed,
-                    CompletedAt: completed == true ? DateTime.UtcNow : null
+                    CompletedAt: completed == true ? DateTime.UtcNow : null,
+                    CurrentTutorialIndex: tutorialIndex
                 );
                 await _sessionApi.UpdateAsync(_currentSessionId.Value, update);
             }
-            catch { /* игнорируем ошибки обновления */ }
+            catch { }
         }
 
         private void UpdateTheoryDisplay()
@@ -311,35 +436,20 @@ namespace CryptoPuzzles.ViewModels
         private async Task PreviousTheoryAsync()
         {
             if (CanGoPrevious)
+            {
                 CurrentTutorialIndex--;
-            await Task.CompletedTask;
+                await UpdateSessionAsync(tutorialIndex: CurrentTutorialIndex);
+            }
         }
 
         private async Task NextTheoryAsync()
         {
-            if (CanGoNext)
-                CurrentTutorialIndex++;
-            else if (CurrentTutorialIndex == Tutorials.Count - 1)
+            if (CurrentTutorialIndex < Tutorials.Count - 1)
             {
-                IsTheoryMode = false;
-                if (Puzzles.Any())
-                {
-                    IsPuzzleMode = true;
-                    CurrentPuzzleIndex = 0;
-
-                    UpdatePuzzleDisplay();
-
-                    OnPropertyChanged(nameof(PuzzleTitle));
-                    OnPropertyChanged(nameof(PuzzleContent));
-                    await UpdateSessionAsync();
-                }
-                else
-                {
-                    IsCompleted = true;
-                    await UpdateSessionAsync(completed: true);
-                }
+                CurrentTutorialIndex++;
+                await UpdateSessionAsync(tutorialIndex: CurrentTutorialIndex);
             }
-            await Task.CompletedTask;
+            UpdateButtonVisibility();
         }
 
         private async Task LoadHintsForPuzzleAsync(int puzzleId)
@@ -348,7 +458,7 @@ namespace CryptoPuzzles.ViewModels
             {
                 var allHints = await _hintApi.GetAllAsync();
                 var hints = allHints
-                    .Where(h => h.PuzzleId == puzzleId)
+                    .Where(h => h.PuzzleId == puzzleId && !h.IsDeleted)
                     .OrderBy(h => h.HintOrder)
                     .ToList();
 
@@ -399,9 +509,21 @@ namespace CryptoPuzzles.ViewModels
             {
                 CurrentHintIndex++;
                 _totalHintsUsed++;
-                await UpdateSessionAsync(newHintsUsed: _totalHintsUsed);
+
+                var puzzle = Puzzles[CurrentPuzzleIndex];
+                if (_progressByPuzzleId.TryGetValue(puzzle.Id, out var progress))
+                {
+                    var update = new ASessionProgressUpdate(
+                        Id: progress.Id,
+                        HintsUsed: CurrentHintIndex + 1,
+                        ScoreEarned: null,
+                        Solved: null,
+                        SolvedAt: null
+                    );
+                    await _sessionProgressApi.UpdateAsync(progress.Id, update);
+                    progress.HintsUsed = CurrentHintIndex + 1;
+                }
             }
-            await Task.CompletedTask;
         }
 
         private async Task CheckAnswerAsync()
@@ -414,6 +536,22 @@ namespace CryptoPuzzles.ViewModels
 
             if (isCorrect)
             {
+                if (_progressByPuzzleId.TryGetValue(puzzle.Id, out var progress))
+                {
+                    var update = new ASessionProgressUpdate(
+                        Id: progress.Id,
+                        HintsUsed: _currentHintIndex + 1,
+                        ScoreEarned: puzzle.MaxScore,
+                        Solved: true,
+                        SolvedAt: DateTime.UtcNow
+                    );
+                    await _sessionProgressApi.UpdateAsync(progress.Id, update);
+                    progress.Solved = true;
+                    progress.SolvedAt = DateTime.UtcNow;
+                    progress.HintsUsed = _currentHintIndex + 1;
+                    progress.ScoreEarned = puzzle.MaxScore;
+                }
+
                 _totalScore += puzzle.MaxScore;
                 await DialogService.ShowMessage($"Правильно! +{puzzle.MaxScore} очков");
 
@@ -431,6 +569,16 @@ namespace CryptoPuzzles.ViewModels
             }
             else
                 await DialogService.ShowError("Неправильный ответ. Попробуйте ещё раз.");
+        }
+
+        private async Task StartTrainingPracticeAsync()
+        {
+            IsTheoryMode = false;
+            IsPuzzleMode = true;
+            CurrentPuzzleIndex = 0;
+            await UpdateSessionAsync(tutorialIndex: null);
+            UpdatePuzzleDisplay();
+            UpdateButtonVisibility();
         }
     }
 }

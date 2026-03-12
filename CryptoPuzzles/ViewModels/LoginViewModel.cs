@@ -87,19 +87,14 @@ namespace CryptoPuzzles.ViewModels
                     isAdmin: response.IsAdmin
                 );
 
-                await DialogService.ShowMessage($"Добро пожаловать, {response.Username}!");
-
                 if (response.IsAdmin)
                 {
-                    // Загружаем полные данные администратора
                     var admin = await _adminApiService.GetByIdAsync(response.Id);
                     _authService.CurrentAdmin = admin;
                     await _navigationService.NavigateToAsync<AdminViewModel>();
                 }
                 else
-                {
                     await _navigationService.NavigateToAsync<UserViewModel>();
-                }
             }
             catch (Exception ex)
             {
@@ -115,7 +110,7 @@ namespace CryptoPuzzles.ViewModels
         {
             if (IsBusy || e == null) return;
 
-            if (e.OriginalSource is not System.Windows.UIElement element) return;
+            if (e.OriginalSource is not UIElement element) return;
 
             if (e.Key == Key.Down)
             {

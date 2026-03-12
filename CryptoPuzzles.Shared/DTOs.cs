@@ -3,8 +3,6 @@ using System.Runtime.CompilerServices;
 
 namespace CryptoPuzzles.Shared
 {
-    // ---- Изменяемые классы для отображения и редактирования в DataGrid ----
-
     public class AAdmin : INotifyPropertyChanged
     {
         private int _id;
@@ -220,6 +218,7 @@ namespace CryptoPuzzles.Shared
         private DateTime? _deletedAt;
         private int _puzzlesCount;
         private int _solvedCount;
+        private int? _currentTutorialIndex;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
         public int UserId { get => _userId; set { _userId = value; OnPropertyChanged(); } }
@@ -234,6 +233,7 @@ namespace CryptoPuzzles.Shared
         public DateTime? DeletedAt { get => _deletedAt; set { _deletedAt = value; OnPropertyChanged(); } }
         public int PuzzlesCount { get => _puzzlesCount; set { _puzzlesCount = value; OnPropertyChanged(); } }
         public int SolvedCount { get => _solvedCount; set { _solvedCount = value; OnPropertyChanged(); } }
+        public int? CurrentTutorialIndex { get => _currentTutorialIndex; set { _currentTutorialIndex = value; OnPropertyChanged(); } }
 
         public string Status => IsCompleted ? "Завершена" : "Активна";
         public string Duration => CompletedAt.HasValue ? (CompletedAt.Value - SessionStart).ToString(@"hh\:mm\:ss") : "—";
@@ -241,7 +241,8 @@ namespace CryptoPuzzles.Shared
 
         public AGameSession(int id, int userId, string userLogin, string username, string sessionType,
             int totalScore, DateTime sessionStart, DateTime? completedAt, bool isCompleted,
-            int puzzlesCount, int solvedCount, bool isDeleted = false, DateTime? deletedAt = null)
+            int puzzlesCount, int solvedCount, int? currentTutorialIndex,
+            bool isDeleted = false, DateTime? deletedAt = null)
         {
             _id = id;
             _userId = userId;
@@ -254,6 +255,7 @@ namespace CryptoPuzzles.Shared
             _isCompleted = isCompleted;
             _puzzlesCount = puzzlesCount;
             _solvedCount = solvedCount;
+            _currentTutorialIndex = currentTutorialIndex;
             _isDeleted = isDeleted;
             _deletedAt = deletedAt;
         }
@@ -472,8 +474,6 @@ namespace CryptoPuzzles.Shared
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    // ---- Неизменяемые record'ы для Create/Update операций ----
-
     public record AAdminCreate(string Login, string Password, string FirstName, string LastName, string? MiddleName);
     public record AAdminUpdate(int Id, string Login, string FirstName, string LastName, string? MiddleName, string? Password);
 
@@ -492,7 +492,7 @@ namespace CryptoPuzzles.Shared
     public record AHintUpdate(int Id, int PuzzleId, string HintText, int HintOrder);
 
     public record AGameSessionCreate(int UserId, string SessionType, int TotalScore);
-    public record AGameSessionUpdate(int Id, int? TotalScore, bool? IsCompleted, DateTime? CompletedAt);
+    public record AGameSessionUpdate(int Id, int? TotalScore, bool? IsCompleted, DateTime? CompletedAt, int? CurrentTutorialIndex);
 
     public record ATutorialCreate(int MethodId, string TheoryTitle, string TheoryContent, int SortOrder);
     public record ATutorialUpdate(int Id, int MethodId, string TheoryTitle, string TheoryContent, int SortOrder);
@@ -504,8 +504,6 @@ namespace CryptoPuzzles.Shared
     public record ASessionProgressUpdate(int Id, int? HintsUsed, int? ScoreEarned, bool? Solved, DateTime? SolvedAt);
 
     public record AUserStatisticRefresh(int UserId);
-
-    // ---- Auth records ----
 
     public record UAErrorResponse(string Message, string? Details);
     public record UALoginResponse(int Id, string Login, string Email, string Username, bool IsAdmin);

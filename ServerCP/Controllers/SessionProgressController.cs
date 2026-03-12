@@ -318,6 +318,9 @@ namespace CryptoPuzzles.Server.Controllers
             var avgScore = totalSessions > 0 ? (decimal)totalScore / totalSessions : 0;
             var lastActive = sessions.Max(s => (DateTime?)s.SessionStart);
 
+            if (lastActive.HasValue && lastActive.Value.Kind == DateTimeKind.Unspecified)
+                lastActive = DateTime.SpecifyKind(lastActive.Value, DateTimeKind.Utc);
+
             if (stats == null)
             {
                 stats = new UserStatistic

@@ -26,7 +26,8 @@ namespace CryptoPuzzles.ViewModels
                 Id: item.Id,
                 TotalScore: item.TotalScore,
                 IsCompleted: item.IsCompleted,
-                CompletedAt: item.CompletedAt
+                CompletedAt: item.CompletedAt,
+                CurrentTutorialIndex: null
             );
         }
 

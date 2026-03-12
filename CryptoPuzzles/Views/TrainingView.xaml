@@ -78,6 +78,15 @@
                             </StackPanel>
                         </Button>
                     </Grid>
+                    <Button Content="Начать тренировочные задания"
+                        Command="{Binding StartTrainingPracticeCommand}"
+                        Style="{StaticResource PrimaryButton}"
+                        HorizontalAlignment="Center"
+                        Margin="0,32,0,16"
+                        Padding="32,12"
+                        FontSize="16"
+                        MinWidth="280"
+                        Visibility="{Binding IsButtonCanVisible, Converter={StaticResource BoolToVis}}"/>
                 </StackPanel>
 
                 <!-- Режим пазла -->
@@ -100,7 +109,8 @@
                         <StackPanel>
                             <TextBlock Text="{Binding CurrentHint}"
                                        TextWrapping="Wrap"
-                                       Margin="0,8,0,8"/>
+                                       Margin="0,8,0,8"
+                                       Foreground="{DynamicResource MaterialDesignBody}"/>
                             <Button Command="{Binding NextHintCommand}"
                                     Content="Следующая подсказка"
                                     HorizontalAlignment="Right"
