@@ -5,6 +5,7 @@ using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.Shared;
 using CryptoPuzzles.ViewModels.Base;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -22,6 +23,7 @@ namespace CryptoPuzzles.ViewModels
         private readonly Action _goBack;
         private readonly int _userId;
         private readonly DispatcherTimer _timer;
+        private readonly DispatcherTimer _hintTimer;
 
         private int? _currentSessionId;
         private int _totalScore;
@@ -42,6 +44,7 @@ namespace CryptoPuzzles.ViewModels
         private int _currentHintIndex;
         private string _currentHint = string.Empty;
         private bool _hasHints;
+        private bool _areHintsVisible;
         private string _resultIcon = "Help";
         private SolidColorBrush _resultColor = Brushes.Transparent;
         private string _resultMessage = string.Empty;
@@ -70,6 +73,9 @@ namespace CryptoPuzzles.ViewModels
 
             _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
             _timer.Tick += (s, e) => UpdateElapsedTime();
+
+            _hintTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(5) };
+            _hintTimer.Tick += (s, e) => ShowHintsAfterDelay();
 
             SelectDifficultyCommand = new AsyncRelayCommand<ADifficulty>(async d => await SelectDifficultyAsync(d));
             NextHintCommand = new AsyncRelayCommand(async _ => await NextHintAsync(), _ => HasNextHint);
@@ -207,6 +213,12 @@ namespace CryptoPuzzles.ViewModels
             set => SetProperty(ref _hasHints, value);
         }
 
+        public bool AreHintsVisible
+        {
+            get => _areHintsVisible;
+            set => SetProperty(ref _areHintsVisible, value);
+        }
+
         public bool HasNextHint => _hints.Count > 0 && CurrentHintIndex < _hints.Count - 1;
 
         public string ResultIcon
@@ -245,6 +257,21 @@ namespace CryptoPuzzles.ViewModels
         public ICommand NextPuzzleCommand { get; }
         public ICommand FinishModuleCommand { get; }
         public ICommand GoBackCommand { get; }
+
+        private void ShowHintsAfterDelay()
+        {
+            _hintTimer.Stop();
+            if (HasHints)
+                AreHintsVisible = true;
+        }
+
+        private void ResetHintTimer()
+        {
+            _hintTimer.Stop();
+            AreHintsVisible = false;
+            if (HasHints)
+                _hintTimer.Start();
+        }
 
         private async Task LoadDifficultiesAsync()
         {
@@ -299,7 +326,7 @@ namespace CryptoPuzzles.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[Practice] Error updating session: {ex}");
+                Debug.WriteLine($"[Practice] Error updating session: {ex}");
             }
         }
 
@@ -322,6 +349,7 @@ namespace CryptoPuzzles.ViewModels
 
         private async Task GoBackAsync()
         {
+            _hintTimer.Stop();
             if (_currentSessionId.HasValue && !IsModuleCompleted)
             {
                 await UpdateSessionAsync(completed: true);
@@ -346,6 +374,7 @@ namespace CryptoPuzzles.ViewModels
                     _totalScore = 0;
                     _totalHintsUsed = 0;
                     _progressByPuzzleId.Clear();
+                    AreHintsVisible = false;
                 });
             }
             await Task.CompletedTask;
@@ -399,6 +428,7 @@ namespace CryptoPuzzles.ViewModels
                         IsSolvingPuzzle = true;
                         CurrentPuzzleIndex = 0;
                         CurrentPuzzle = Puzzles[0];
+                        await LoadHintsForPuzzleAsync(CurrentPuzzle.Id);
                     }
                     else
                         await DialogService.ShowMessage("В этой сложности пока нет головоломок.");
@@ -415,25 +445,30 @@ namespace CryptoPuzzles.ViewModels
         {
             try
             {
+                Debug.WriteLine($"[Practice] Loading hints for puzzle {puzzleId}");
                 var allHints = await _hintApi.GetAllAsync();
                 var hints = allHints
                     .Where(h => h.PuzzleId == puzzleId && !h.IsDeleted)
                     .OrderBy(h => h.HintOrder)
                     .ToList();
+                Debug.WriteLine($"[Practice] Found {hints.Count} hints for puzzle {puzzleId}");
 
                 await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
                     Hints = new ObservableCollection<AHint>(hints);
                     HasHints = Hints.Any();
                     CurrentHintIndex = -1;
+                    ResetHintTimer();
                 });
             }
-            catch
+            catch (Exception ex)
             {
+                Debug.WriteLine($"[Practice] Error loading hints: {ex}");
                 await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
                     Hints.Clear();
                     HasHints = false;
+                    AreHintsVisible = false;
                 });
             }
         }
@@ -487,6 +522,7 @@ namespace CryptoPuzzles.ViewModels
                 return;
 
             IsSolvingPuzzle = false;
+            _hintTimer.Stop();
 
             bool isCorrect = UserAnswer.Trim().Equals(CurrentPuzzle.Answer.Trim(), StringComparison.OrdinalIgnoreCase);
 
@@ -520,6 +556,7 @@ namespace CryptoPuzzles.ViewModels
             if (CurrentPuzzleIndex < Puzzles.Count - 1)
             {
                 CurrentPuzzleIndex++;
+                await LoadHintsForPuzzleAsync(CurrentPuzzle.Id);
                 IsSolvingPuzzle = true;
             }
             else
@@ -536,6 +573,7 @@ namespace CryptoPuzzles.ViewModels
 
         private async Task CompleteModuleAsync()
         {
+            _hintTimer.Stop();
             IsResult = false;
             IsModuleCompleted = true;
             CompletionMessage = $"Вы решили все головоломки сложности \"{SelectedDifficulty.DifficultyName}\"!\n\n" +

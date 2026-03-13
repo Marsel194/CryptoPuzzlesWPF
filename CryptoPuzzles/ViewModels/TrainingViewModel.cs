@@ -4,6 +4,7 @@ using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.Shared;
 using CryptoPuzzles.ViewModels.Base;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 
@@ -37,6 +38,7 @@ namespace CryptoPuzzles.ViewModels
         private int _currentHintIndex = -1;
         private string _currentHint = string.Empty;
         private bool _hasHints;
+        private bool _areHintsVisible;
         private string _userAnswer = string.Empty;
 
         private int? _currentSessionId;
@@ -207,6 +209,12 @@ namespace CryptoPuzzles.ViewModels
         {
             get => _hasHints;
             set => SetProperty(ref _hasHints, value);
+        }
+
+        public bool AreHintsVisible
+        {
+            get => _areHintsVisible;
+            set => SetProperty(ref _areHintsVisible, value);
         }
 
         public bool HasNextHint => _hints.Count > 0 && CurrentHintIndex < _hints.Count - 1;
@@ -456,11 +464,13 @@ namespace CryptoPuzzles.ViewModels
         {
             try
             {
+                Debug.WriteLine($"[Training] Loading hints for puzzle {puzzleId}");
                 var allHints = await _hintApi.GetAllAsync();
                 var hints = allHints
                     .Where(h => h.PuzzleId == puzzleId && !h.IsDeleted)
                     .OrderBy(h => h.HintOrder)
                     .ToList();
+                Debug.WriteLine($"[Training] Found {hints.Count} hints for puzzle {puzzleId}");
 
                 await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
@@ -468,14 +478,17 @@ namespace CryptoPuzzles.ViewModels
                     HasHints = Hints.Any();
                     CurrentHintIndex = -1;
                     CurrentHint = string.Empty;
+                    AreHintsVisible = HasHints; // Сразу показываем подсказки в обучении
                 });
             }
-            catch
+            catch (Exception ex)
             {
+                Debug.WriteLine($"[Training] Error loading hints: {ex}");
                 await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
                     Hints.Clear();
                     HasHints = false;
+                    AreHintsVisible = false;
                 });
             }
         }

@@ -14,7 +14,6 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Верхняя панель -->
         <Grid Grid.Row="0" Margin="0,0,0,16">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -35,11 +34,9 @@
                        VerticalAlignment="Center"/>
         </Grid>
 
-        <!-- Основная область -->
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <StackPanel>
 
-                <!-- Режим теории -->
                 <StackPanel Visibility="{Binding IsTheoryMode, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="{Binding TheoryTitle, FallbackValue='Загрузка...'}"
                                FontSize="22" FontWeight="SemiBold"
@@ -89,7 +86,6 @@
                         Visibility="{Binding IsButtonCanVisible, Converter={StaticResource BoolToVis}}"/>
                 </StackPanel>
 
-                <!-- Режим пазла -->
                 <StackPanel Visibility="{Binding IsPuzzleMode, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="{Binding PuzzleTitle, FallbackValue='Загрузка...'}"
                                FontSize="22" FontWeight="SemiBold"
@@ -101,11 +97,10 @@
                                TextWrapping="Wrap"
                                Margin="0,0,0,24"/>
 
-                    <!-- Подсказки -->
                     <Expander Header="Подсказка" 
                               IsExpanded="False"
                               Margin="0,0,0,16"
-                              Visibility="{Binding HasHints, Converter={StaticResource BoolToVis}}">
+                              Visibility="{Binding AreHintsVisible, Converter={StaticResource BoolToVis}}">
                         <StackPanel>
                             <TextBlock Text="{Binding CurrentHint}"
                                        TextWrapping="Wrap"
@@ -119,7 +114,6 @@
                         </StackPanel>
                     </Expander>
 
-                    <!-- Ввод ответа -->
                     <TextBox Text="{Binding UserAnswer, UpdateSourceTrigger=PropertyChanged}"
                              materialDesign:HintAssist.Hint="Ваш ответ"
                              Style="{StaticResource MaterialDesignFloatingHintTextBox}"
@@ -139,7 +133,6 @@
                     </Grid>
                 </StackPanel>
 
-                <!-- Режим завершения -->
                 <StackPanel Visibility="{Binding IsCompleted, Converter={StaticResource BoolToVis}}"
                             HorizontalAlignment="Center" Margin="0,48">
                     <materialDesign:PackIcon Kind="Trophy" Width="80" Height="80"
@@ -162,7 +155,6 @@
             </StackPanel>
         </ScrollViewer>
 
-        <!-- Индикатор прогресса для пазлов -->
         <Grid Grid.Row="2" Margin="0,16,0,0" Visibility="{Binding IsPuzzleMode, Converter={StaticResource BoolToVis}}">
             <ProgressBar Value="{Binding CurrentPuzzleIndex}" Maximum="{Binding TotalPuzzles}" Height="4"/>
         </Grid>
