@@ -49,6 +49,8 @@ namespace CryptoPuzzles.ViewModels
         private string _completionMessage = string.Empty;
         private DateTime _startTime;
 
+        private Dictionary<int, ASessionProgress> _progressByPuzzleId = [];
+
         public PracticeViewModel(
             DifficultyApiService difficultyApi,
             PuzzleApiService puzzleApi,
@@ -301,51 +303,20 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
-        private async Task CreateProgressForCurrentPuzzleAsync()
-        {
-            if (!_currentSessionId.HasValue || CurrentPuzzle == null) return;
-
-            try
-            {
-                var progressCreate = new ASessionProgressCreate(
-                    _currentSessionId.Value,
-                    CurrentPuzzle.Id,
-                    CurrentPuzzleIndex + 1,
-                    0,
-                    0
-                );
-                await _sessionProgressApi.CreateAsync(progressCreate);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"[Practice] Error creating progress: {ex}");
-            }
-        }
-
         private async Task UpdateProgressForCurrentPuzzleAsync(bool solved, int hintsUsed, int scoreEarned)
         {
             if (!_currentSessionId.HasValue || CurrentPuzzle == null) return;
 
-            try
+            if (_progressByPuzzleId.TryGetValue(CurrentPuzzle.Id, out var progress))
             {
-                var progresses = await _sessionProgressApi.GetAllAsync(sessionId: _currentSessionId.Value);
-                var progress = progresses.FirstOrDefault(p => p.PuzzleId == CurrentPuzzle.Id);
-
-                if (progress != null)
-                {
-                    var update = new ASessionProgressUpdate(
-                        progress.Id,
-                        hintsUsed,
-                        scoreEarned,
-                        solved,
-                        solved ? DateTime.UtcNow : null
-                    );
-                    await _sessionProgressApi.UpdateAsync(progress.Id, update);
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"[Practice] Error updating progress: {ex}");
+                var update = new ASessionProgressUpdate(
+                    progress.Id,
+                    hintsUsed,
+                    scoreEarned,
+                    solved,
+                    solved ? DateTime.UtcNow : null
+                );
+                await _sessionProgressApi.UpdateAsync(progress.Id, update);
             }
         }
 
@@ -374,6 +345,7 @@ namespace CryptoPuzzles.ViewModels
                     _currentSessionId = null;
                     _totalScore = 0;
                     _totalHintsUsed = 0;
+                    _progressByPuzzleId.Clear();
                 });
             }
             await Task.CompletedTask;
@@ -402,13 +374,31 @@ namespace CryptoPuzzles.ViewModels
 
                     if (Puzzles.Any())
                     {
+                        var existingProgress = await _sessionProgressApi.GetAllAsync(sessionId: _currentSessionId.Value);
+                        _progressByPuzzleId = existingProgress.ToDictionary(p => p.PuzzleId, p => p);
+
+                        foreach (var puzzle in Puzzles)
+                        {
+                            if (!_progressByPuzzleId.ContainsKey(puzzle.Id))
+                            {
+                                var progressCreate = new ASessionProgressCreate(
+                                    _currentSessionId.Value,
+                                    puzzle.Id,
+                                    Puzzles.IndexOf(puzzle),
+                                    0,
+                                    0
+                                );
+                                var newProgress = await _sessionProgressApi.CreateAsync(progressCreate);
+                                _progressByPuzzleId[puzzle.Id] = newProgress;
+                            }
+                        }
+
                         IsSelectingDifficulty = false;
                         IsResult = false;
                         IsModuleCompleted = false;
                         IsSolvingPuzzle = true;
                         CurrentPuzzleIndex = 0;
                         CurrentPuzzle = Puzzles[0];
-                        await CreateProgressForCurrentPuzzleAsync();
                     }
                     else
                         await DialogService.ShowMessage("В этой сложности пока нет головоломок.");
@@ -459,7 +449,6 @@ namespace CryptoPuzzles.ViewModels
                 CurrentHintIndex = -1;
                 CurrentHint = string.Empty;
                 _ = LoadHintsForPuzzleAsync(CurrentPuzzle.Id);
-                _ = CreateProgressForCurrentPuzzleAsync();
                 ElapsedTime = "00:00";
             }
         }

@@ -164,6 +164,9 @@ namespace CryptoPuzzles.Server.Data
                     .HasColumnName("is_completed")
                     .HasDefaultValue(false);
 
+                entity.Property(e => e.CurrentTutorialIndex)
+                    .HasColumnName("current_tutorial_index");
+
                 entity.Property(e => e.IsDeleted)
                     .HasColumnName("is_deleted");
 

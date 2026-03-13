@@ -4,7 +4,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:helpers="clr-namespace:CryptoPuzzles.Helpers">
     <UserControl.Resources>
-        
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
     </UserControl.Resources>
 
     <Grid Margin="24">
@@ -14,21 +14,19 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Верхняя панель: заголовок и кнопка назад -->
         <Grid Grid.Row="0" Margin="0,0,0,16">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <!-- Кнопка назад теперь видна всегда -->
             <Button Command="{Binding GoBackCommand}"
                 Style="{StaticResource MaterialDesignFlatButton}"
                 HorizontalAlignment="Left">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="ArrowLeft" Width="24" Height="24"/>
-                        <TextBlock Text="Назад" Margin="8,0,0,0" FontSize="16"/>
-                    </StackPanel>
-                </Button>
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="ArrowLeft" Width="24" Height="24"/>
+                    <TextBlock Text="Назад" Margin="8,0,0,0" FontSize="16"/>
+                </StackPanel>
+            </Button>
 
             <TextBlock Grid.Column="1" Text="Практика"
                    FontSize="28" FontWeight="Bold"
@@ -37,11 +35,9 @@
                    VerticalAlignment="Center"/>
         </Grid>
 
-        <!-- Основная область -->
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <StackPanel>
 
-                <!-- Выбор сложности -->
                 <StackPanel Visibility="{Binding IsSelectingDifficulty, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="Выберите сложность"
                                FontSize="22" FontWeight="SemiBold"
@@ -84,9 +80,7 @@
                     </ListBox>
                 </StackPanel>
 
-                <!-- Решение пазла -->
                 <StackPanel Visibility="{Binding IsSolvingPuzzle, Converter={StaticResource BoolToVis}}">
-                    <!-- Таймер -->
                     <Grid Margin="0,0,0,16">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -112,7 +106,6 @@
                        Background="{DynamicResource SecondaryHueMidBrush}"
                        Margin="0,0,0,24"/>
 
-                    <!-- Подсказки -->
                     <Expander Header="Подсказка" 
                               IsExpanded="False"
                               Margin="0,0,0,16"
@@ -141,7 +134,6 @@
                             Height="48"/>
                 </StackPanel>
 
-                <!-- Результат -->
                 <StackPanel Visibility="{Binding IsResult, Converter={StaticResource BoolToVis}}"
                             HorizontalAlignment="Center" Margin="0,24">
                     <materialDesign:PackIcon Kind="{Binding ResultIcon}" Width="64" Height="64"
@@ -183,7 +175,6 @@
                     </Grid>
                 </StackPanel>
 
-                <!-- Завершение модуля -->
                 <StackPanel Visibility="{Binding IsModuleCompleted, Converter={StaticResource BoolToVis}}"
                             HorizontalAlignment="Center" Margin="0,48">
                     <materialDesign:PackIcon Kind="Trophy" Width="80" Height="80"
