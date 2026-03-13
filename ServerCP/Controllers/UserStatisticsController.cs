@@ -22,47 +22,64 @@ namespace CryptoPuzzles.Server.Controllers
             [FromQuery] string? orderBy = "totalScore",
             [FromQuery] bool descending = true)
         {
-            var query = _context.UserStatistics
-                .Include(us => us.User)
-                .Where(us => !us.User.IsDeleted)
-                .Select(us => new AUserStatistic(
-                    us.UserId,
-                    us.User.Login,
-                    us.User.Username,
-                    us.User.Email,
-                    us.TotalSessions,
-                    us.TotalPuzzlesSolved,
-                    us.TotalScore,
-                    us.TotalHintsUsed,
-                    us.AvgScorePerSession,
-                    us.LastActive,
-                    us.User.CreatedAt
-                ));
+            var users = await _context.Users
+                .Where(u => !u.IsDeleted)
+                .Select(u => new
+                {
+                    u.Id,
+                    u.Login,
+                    u.Username,
+                    u.Email,
+                    u.CreatedAt,
+                    Statistic = u.Statistic != null ? new
+                    {
+                        u.Statistic.TotalSessions,
+                        u.Statistic.TotalPuzzlesSolved,
+                        u.Statistic.TotalScore,
+                        u.Statistic.TotalHintsUsed,
+                        u.Statistic.AvgScorePerSession,
+                        u.Statistic.LastActive
+                    } : null
+                })
+                .ToListAsync();
 
-            query = orderBy?.ToLower() switch
+            var result = users.Select(u => new AUserStatistic(
+                u.Id,
+                u.Login,
+                u.Username,
+                u.Email,
+                u.Statistic?.TotalSessions ?? 0,
+                u.Statistic?.TotalPuzzlesSolved ?? 0,
+                u.Statistic?.TotalScore ?? 0,
+                u.Statistic?.TotalHintsUsed ?? 0,
+                u.Statistic?.AvgScorePerSession ?? 0,
+                u.Statistic?.LastActive,
+                u.CreatedAt
+            )).AsQueryable();
+
+            result = orderBy?.ToLower() switch
             {
                 "totalsessions" => descending
-                    ? query.OrderByDescending(us => us.TotalSessions)
-                    : query.OrderBy(us => us.TotalSessions),
+                    ? result.OrderByDescending(us => us.TotalSessions)
+                    : result.OrderBy(us => us.TotalSessions),
                 "totalpuzzlessolved" => descending
-                    ? query.OrderByDescending(us => us.TotalPuzzlesSolved)
-                    : query.OrderBy(us => us.TotalPuzzlesSolved),
+                    ? result.OrderByDescending(us => us.TotalPuzzlesSolved)
+                    : result.OrderBy(us => us.TotalPuzzlesSolved),
                 "totalscore" => descending
-                    ? query.OrderByDescending(us => us.TotalScore)
-                    : query.OrderBy(us => us.TotalScore),
+                    ? result.OrderByDescending(us => us.TotalScore)
+                    : result.OrderBy(us => us.TotalScore),
                 "totalhintsused" => descending
-                    ? query.OrderByDescending(us => us.TotalHintsUsed)
-                    : query.OrderBy(us => us.TotalHintsUsed),
+                    ? result.OrderByDescending(us => us.TotalHintsUsed)
+                    : result.OrderBy(us => us.TotalHintsUsed),
                 "lastactive" => descending
-                    ? query.OrderByDescending(us => us.LastActive)
-                    : query.OrderBy(us => us.LastActive),
+                    ? result.OrderByDescending(us => us.LastActive)
+                    : result.OrderBy(us => us.LastActive),
                 _ => descending
-                    ? query.OrderByDescending(us => us.TotalScore)
-                    : query.OrderBy(us => us.TotalScore)
+                    ? result.OrderByDescending(us => us.TotalScore)
+                    : result.OrderBy(us => us.TotalScore)
             };
 
-            query = query.OrderByDescending(us => us.TotalScore);
-            return Ok(await query.ToListAsync());
+            return Ok(result.ToList());
         }
 
         [HttpGet("user/{userId}")]
@@ -109,34 +126,52 @@ namespace CryptoPuzzles.Server.Controllers
             [FromQuery] int top = 10,
             [FromQuery] string criteria = "totalScore")
         {
-            var query = _context.UserStatistics
-                .Include(us => us.User)
-                .Where(us => !us.User.IsDeleted);
+            var users = await _context.Users
+                .Where(u => !u.IsDeleted)
+                .Select(u => new
+                {
+                    u.Id,
+                    u.Login,
+                    u.Username,
+                    u.Email,
+                    u.CreatedAt,
+                    Statistic = u.Statistic != null ? new
+                    {
+                        u.Statistic.TotalSessions,
+                        u.Statistic.TotalPuzzlesSolved,
+                        u.Statistic.TotalScore,
+                        u.Statistic.TotalHintsUsed,
+                        u.Statistic.AvgScorePerSession,
+                        u.Statistic.LastActive
+                    } : null
+                })
+                .ToListAsync();
 
-            query = criteria.ToLower() switch
+            var result = users.Select(u => new AUserStatistic(
+                u.Id,
+                u.Login,
+                u.Username,
+                u.Email,
+                u.Statistic?.TotalSessions ?? 0,
+                u.Statistic?.TotalPuzzlesSolved ?? 0,
+                u.Statistic?.TotalScore ?? 0,
+                u.Statistic?.TotalHintsUsed ?? 0,
+                u.Statistic?.AvgScorePerSession ?? 0,
+                u.Statistic?.LastActive,
+                u.CreatedAt
+            )).AsQueryable();
+
+            result = criteria.ToLower() switch
             {
-                "totalpuzzlessolved" => query.OrderByDescending(us => us.TotalPuzzlesSolved),
-                "avgscore" => query.OrderByDescending(us => us.AvgScorePerSession),
-                "totalsessions" => query.OrderByDescending(us => us.TotalSessions),
-                _ => query.OrderByDescending(us => us.TotalScore)
+                "totalpuzzlessolved" => result.OrderByDescending(us => us.TotalPuzzlesSolved),
+                "avgscore" => result.OrderByDescending(us => us.AvgScorePerSession),
+                "totalsessions" => result.OrderByDescending(us => us.TotalSessions),
+                _ => result.OrderByDescending(us => us.TotalScore)
             };
 
-            var leaderboard = await query
+            var leaderboard = result
                 .Take(top)
-                .Select(us => new AUserStatistic(
-                    us.UserId,
-                    us.User.Login,
-                    us.User.Username,
-                    us.User.Email,
-                    us.TotalSessions,
-                    us.TotalPuzzlesSolved,
-                    us.TotalScore,
-                    us.TotalHintsUsed,
-                    us.AvgScorePerSession,
-                    us.LastActive,
-                    us.User.CreatedAt
-                ))
-                .ToListAsync();
+                .ToList();
 
             return Ok(leaderboard);
         }

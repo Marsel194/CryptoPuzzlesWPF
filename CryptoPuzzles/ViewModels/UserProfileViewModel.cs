@@ -1,20 +1,24 @@
-﻿using CryptoPuzzles.Converters;
-using CryptoPuzzles.Helpers;
-using CryptoPuzzles.Services;
+﻿using CryptoPuzzles.Services;
 using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.Shared;
 using CryptoPuzzles.ViewModels.Base;
+using System.Diagnostics;
 using System.Windows.Input;
 
 namespace CryptoPuzzles.ViewModels
 {
     public class UserProfileViewModel : ViewModelBase
     {
+        private readonly IAuthService _authService;
         private readonly UserApiService _userApi;
+        private readonly GameSessionApiService _gameSessionApi;
+        private readonly SessionProgressApiService _progressApi;
+        private readonly UserStatisticsApiService _statisticsApi;
         private readonly PuzzleApiService _puzzleApi;
-        private readonly SessionProgressApiService _sessionProgressApi;
-        private readonly Action _goBack;
+        private readonly UserSessionService _userSession;
+        private readonly Action _closeAction;
         private readonly int _userId;
+
         private readonly AsyncRelayCommand _saveCommand;
 
         private string _login = string.Empty;
@@ -22,34 +26,20 @@ namespace CryptoPuzzles.ViewModels
         private string _username = string.Empty;
         private string _newPassword = string.Empty;
         private string _confirmPassword = string.Empty;
+        private bool _isEditMode;
+        private bool _isLoading;
+        private bool _hasActiveSession;
+
+        private string _originalEmail = string.Empty;
+        private string _originalUsername = string.Empty;
+
         private int _trainingProgress;
         private int _practiceProgress;
-        private bool _isEditMode;
-
-        public UserProfileViewModel(
-            UserApiService userApi,
-            PuzzleApiService puzzleApi,
-            SessionProgressApiService sessionProgressApi,
-            int userId,
-            Action goBack)
-        {
-            _userApi = userApi;
-            _puzzleApi = puzzleApi;
-            _sessionProgressApi = sessionProgressApi;
-            _userId = userId;
-            _goBack = goBack;
-
-            CloseCommand = new AsyncRelayCommand(CloseAsync);
-            EditCommand = new AsyncRelayCommand(EditAsync);
-            CancelCommand = new AsyncRelayCommand(CancelAsync);
-            _saveCommand = new AsyncRelayCommand(SaveAsync, _ => CanSave());
-            SaveCommand = _saveCommand;
-        }
 
         public string Login
         {
             get => _login;
-            set => SetProperty(ref _login, value);
+            private set => SetProperty(ref _login, value);
         }
 
         public string Email
@@ -84,118 +74,266 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
-        public int TrainingProgress
-        {
-            get => _trainingProgress;
-            set => SetProperty(ref _trainingProgress, value);
-        }
-
-        public int PracticeProgress
-        {
-            get => _practiceProgress;
-            set => SetProperty(ref _practiceProgress, value);
-        }
-
         public bool IsEditMode
         {
             get => _isEditMode;
             set => SetProperty(ref _isEditMode, value);
         }
 
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set => SetProperty(ref _isLoading, value);
+        }
+
+        public bool HasActiveSession
+        {
+            get => _hasActiveSession;
+            set => SetProperty(ref _hasActiveSession, value);
+        }
+
+        public int TrainingProgress
+        {
+            get => _trainingProgress;
+            private set => SetProperty(ref _trainingProgress, value);
+        }
+
+        public int PracticeProgress
+        {
+            get => _practiceProgress;
+            private set => SetProperty(ref _practiceProgress, value);
+        }
+
         public ICommand CloseCommand { get; }
         public ICommand EditCommand { get; }
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
+        public ICommand DeleteProgressCommand { get; }
 
-        public async Task LoadDataAsync()
+        public UserProfileViewModel(
+            IAuthService authService,
+            UserApiService userApi,
+            GameSessionApiService gameSessionApi,
+            SessionProgressApiService progressApi,
+            UserStatisticsApiService statisticsApi,
+            PuzzleApiService puzzleApi,
+            UserSessionService userSession,
+            Action closeAction,
+            int userId)
+        {
+            _authService = authService ?? throw new ArgumentNullException(nameof(authService));
+            _userApi = userApi ?? throw new ArgumentNullException(nameof(userApi));
+            _gameSessionApi = gameSessionApi ?? throw new ArgumentNullException(nameof(gameSessionApi));
+            _progressApi = progressApi ?? throw new ArgumentNullException(nameof(progressApi));
+            _statisticsApi = statisticsApi ?? throw new ArgumentNullException(nameof(statisticsApi));
+            _puzzleApi = puzzleApi ?? throw new ArgumentNullException(nameof(puzzleApi));
+            _userSession = userSession ?? throw new ArgumentNullException(nameof(userSession));
+            _closeAction = closeAction ?? throw new ArgumentNullException(nameof(closeAction));
+            _userId = userId;
+
+            CloseCommand = new AsyncRelayCommand(CloseAsync);
+            EditCommand = new AsyncRelayCommand(EditAsync, _ => !IsLoading && !IsEditMode);
+            _saveCommand = new AsyncRelayCommand(SaveAsync, _ => !IsLoading && IsEditMode && CanSave());
+            SaveCommand = _saveCommand;
+            CancelCommand = new AsyncRelayCommand(CancelAsync, _ => !IsLoading && IsEditMode);
+            DeleteProgressCommand = new AsyncRelayCommand(DeleteProgressAsync, _ => !IsLoading && HasActiveSession);
+        }
+
+        private bool CanSave()
+        {
+            if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Username))
+                return false;
+
+            bool changePassword = !string.IsNullOrWhiteSpace(NewPassword);
+            if (changePassword)
+            {
+                if (NewPassword != ConfirmPassword)
+                    return false;
+                if (NewPassword.Length < 6)
+                    return false;
+            }
+
+            return true;
+        }
+
+        public async Task LoadUserDataAsync()
         {
             try
             {
+                IsLoading = true;
+
                 var user = await _userApi.GetByIdAsync(_userId);
                 if (user != null)
                 {
                     Login = user.Login;
                     Email = user.Email;
                     Username = user.Username;
+
+                    _originalEmail = user.Email;
+                    _originalUsername = user.Username;
                 }
 
-                var allPuzzles = await _puzzleApi.GetAllAsync();
-                int totalTraining = allPuzzles.Count(p => p.IsTraining);
-                int totalPractice = allPuzzles.Count(p => !p.IsTraining);
-
-                var solvedProgress = await _sessionProgressApi.GetAllAsync(userId: _userId, solved: true);
-                int solvedTraining = solvedProgress.Count(sp =>
+                var stats = await _statisticsApi.GetByUserIdAsync(_userId);
+                if (stats != null)
                 {
-                    var puzzle = allPuzzles.FirstOrDefault(p => p.Id == sp.PuzzleId);
-                    return puzzle != null && puzzle.IsTraining;
-                });
-                int solvedPractice = solvedProgress.Count(sp =>
-                {
-                    var puzzle = allPuzzles.FirstOrDefault(p => p.Id == sp.PuzzleId);
-                    return puzzle != null && !puzzle.IsTraining;
-                });
+                    var allPuzzles = await _puzzleApi.GetAllAsync();
+                    var trainingPuzzles = allPuzzles.Where(p => p.IsTraining).ToList();
+                    var practicePuzzles = allPuzzles.Where(p => !p.IsTraining).ToList();
 
-                TrainingProgress = totalTraining > 0 ? (solvedTraining * 100 / totalTraining) : 0;
-                PracticeProgress = totalPractice > 0 ? (solvedPractice * 100 / totalPractice) : 0;
+                    TrainingProgress = trainingPuzzles.Count > 0
+                        ? (int)((double)stats.TotalPuzzlesSolved / trainingPuzzles.Count * 100)
+                        : 0;
+
+                    PracticeProgress = practicePuzzles.Count > 0
+                        ? (int)((double)stats.TotalPuzzlesSolved / practicePuzzles.Count * 100)
+                        : 0;
+                }
+
+                var activeSessions = await _gameSessionApi.GetAllAsync(userId: _userId, isCompleted: false);
+                HasActiveSession = activeSessions != null && activeSessions.Any();
             }
             catch (Exception ex)
             {
-                await DialogService.ShowError($"Ошибка загрузки профиля: {ex.Message}");
+                Debug.WriteLine($"[UserProfile] Error loading data: {ex.Message}");
+                await DialogService.ShowError($"Ошибка загрузки данных: {ex.Message}");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
+        private async Task DeleteProgressAsync(object? parameter = null)
+        {
+            try
+            {
+                var activeSessions = await _gameSessionApi.GetAllAsync(userId: _userId, isCompleted: false);
+                var session = activeSessions?.FirstOrDefault();
+                if (session == null)
+                {
+                    HasActiveSession = false;
+                    return;
+                }
+
+                bool confirmed = await DialogService.ShowConfirmation(
+                    "Вы действительно хотите удалить текущий прогресс? Все несохранённые данные будут потеряны.");
+                if (!confirmed)
+                    return;
+
+                IsLoading = true;
+
+                await _gameSessionApi.DeleteAsync(session.Id);
+
+                HasActiveSession = false;
+
+                await LoadUserDataAsync();
+
+                await DialogService.ShowMessage("Текущий прогресс успешно удалён.");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[UserProfile] Error deleting progress: {ex.Message}");
+                await DialogService.ShowError($"Ошибка при удалении прогресса: {ex.Message}");
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
 
         private Task CloseAsync(object? parameter = null)
         {
-            _goBack?.Invoke();
+            _closeAction?.Invoke();
             return Task.CompletedTask;
         }
 
         private Task EditAsync(object? parameter = null)
         {
+            _originalEmail = Email;
+            _originalUsername = Username;
+
+            NewPassword = string.Empty;
+            ConfirmPassword = string.Empty;
+
             IsEditMode = true;
             return Task.CompletedTask;
         }
 
-        private Task CancelAsync(object? parameter = null)
-        {
-            IsEditMode = false;
-            NewPassword = string.Empty;
-            ConfirmPassword = string.Empty;
-            _ = LoadDataAsync();
-            return Task.CompletedTask;
-        }
-
-        private bool CanSave(object? parameter = null)
-        {
-            if (!IsEditMode) return false;
-            if (string.IsNullOrWhiteSpace(NewPassword) && string.IsNullOrWhiteSpace(ConfirmPassword))
-                return true;
-            return NewPassword == ConfirmPassword && !string.IsNullOrWhiteSpace(NewPassword);
-        }
-
         private async Task SaveAsync(object? parameter = null)
         {
+            if (string.IsNullOrWhiteSpace(Email))
+            {
+                await DialogService.ShowError("Email не может быть пустым.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(Username))
+            {
+                await DialogService.ShowError("Имя не может быть пустым.");
+                return;
+            }
+
+            bool changePassword = !string.IsNullOrWhiteSpace(NewPassword);
+            if (changePassword)
+            {
+                if (NewPassword != ConfirmPassword)
+                {
+                    await DialogService.ShowError("Введенные пароли не совпадают.");
+                    return;
+                }
+                if (NewPassword.Length < 6)
+                {
+                    await DialogService.ShowError("Пароль должен содержать не менее 6 символов.");
+                    return;
+                }
+            }
+
             try
             {
+                IsLoading = true;
+
                 var updateDto = new AUserUpdate(
                     Id: _userId,
-                    Login: Login,
-                    Username: Username,
-                    Email: Email,
-                    Password: string.IsNullOrWhiteSpace(NewPassword) ? null : NewPassword
+                    Login: this.Login,
+                    Username: this.Username,
+                    Email: this.Email,
+                    Password: changePassword ? this.NewPassword : null
                 );
 
                 await _userApi.UpdateAsync(_userId, updateDto);
 
-                await DialogService.ShowMessage("Данные успешно сохранены");
-                IsEditMode = false;
+                _originalEmail = Email;
+                _originalUsername = Username;
+
                 NewPassword = string.Empty;
                 ConfirmPassword = string.Empty;
+
+                IsEditMode = false;
+
+                await DialogService.ShowMessage("Данные успешно сохранены.");
             }
             catch (Exception ex)
             {
-                await DialogService.ShowError($"Ошибка сохранения: {ex.Message}");
+                Debug.WriteLine($"[UserProfile] ERROR: {ex.Message}");
+                await DialogService.ShowError($"Ошибка при сохранении: {ex.Message}");
             }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
+        private async Task CancelAsync(object? parameter = null)
+        {
+            Email = _originalEmail;
+            Username = _originalUsername;
+
+            NewPassword = string.Empty;
+            ConfirmPassword = string.Empty;
+
+            IsEditMode = false;
+
+            await LoadUserDataAsync();
         }
     }
 }

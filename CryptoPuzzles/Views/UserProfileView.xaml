@@ -10,7 +10,6 @@
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="0,0,0,24">
-            <!-- Кнопка назад -->
             <Button Command="{Binding CloseCommand}"
                 Style="{StaticResource MaterialDesignFlatButton}"
                 HorizontalAlignment="Left"
@@ -21,13 +20,11 @@
                 </StackPanel>
             </Button>
 
-            <!-- Заголовок -->
             <TextBlock Text="Профиль пользователя"
                        FontSize="28" FontWeight="Bold"
                        Foreground="{DynamicResource PrimaryHueMidBrush}"
                        Margin="0,0,0,24"/>
 
-            <!-- Прогресс (без изменений) -->
             <Border Background="{DynamicResource MaterialDesignCardBackground}"
                     CornerRadius="20" Padding="24" Margin="0,0,0,24"
                     materialDesign:ElevationAssist.Elevation="Dp4">
@@ -57,7 +54,7 @@
                                        FontSize="20" FontWeight="Bold"
                                        Foreground="{DynamicResource PrimaryHueMidBrush}"/>
                             <ProgressBar Grid.Row="1" Grid.ColumnSpan="2"
-                                         Value="{Binding TrainingProgress}" Maximum="100"
+                                         Value="{Binding TrainingProgress, Mode=OneWay}" Maximum="100"
                                          Height="8" Margin="0,8,0,0"
                                          Foreground="{DynamicResource PrimaryHueMidBrush}"/>
                         </Grid>
@@ -86,7 +83,7 @@
                                        FontSize="20" FontWeight="Bold"
                                        Foreground="{DynamicResource SecondaryHueMidBrush}"/>
                             <ProgressBar Grid.Row="1" Grid.ColumnSpan="2"
-                                         Value="{Binding PracticeProgress}" Maximum="100"
+                                         Value="{Binding PracticeProgress, Mode=OneWay}" Maximum="100"
                                          Height="8" Margin="0,8,0,0"
                                          Foreground="{DynamicResource SecondaryHueMidBrush}"/>
                         </Grid>
@@ -97,12 +94,10 @@
                 </Grid>
             </Border>
 
-            <!-- Данные пользователя -->
             <Border Background="{DynamicResource MaterialDesignCardBackground}"
                     CornerRadius="20" Padding="24"
                     materialDesign:ElevationAssist.Elevation="Dp4">
                 <StackPanel>
-                    <!-- Заголовок с кнопкой -->
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -122,7 +117,6 @@
                         </Button>
                     </Grid>
 
-                    <!-- Поля данных -->
                     <Grid Margin="0,24,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -136,7 +130,6 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <!-- Логин -->
                         <TextBlock Grid.Row="0" Grid.Column="0"
                                    Text="Логин:" FontSize="16"
                                    Foreground="{DynamicResource MaterialDesignBodyLight}"
@@ -146,7 +139,6 @@
                                    Foreground="{DynamicResource MaterialDesignBody}"
                                    VerticalAlignment="Center" Margin="0,0,0,16"/>
 
-                        <!-- Email -->
                         <TextBlock Grid.Row="1" Grid.Column="0"
                                    Text="Email:" FontSize="16"
                                    Foreground="{DynamicResource MaterialDesignBodyLight}"
@@ -162,7 +154,6 @@
                                  Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}"
                                  materialDesign:HintAssist.Hint="Email"/>
 
-                        <!-- Имя -->
                         <TextBlock Grid.Row="2" Grid.Column="0"
                                    Text="Имя:" FontSize="16"
                                    Foreground="{DynamicResource MaterialDesignBodyLight}"
@@ -178,7 +169,6 @@
                                  Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}"
                                  materialDesign:HintAssist.Hint="Имя"/>
 
-                        <!-- Новый пароль -->
                         <Grid Grid.Row="3" Grid.ColumnSpan="2" Margin="0,8,0,16"
                               Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}">
                             <Grid.ColumnDefinitions>
@@ -201,7 +191,6 @@
                                Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"/>
                         </Grid>
 
-                        <!-- Подтверждение пароля -->
                         <Grid Grid.Row="4" Grid.ColumnSpan="2" Margin="0,8,0,16"
                               Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}">
                             <Grid.ColumnDefinitions>
@@ -225,7 +214,6 @@
                         </Grid>
                     </Grid>
 
-                    <!-- Кнопки сохранения/отмены -->
                     <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Right"
                                 Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}">
@@ -236,6 +224,33 @@
                                 Style="{StaticResource MaterialDesignFlatButton}"
                                 Content="Отмена"/>
                     </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Background="{DynamicResource MaterialDesignCardBackground}"
+                    CornerRadius="20" Padding="24" Margin="0,24,0,0"
+                    materialDesign:ElevationAssist.Elevation="Dp4">
+                <StackPanel>
+                    <TextBlock Text="Управление прогрессом"
+                               FontSize="22" FontWeight="SemiBold"
+                               Foreground="{DynamicResource PrimaryHueMidBrush}"
+                               Margin="0,0,0,16"/>
+                    <TextBlock Text="Если вы хотите начать обучение заново, вы можете сбросить текущий прогресс. Это удалит все данные о вашей текущей активной сессии."
+                               TextWrapping="Wrap"
+                               Foreground="{DynamicResource MaterialDesignBodyLight}"
+                               Margin="0,0,0,16"/>
+                    <Button Command="{Binding DeleteProgressCommand}"
+                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            Background="{DynamicResource MaterialDesignError}"
+                            Foreground="White"
+                            Height="44"
+                            materialDesign:ButtonAssist.CornerRadius="22"
+                            IsEnabled="{Binding HasActiveSession}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Delete" Width="20" Height="20" Margin="0,0,8,0"/>
+                            <TextBlock Text="Удалить текущий прогресс" FontSize="14" FontWeight="Bold"/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
             </Border>
         </StackPanel>

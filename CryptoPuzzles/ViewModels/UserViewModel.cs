@@ -199,7 +199,7 @@ namespace CryptoPuzzles.ViewModels
                 );
 
                 CurrentSection = profileVM;
-                await profileVM.LoadDataAsync();
+                await profileVM.LoadUserDataAsync();
             }
             catch (Exception ex)
             {
