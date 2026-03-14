@@ -1,12 +1,16 @@
-﻿namespace CryptoPuzzles.Server.Models
+﻿using CryptoPuzzles.Shared;
+
+namespace CryptoPuzzles.Server.Models
 {
-    public class Hint
+    public class Hint : IEntityWithId, ISoftDelete, IHasCreatedAt
     {
+        public Hint() { }
+
         public int Id { get; set; }
 
         public int PuzzleId { get; set; }
 
-        public required string HintText { get; set; }
+        public string HintText { get; set; } = string.Empty;
 
         public int HintOrder { get; set; } = 1;
 

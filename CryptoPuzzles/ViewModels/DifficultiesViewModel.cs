@@ -73,7 +73,7 @@ namespace CryptoPuzzles.ViewModels
         protected override bool FilterPredicate(ADifficulty item)
         {
             if (string.IsNullOrWhiteSpace(FilterText)) return true;
-            return item.DifficultyName.ToLower().Contains(FilterText.ToLower());
+            return item.DifficultyName.Contains(FilterText, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

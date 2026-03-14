@@ -3,6 +3,27 @@ using System.Runtime.CompilerServices;
 
 namespace CryptoPuzzles.Shared
 {
+    public interface IHasId
+    {
+        int Id { get; }
+    }
+
+    public interface IEntityWithId
+    {
+        int Id { get; set; }
+    }
+
+    public interface ISoftDelete
+    {
+        bool IsDeleted { get; set; }
+        DateTime? DeletedAt { get; set; }
+    }
+
+    public interface IHasCreatedAt
+    {
+        DateTime CreatedAt { get; set; }
+    }
+
     public class AAdmin : INotifyPropertyChanged
     {
         private int _id;
@@ -618,33 +639,33 @@ namespace CryptoPuzzles.Shared
     }
 
     public record AAdminCreate(string Login, string Password, string FirstName, string LastName, string? MiddleName);
-    public record AAdminUpdate(int Id, string Login, string FirstName, string LastName, string? MiddleName, string? Password);
+    public record AAdminUpdate(int Id, string Login, string FirstName, string LastName, string? MiddleName, string? Password) : IHasId;
 
     public record ADifficultyCreate(string DifficultyName);
-    public record ADifficultyUpdate(int Id, string DifficultyName);
+    public record ADifficultyUpdate(int Id, string DifficultyName) : IHasId;
 
     public record AEncryptionMethodCreate(string Name);
-    public record AEncryptionMethodUpdate(int Id, string Name);
+    public record AEncryptionMethodUpdate(int Id, string Name): IHasId;
 
     public record APuzzleCreate(string Title, string Content, string Answer, int MaxScore,
         int DifficultyId, int? MethodId, bool IsTraining, int? TutorialOrder);
     public record APuzzleUpdate(int Id, string Title, string Content, string Answer, int MaxScore,
-        int DifficultyId, int? MethodId, bool IsTraining, int? TutorialOrder);
+        int DifficultyId, int? MethodId, bool IsTraining, int? TutorialOrder): IHasId;
 
     public record AHintCreate(int PuzzleId, string HintText, int HintOrder);
-    public record AHintUpdate(int Id, int PuzzleId, string HintText, int HintOrder);
+    public record AHintUpdate(int Id, int PuzzleId, string HintText, int HintOrder) : IHasId;
 
     public record AGameSessionCreate(int UserId, string SessionType, int TotalScore);
-    public record AGameSessionUpdate(int Id, int? TotalScore, bool? IsCompleted, DateTime? CompletedAt, int? CurrentTutorialIndex);
+    public record AGameSessionUpdate(int Id, int? TotalScore, bool? IsCompleted, DateTime? CompletedAt, int? CurrentTutorialIndex) : IHasId;
 
     public record ATutorialCreate(int MethodId, string TheoryTitle, string TheoryContent, int SortOrder);
-    public record ATutorialUpdate(int Id, int MethodId, string TheoryTitle, string TheoryContent, int SortOrder);
+    public record ATutorialUpdate(int Id, int MethodId, string TheoryTitle, string TheoryContent, int SortOrder) : IHasId;
 
     public record AUserCreate(string Login, string Password, string Username, string Email);
-    public record AUserUpdate(int Id, string Login, string Username, string Email, string? Password = null);
+    public record AUserUpdate(int Id, string Login, string Username, string Email, string? Password = null) : IHasId;
 
     public record ASessionProgressCreate(int SessionId, int PuzzleId, int PuzzleOrder, int HintsUsed, int ScoreEarned);
-    public record ASessionProgressUpdate(int Id, int? HintsUsed, int? ScoreEarned, bool? Solved, DateTime? SolvedAt);
+    public record ASessionProgressUpdate(int Id, int? HintsUsed, int? ScoreEarned, bool? Solved, DateTime? SolvedAt) : IHasId;
 
     public record AUserStatisticRefresh(int UserId);
 

@@ -180,15 +180,11 @@ namespace CryptoPuzzles.Server.Controllers
         public async Task<ActionResult<IEnumerable<ASessionProgress>>> GetSessionProgress(int id)
         {
             var progress = await _context.SessionProgress
-                .Where(sp => sp.SessionId == id && !sp.IsDeleted)
-                .OrderBy(sp => sp.PuzzleOrder)
-                .ToListAsync();
-
-            foreach (var sp in progress)
-            {
-                await _context.Entry(sp).Reference(x => x.Puzzle).LoadAsync();
-                await _context.Entry(sp).Reference(x => x.Session).Query().Include(s => s.User).LoadAsync();
-            }
+               .Include(sp => sp.Puzzle)
+               .Include(sp => sp.Session).ThenInclude(s => s.User)
+               .Where(sp => sp.SessionId == id && !sp.IsDeleted)
+               .OrderBy(sp => sp.PuzzleOrder)
+               .ToListAsync();
 
             var result = progress.Select(sp => new ASessionProgress(
                 sp.Id,

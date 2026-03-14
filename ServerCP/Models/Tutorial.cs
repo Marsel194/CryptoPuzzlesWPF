@@ -1,17 +1,20 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CryptoPuzzles.Shared;
+using System.ComponentModel.DataAnnotations;
 
 namespace CryptoPuzzles.Server.Models
 {
-    public class Tutorial
+    public class Tutorial : IEntityWithId, ISoftDelete, IHasCreatedAt
     {
+        public Tutorial() { }
+
         public int Id { get; set; }
 
         public int MethodId { get; set; }
 
         [MaxLength(150)]
-        public required string TheoryTitle { get; set; }
+        public string TheoryTitle { get; set; } = string.Empty;
 
-        public required string TheoryContent { get; set; }
+        public string TheoryContent { get; set; } = string.Empty;
 
         public int SortOrder { get; set; } = 0;
 

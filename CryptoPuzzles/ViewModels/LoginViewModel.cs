@@ -90,8 +90,8 @@ namespace CryptoPuzzles.ViewModels
                 if (response.IsAdmin)
                 {
                     var admin = await _adminApiService.GetByIdAsync(response.Id);
-                    _authService.CurrentAdmin = admin;
-                    await _navigationService.NavigateToAsync<AdminViewModel>();
+                    _authService.SetCurrentAdmin(admin);
+                    await _navigationService.NavigateToAsync<AdminViewModel>(); 
                 }
                 else
                     await _navigationService.NavigateToAsync<UserViewModel>();

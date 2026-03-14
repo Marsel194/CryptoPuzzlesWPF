@@ -208,9 +208,9 @@ namespace CryptoPuzzles.ViewModels
             if (string.IsNullOrWhiteSpace(FilterText)) return true;
 
             var f = FilterText.ToLower();
-            return (item.Title?.ToLower().Contains(f) ?? false) ||
-                   (item.Content?.ToLower().Contains(f) ?? false) ||
-                   (item.Answer?.ToLower().Contains(f) ?? false);
+            return (item.Title?.ToLower().Contains(f, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                   (item.Content?.ToLower().Contains(f, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                   (item.Answer?.ToLower().Contains(f, StringComparison.OrdinalIgnoreCase) ?? false);
         }
     }
 }

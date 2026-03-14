@@ -4,15 +4,21 @@ namespace CryptoPuzzles.Services
 {
     public interface IAuthService
     {
-        AAdmin? CurrentAdmin { get; set; }
+        AAdmin? CurrentAdmin { get; }
         int? CurrentAdminId => CurrentAdmin?.Id;
         bool IsAuthenticated => CurrentAdmin != null;
+        void SetCurrentAdmin(AAdmin admin);
         void Clear();
     }
 
     public class AuthService : IAuthService
     {
-        public AAdmin? CurrentAdmin { get; set; }
+        public AAdmin? CurrentAdmin { get; private set; }
+
+        public void SetCurrentAdmin(AAdmin admin)
+        {
+            CurrentAdmin = admin;
+        }
 
         public void Clear()
         {

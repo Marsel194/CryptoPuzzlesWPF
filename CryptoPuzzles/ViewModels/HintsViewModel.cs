@@ -103,8 +103,8 @@ namespace CryptoPuzzles.ViewModels
         {
             if (string.IsNullOrWhiteSpace(FilterText)) return true;
             var f = FilterText.ToLower();
-            return item.PuzzleTitle.ToLower().Contains(f) ||
-                   item.HintText.ToLower().Contains(f);
+            return item.PuzzleTitle.Contains(f, StringComparison.OrdinalIgnoreCase) ||
+                   item.HintText.Contains(f, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

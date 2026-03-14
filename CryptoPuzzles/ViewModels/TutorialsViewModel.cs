@@ -103,9 +103,9 @@ namespace CryptoPuzzles.ViewModels
         {
             if (string.IsNullOrWhiteSpace(FilterText)) return true;
             var f = FilterText.ToLower();
-            return item.MethodName.ToLower().Contains(f) ||
-                   item.TheoryTitle.ToLower().Contains(f) ||
-                   item.TheoryContent.ToLower().Contains(f);
+            return item.MethodName.Contains(f, StringComparison.OrdinalIgnoreCase) ||
+                   item.TheoryTitle.Contains(f, StringComparison.OrdinalIgnoreCase) ||
+                   item.TheoryContent.Contains(f, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

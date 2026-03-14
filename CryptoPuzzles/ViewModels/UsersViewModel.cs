@@ -107,9 +107,9 @@ namespace CryptoPuzzles.ViewModels
         {
             if (string.IsNullOrWhiteSpace(FilterText)) return true;
             var f = FilterText.ToLower();
-            return item.Login.ToLower().Contains(f) ||
-                   item.Username.ToLower().Contains(f) ||
-                   item.Email.ToLower().Contains(f);
+            return item.Login.Contains(f, StringComparison.OrdinalIgnoreCase) ||
+                   item.Username.Contains(f, StringComparison.OrdinalIgnoreCase) ||
+                   item.Email.Contains(f, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

@@ -64,9 +64,9 @@ namespace CryptoPuzzles.ViewModels
         {
             if (string.IsNullOrWhiteSpace(FilterText)) return true;
             var f = FilterText.ToLower();
-            return item.UserLogin?.ToLower().Contains(f) == true ||
-                   item.Username?.ToLower().Contains(f) == true ||
-                   item.PuzzleTitle?.ToLower().Contains(f) == true ||
+            return item.UserLogin?.ToLower().Contains(f, StringComparison.OrdinalIgnoreCase) == true ||
+                   item.Username?.ToLower().Contains(f, StringComparison.OrdinalIgnoreCase) == true ||
+                   item.PuzzleTitle?.ToLower().Contains(f, StringComparison.OrdinalIgnoreCase) == true ||
                    item.SessionId.ToString().Contains(f);
         }
     }

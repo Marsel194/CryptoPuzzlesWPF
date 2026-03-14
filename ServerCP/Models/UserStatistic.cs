@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using CryptoPuzzles.Server.Controllers;
+using System.Text.Json.Serialization;
 
 namespace CryptoPuzzles.Server.Models
 {

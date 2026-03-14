@@ -1,9 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using CryptoPuzzles.Shared;
 
 namespace CryptoPuzzles.Server.Models
 {
-    public class GameSession
+    public class GameSession : IEntityWithId, ISoftDelete
     {
+        public GameSession() { }
+
         public int Id { get; set; }
 
         public int UserId { get; set; }

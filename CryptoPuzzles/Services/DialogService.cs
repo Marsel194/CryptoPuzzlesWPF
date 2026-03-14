@@ -23,9 +23,9 @@ namespace CryptoPuzzles.Services
             return Task.CompletedTask;
         }
 
-        public static async Task<bool> ShowConfirmation(string message)
+        public static async Task<bool> ShowConfirmation(string message, string confirm = "Подтверждение")
         {
-            return MessageBox.Show(message, "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
+            return MessageBox.Show(message, confirm, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
         }
 
         public static T ShowDialog<T>(object viewModel) where T : Window, new()

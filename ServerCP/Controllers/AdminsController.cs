@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using CryptoPuzzles.Server.Data;
 using CryptoPuzzles.Server.Models;
 using CryptoPuzzles.Shared;
@@ -9,33 +8,27 @@ namespace CryptoPuzzles.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AdminsController(AppDbContext context) : ControllerBase
+    public class AdminsController : BaseController<Admin, AAdmin, AAdminCreate, AAdminUpdate>
     {
-        private readonly AppDbContext _context = context;
+        public AdminsController(AppDbContext context) : base(context) { }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<AAdmin>>> GetAll()
+        protected override AAdmin MapToDto(Admin entity)
         {
-            var admins = await _context.Admins
-                .Where(a => !a.IsDeleted)
-                .OrderBy(a => a.Id)
-                .Select(a => new AAdmin(
-                    a.Id,
-                    a.Login,
-                    a.FirstName,
-                    a.LastName,
-                    a.MiddleName ?? "",
-                    a.CreatedAt,
-                    a.IsDeleted,
-                    a.DeletedAt
-                )).ToListAsync();
-            return Ok(admins);
+            return new AAdmin(
+                entity.Id,
+                entity.Login,
+                entity.FirstName,
+                entity.LastName,
+                entity.MiddleName ?? "",
+                entity.CreatedAt,
+                entity.IsDeleted,
+                entity.DeletedAt
+            );
         }
 
-        [HttpPost]
-        public async Task<ActionResult<AAdmin>> Create([FromBody] AAdminCreate dto)
+        protected override Admin MapToEntity(AAdminCreate dto)
         {
-            var admin = new Admin
+            return new Admin
             {
                 Login = dto.Login,
                 FirstName = dto.FirstName,
@@ -44,62 +37,16 @@ namespace CryptoPuzzles.Server.Controllers
                 PasswordHash = Argon2PasswordActions.HashPassword(dto.Password),
                 CreatedAt = DateTime.Now
             };
-            _context.Admins.Add(admin);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetAll), new { id = admin.Id },
-                new AAdmin(admin.Id, admin.Login, admin.FirstName, admin.LastName, admin.MiddleName ?? "", admin.CreatedAt));
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] AAdminUpdate dto)
+        protected override void UpdateEntity(Admin entity, AAdminUpdate dto)
         {
-            if (id != dto.Id) return BadRequest();
-            var existing = await _context.Admins
-                .Where(a => a.Id == id && !a.IsDeleted)
-                .FirstOrDefaultAsync();
-            if (existing == null) return NotFound();
-
-            existing.Login = dto.Login;
-            existing.FirstName = dto.FirstName;
-            existing.LastName = dto.LastName;
-            existing.MiddleName = dto.MiddleName;
+            entity.Login = dto.Login;
+            entity.FirstName = dto.FirstName;
+            entity.LastName = dto.LastName;
+            entity.MiddleName = dto.MiddleName;
             if (!string.IsNullOrWhiteSpace(dto.Password))
-                existing.PasswordHash = Argon2PasswordActions.HashPassword(dto.Password);
-
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<AAdmin>> Get(int id)
-        {
-            var admin = await _context.Admins
-                .Where(a => a.Id == id && !a.IsDeleted)
-                .Select(a => new AAdmin(
-                    a.Id,
-                    a.Login,
-                    a.FirstName,
-                    a.LastName,
-                    a.MiddleName ?? "",
-                    a.CreatedAt,
-                    a.IsDeleted,
-                    a.DeletedAt
-                )).FirstOrDefaultAsync();
-            if (admin == null) return NotFound();
-            return Ok(admin);
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var admin = await _context.Admins.FindAsync(id);
-            if (admin == null) return NotFound();
-
-            admin.IsDeleted = true;
-            admin.DeletedAt = DateTime.Now;
-
-            await _context.SaveChangesAsync();
-            return NoContent();
+                entity.PasswordHash = Argon2PasswordActions.HashPassword(dto.Password);
         }
     }
 }

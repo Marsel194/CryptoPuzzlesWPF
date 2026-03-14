@@ -1,22 +1,25 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CryptoPuzzles.Shared;
+using System.ComponentModel.DataAnnotations;
 
 namespace CryptoPuzzles.Server.Models
 {
-    public class Admin
+    public class Admin : IEntityWithId, ISoftDelete, IHasCreatedAt
     {
+        public Admin() { }
+
         public int Id { get; set; }
 
         [MaxLength(50)]
-        public required string Login { get; set; }
+        public string Login { get; set; } = string.Empty;
 
         [MaxLength(128)]
-        public required string PasswordHash { get; set; }
+        public string PasswordHash { get; set; } = string.Empty;
 
         [MaxLength(30)]
-        public required string FirstName { get; set; }
+        public string FirstName { get; set; } = string.Empty;
 
         [MaxLength(30)]
-        public required string LastName { get; set; }
+        public string LastName { get; set; } = string.Empty;
 
         [MaxLength(30)]
         public string? MiddleName { get; set; }

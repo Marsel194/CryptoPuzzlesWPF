@@ -1,29 +1,34 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CryptoPuzzles.Server.Controllers;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+using CryptoPuzzles.Shared;
 
 namespace CryptoPuzzles.Server.Models
 {
-    public class User
+    public class User : IEntityWithId, ISoftDelete
     {
         public int Id { get; set; }
 
-        [MaxLength(50)]
-        public required string Login { get; set; }
+        [MaxLength(30)]
+        public string Login { get; set; } = string.Empty;
 
-        [MaxLength(128)]
-        public required string PasswordHash { get; set; }
+        [MaxLength(30)]
+        public string Username { get; set; } = string.Empty;
 
-        [MaxLength(150), EmailAddress]
-        public required string Email { get; set; }
+        [MaxLength(100)]
+        public string Email { get; set; } = string.Empty;
 
-        [MaxLength(60)]
-        public required string Username { get; set; }
+        public string PasswordHash { get; set; } = string.Empty;
 
-        public DateTime? CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
+
         public bool IsDeleted { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual ICollection<GameSession> GameSessions { get; set; } = [];
+        [JsonIgnore]
+        public virtual ICollection<GameSession> GameSessions { get; set; } = new List<GameSession>();
 
+        [JsonIgnore]
         public virtual UserStatistic? Statistic { get; set; }
     }
 }

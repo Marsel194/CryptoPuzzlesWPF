@@ -117,11 +117,7 @@ namespace CryptoPuzzles.ViewModels
             {
                 var admin = _authService.CurrentAdmin;
                 if (admin == null)
-                {
-                    // Если в сессии нет админа, пробуем загрузить по ID из токена
-                    // Здесь должна быть логика получения ID из токена
                     return;
-                }
 
                 Username = $"{admin.FirstName} {admin.LastName}";
             }
@@ -135,9 +131,8 @@ namespace CryptoPuzzles.ViewModels
                 var admin = _authService.CurrentAdmin;
                 if (admin == null)
                 {
-                    // Пробуем получить ID из UserSessionService или другого источника
-                    // Например, если есть метод получения ID текущего администратора
-                    await DialogService.ShowError("Не удалось загрузить данные профиля");
+                    await DialogService.ShowError("Требуется повторная авторизация");
+                    await LogoutAsync();
                     return;
                 }
 

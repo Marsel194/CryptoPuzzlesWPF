@@ -71,7 +71,7 @@ namespace CryptoPuzzles.ViewModels
         protected override bool FilterPredicate(AEncryptionMethod item)
         {
             if (string.IsNullOrWhiteSpace(FilterText)) return true;
-            return item.Name.ToLower().Contains(FilterText.ToLower());
+            return item.Name.Contains(FilterText, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

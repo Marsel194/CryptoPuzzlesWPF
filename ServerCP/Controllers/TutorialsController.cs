@@ -8,17 +8,47 @@ namespace CryptoPuzzles.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TutorialsController : ControllerBase
+    public class TutorialsController : BaseController<Tutorial, ATutorial, ATutorialCreate, ATutorialUpdate>
     {
-        private readonly AppDbContext _context;
+        public TutorialsController(AppDbContext context) : base(context) { }
 
-        public TutorialsController(AppDbContext context)
+        protected override ATutorial MapToDto(Tutorial entity)
         {
-            _context = context;
+            return new ATutorial(
+                entity.Id,
+                entity.MethodId,
+                entity.Method?.Name ?? string.Empty,
+                entity.TheoryTitle,
+                entity.TheoryContent,
+                entity.SortOrder,
+                entity.CreatedAt,
+                entity.IsDeleted,
+                entity.DeletedAt
+            );
+        }
+
+        protected override Tutorial MapToEntity(ATutorialCreate dto)
+        {
+            return new Tutorial
+            {
+                MethodId = dto.MethodId,
+                TheoryTitle = dto.TheoryTitle,
+                TheoryContent = dto.TheoryContent,
+                SortOrder = dto.SortOrder,
+                CreatedAt = DateTime.UtcNow
+            };
+        }
+
+        protected override void UpdateEntity(Tutorial entity, ATutorialUpdate dto)
+        {
+            entity.MethodId = dto.MethodId;
+            entity.TheoryTitle = dto.TheoryTitle;
+            entity.TheoryContent = dto.TheoryContent;
+            entity.SortOrder = dto.SortOrder;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ATutorial>>> GetAll()
+        public override async Task<ActionResult<IEnumerable<ATutorial>>> GetAll()
         {
             var tutorials = await _context.Tutorials
                 .Include(t => t.Method)
@@ -31,13 +61,16 @@ namespace CryptoPuzzles.Server.Controllers
                     t.TheoryTitle,
                     t.TheoryContent,
                     t.SortOrder,
-                    t.CreatedAt))
+                    t.CreatedAt,
+                    t.IsDeleted,
+                    t.DeletedAt
+                ))
                 .ToListAsync();
             return Ok(tutorials);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ATutorial>> Get(int id)
+        public override async Task<ActionResult<ATutorial>> Get(int id)
         {
             var tutorial = await _context.Tutorials
                 .Include(t => t.Method)
@@ -49,68 +82,23 @@ namespace CryptoPuzzles.Server.Controllers
                     t.TheoryTitle,
                     t.TheoryContent,
                     t.SortOrder,
-                    t.CreatedAt))
+                    t.CreatedAt,
+                    t.IsDeleted,
+                    t.DeletedAt
+                ))
                 .FirstOrDefaultAsync();
             if (tutorial == null) return NotFound();
             return Ok(tutorial);
         }
 
         [HttpPost]
-        public async Task<ActionResult<ATutorial>> Create([FromBody] ATutorialCreate dto)
+        public override async Task<ActionResult<ATutorial>> Create(ATutorialCreate dto)
         {
-            var tutorial = new Tutorial
-            {
-                MethodId = dto.MethodId,
-                TheoryTitle = dto.TheoryTitle,
-                TheoryContent = dto.TheoryContent,
-                SortOrder = dto.SortOrder,
-                CreatedAt = DateTime.UtcNow
-            };
-            _context.Tutorials.Add(tutorial);
+            var entity = MapToEntity(dto);
+            _context.Tutorials.Add(entity);
             await _context.SaveChangesAsync();
-
-            await _context.Entry(tutorial).Reference(t => t.Method).LoadAsync();
-
-            var result = new ATutorial(
-                tutorial.Id,
-                tutorial.MethodId,
-                tutorial.Method.Name,
-                tutorial.TheoryTitle,
-                tutorial.TheoryContent,
-                tutorial.SortOrder,
-                tutorial.CreatedAt);
-
-            return CreatedAtAction(nameof(Get), new { id = tutorial.Id }, result);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] ATutorialUpdate dto)
-        {
-            if (id != dto.Id) return BadRequest();
-            var tutorial = await _context.Tutorials
-                .Where(t => t.Id == id && !t.IsDeleted)
-                .FirstOrDefaultAsync();
-            if (tutorial == null) return NotFound();
-
-            tutorial.MethodId = dto.MethodId;
-            tutorial.TheoryTitle = dto.TheoryTitle;
-            tutorial.TheoryContent = dto.TheoryContent;
-            tutorial.SortOrder = dto.SortOrder;
-
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var tutorial = await _context.Tutorials.FindAsync(id);
-            if (tutorial == null || tutorial.IsDeleted) return NotFound();
-
-            tutorial.IsDeleted = true;
-            tutorial.DeletedAt = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
-            return NoContent();
+            await _context.Entry(entity).Reference(t => t.Method).LoadAsync();
+            return CreatedAtAction(nameof(Get), new { id = entity.Id }, MapToDto(entity));
         }
     }
 }

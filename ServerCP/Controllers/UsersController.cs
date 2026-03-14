@@ -1,89 +1,93 @@
-﻿using CryptoPuzzles.Server.Data;
+﻿using CryptoPuzzles.Server.Controllers;
+using CryptoPuzzles.Server.Data;
 using CryptoPuzzles.Server.Helpers;
 using CryptoPuzzles.Server.Models;
 using CryptoPuzzles.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace CryptoPuzzles.Server.Controllers
+[Route("api/[controller]")]
+[ApiController]
+public class UsersController : BaseController<User, AUser, AUserCreate, AUserUpdate>
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UsersController : ControllerBase
+    public UsersController(AppDbContext context) : base(context) { }
+
+    protected override AUser MapToDto(User entity)
     {
-        private readonly AppDbContext _context;
+        return new AUser(
+            entity.Id,
+            entity.Login,
+            entity.Username,
+            entity.Email,
+            entity.CreatedAt,
+            entity.IsDeleted,
+            entity.DeletedAt
+        );
+    }
 
-        public UsersController(AppDbContext context)
+    protected override User MapToEntity(AUserCreate dto)
+    {
+        return new User
         {
-            _context = context;
+            Login = dto.Login,
+            Username = dto.Username,
+            Email = dto.Email,
+            PasswordHash = Argon2PasswordActions.HashPassword(dto.Password),
+            CreatedAt = DateTime.UtcNow
+        };
+    }
+
+    protected override void UpdateEntity(User entity, AUserUpdate dto)
+    {
+        entity.Login = dto.Login;
+        entity.Username = dto.Username;
+        entity.Email = dto.Email;
+        if (!string.IsNullOrWhiteSpace(dto.Password))
+            entity.PasswordHash = Argon2PasswordActions.HashPassword(dto.Password);
+    }
+
+    [HttpPost]
+    public override async Task<ActionResult<AUser>> Create(AUserCreate dto)
+    {
+        if (await _context.Users.AnyAsync(u => u.Login == dto.Login && !u.IsDeleted))
+            return Conflict(new UAErrorResponse("Пользователь с таким логином уже существует", null));
+
+        if (await _context.Users.AnyAsync(u => u.Email == dto.Email && !u.IsDeleted))
+            return Conflict(new UAErrorResponse("Пользователь с таким email уже существует", null));
+
+        var entity = MapToEntity(dto);
+        _context.Users.Add(entity);
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(Get), new { id = entity.Id }, MapToDto(entity));
+    }
+
+    [HttpPut("{id}")]
+    public override async Task<IActionResult> Update(int id, AUserUpdate dto)
+    {
+        if (id != dto.Id)
+            return BadRequest("ID в маршруте не совпадает с ID сущности");
+
+        var entity = await _context.Users
+            .Where(u => u.Id == id && !u.IsDeleted)
+            .FirstOrDefaultAsync();
+        if (entity == null)
+            return NotFound();
+
+        if (entity.Login != dto.Login)
+        {
+            if (await _context.Users.AnyAsync(u => u.Login == dto.Login && u.Id != id && !u.IsDeleted))
+                return Conflict(new UAErrorResponse("Пользователь с таким логином уже существует", null));
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<AUser>>> GetAll()
+        if (entity.Email != dto.Email)
         {
-            var users = await _context.Users
-                .Where(u => !u.IsDeleted)
-                .OrderBy(u => u.Id)
-                .Select(u => new AUser(u.Id, u.Login, u.Username, u.Email, u.CreatedAt))
-                .ToListAsync();
-            return Ok(users);
+            if (await _context.Users.AnyAsync(u => u.Email == dto.Email && u.Id != id && !u.IsDeleted))
+                return Conflict(new UAErrorResponse("Пользователь с таким email уже существует", null));
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<AUser>> Get(int id)
-        {
-            var user = await _context.Users
-                .Where(u => u.Id == id && !u.IsDeleted)
-                .Select(u => new AUser(u.Id, u.Login, u.Username, u.Email, u.CreatedAt))
-                .FirstOrDefaultAsync();
-            if (user == null) return NotFound();
-            return Ok(user);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<AUser>> Create([FromBody] AUserCreate dto)
-        {
-            var user = new User
-            {
-                Login = dto.Login,
-                Username = dto.Username,
-                Email = dto.Email,
-                PasswordHash = Argon2PasswordActions.HashPassword(dto.Password),
-                CreatedAt = DateTime.UtcNow
-            };
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(Get), new { id = user.Id },
-                new AUser(user.Id, user.Login, user.Username, user.Email, user.CreatedAt));
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] AUserUpdate dto)
-        {
-            if (id != dto.Id) return BadRequest();
-            var user = await _context.Users
-                .Where(u => u.Id == id && !u.IsDeleted)
-                .FirstOrDefaultAsync();
-            if (user == null) return NotFound();
-
-            user.Login = dto.Login;
-            user.Username = dto.Username;
-            user.Email = dto.Email;
-
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null || user.IsDeleted) return NotFound();
-
-            user.IsDeleted = true;
-            user.DeletedAt = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
+        UpdateEntity(entity, dto);
+        await _context.SaveChangesAsync();
+        return NoContent();
     }
 }

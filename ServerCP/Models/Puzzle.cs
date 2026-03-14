@@ -1,18 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CryptoPuzzles.Shared;
+using System.ComponentModel.DataAnnotations;
 
 namespace CryptoPuzzles.Server.Models
 {
-    public class Puzzle
+    public class Puzzle : IEntityWithId, ISoftDelete, IHasCreatedAt
     {
+        public Puzzle() { }
+
         public int Id { get; set; }
 
         [MaxLength(100)]
-        public required string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
 
-        public required string Content { get; set; }
+        public string Content { get; set; } = string.Empty;
 
         [MaxLength(100)]
-        public required string Answer { get; set; }
+        public string Answer { get; set; } = string.Empty;
 
         public int MaxScore { get; set; } = 50;
 

@@ -8,17 +8,44 @@ namespace CryptoPuzzles.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class HintsController : ControllerBase
+    public class HintsController : BaseController<Hint, AHint, AHintCreate, AHintUpdate>
     {
-        private readonly AppDbContext _context;
+        public HintsController(AppDbContext context) : base(context) { }
 
-        public HintsController(AppDbContext context)
+        protected override AHint MapToDto(Hint entity)
         {
-            _context = context;
+            return new AHint(
+                entity.Id,
+                entity.PuzzleId,
+                entity.Puzzle?.Title ?? string.Empty,
+                entity.HintText,
+                entity.HintOrder,
+                entity.CreatedAt,
+                entity.IsDeleted,
+                entity.DeletedAt
+            );
+        }
+
+        protected override Hint MapToEntity(AHintCreate dto)
+        {
+            return new Hint
+            {
+                PuzzleId = dto.PuzzleId,
+                HintText = dto.HintText,
+                HintOrder = dto.HintOrder,
+                CreatedAt = DateTime.UtcNow
+            };
+        }
+
+        protected override void UpdateEntity(Hint entity, AHintUpdate dto)
+        {
+            entity.PuzzleId = dto.PuzzleId;
+            entity.HintText = dto.HintText;
+            entity.HintOrder = dto.HintOrder;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AHint>>> GetAll()
+        public override async Task<ActionResult<IEnumerable<AHint>>> GetAll()
         {
             var hints = await _context.Hints
                 .Include(h => h.Puzzle)
@@ -39,7 +66,7 @@ namespace CryptoPuzzles.Server.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<AHint>> Get(int id)
+        public override async Task<ActionResult<AHint>> Get(int id)
         {
             var hint = await _context.Hints
                 .Include(h => h.Puzzle)
@@ -60,60 +87,13 @@ namespace CryptoPuzzles.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<AHint>> Create([FromBody] AHintCreate dto)
+        public override async Task<ActionResult<AHint>> Create(AHintCreate dto)
         {
-            var hint = new Hint
-            {
-                PuzzleId = dto.PuzzleId,
-                HintText = dto.HintText,
-                HintOrder = dto.HintOrder
-            };
-            _context.Hints.Add(hint);
+            var entity = MapToEntity(dto);
+            _context.Hints.Add(entity);
             await _context.SaveChangesAsync();
-
-            await _context.Entry(hint).Reference(h => h.Puzzle).LoadAsync();
-
-            var result = new AHint(
-                hint.Id,
-                hint.PuzzleId,
-                hint.Puzzle.Title,
-                hint.HintText,
-                hint.HintOrder,
-                hint.CreatedAt,
-                hint.IsDeleted,
-                hint.DeletedAt
-            );
-
-            return CreatedAtAction(nameof(Get), new { id = hint.Id }, result);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] AHintUpdate dto)
-        {
-            if (id != dto.Id) return BadRequest();
-            var hint = await _context.Hints
-                .Where(h => h.Id == id && !h.IsDeleted)
-                .FirstOrDefaultAsync();
-            if (hint == null) return NotFound();
-
-            hint.PuzzleId = dto.PuzzleId;
-            hint.HintText = dto.HintText;
-            hint.HintOrder = dto.HintOrder;
-
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var hint = await _context.Hints.FindAsync(id);
-            if (hint == null || hint.IsDeleted) return NotFound();
-
-            hint.IsDeleted = true;
-            hint.DeletedAt = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
-            return NoContent();
+            await _context.Entry(entity).Reference(h => h.Puzzle).LoadAsync();
+            return CreatedAtAction(nameof(Get), new { id = entity.Id }, MapToDto(entity));
         }
     }
 }
