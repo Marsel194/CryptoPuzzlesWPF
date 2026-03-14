@@ -34,7 +34,7 @@ namespace CryptoPuzzles.Server.Controllers
                     s.IsCompleted,
                     s.Progresses.Count,
                     s.Progresses.Count(p => p.Solved),
-                    s.CurrentTutorialIndex,   // добавлено
+                    s.CurrentTutorialIndex,
                     s.IsDeleted,
                     s.DeletedAt
                 ))
@@ -61,7 +61,7 @@ namespace CryptoPuzzles.Server.Controllers
                     s.IsCompleted,
                     s.Progresses.Count,
                     s.Progresses.Count(p => p.Solved),
-                    s.CurrentTutorialIndex,   // добавлено
+                    s.CurrentTutorialIndex,
                     s.IsDeleted,
                     s.DeletedAt
                 ))
@@ -90,7 +90,7 @@ namespace CryptoPuzzles.Server.Controllers
                     s.IsCompleted,
                     s.Progresses.Count,
                     s.Progresses.Count(p => p.Solved),
-                    s.CurrentTutorialIndex,   // добавлено
+                    s.CurrentTutorialIndex,
                     s.IsDeleted,
                     s.DeletedAt
                 ))
@@ -108,7 +108,7 @@ namespace CryptoPuzzles.Server.Controllers
                 TotalScore = dto.TotalScore,
                 SessionStart = DateTime.UtcNow,
                 IsCompleted = false,
-                CurrentTutorialIndex = null   // по умолчанию null
+                CurrentTutorialIndex = null
             };
 
             _context.GameSessions.Add(session);
@@ -127,7 +127,7 @@ namespace CryptoPuzzles.Server.Controllers
                 session.IsCompleted,
                 0,
                 0,
-                session.CurrentTutorialIndex,   // добавлено
+                session.CurrentTutorialIndex,
                 session.IsDeleted,
                 session.DeletedAt
             );
@@ -155,7 +155,7 @@ namespace CryptoPuzzles.Server.Controllers
             if (dto.CompletedAt.HasValue)
                 session.CompletedAt = dto.CompletedAt;
 
-            if (dto.CurrentTutorialIndex.HasValue)   // добавлено
+            if (dto.CurrentTutorialIndex.HasValue)
                 session.CurrentTutorialIndex = dto.CurrentTutorialIndex.Value;
             else if (dto.CurrentTutorialIndex == null)
                 session.CurrentTutorialIndex = null;

@@ -119,21 +119,16 @@ namespace CryptoPuzzles.ViewModels
 
                 CurrentUser = await userTask;
                 if (CurrentUser != null)
-                {
                     Username = CurrentUser.Username;
-                }
 
                 await statsTask;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[UserViewModel] Error loading data: {ex.Message}");
                 await DialogService.ShowError($"Ошибка загрузки данных: {ex.Message}");
 
                 if (ex.Message.Contains("авторизован") || ex.Message.Contains("Unauthorized"))
-                {
                     await LogoutAsync();
-                }
             }
             finally
             {
@@ -147,9 +142,7 @@ namespace CryptoPuzzles.ViewModels
             {
                 var userStats = await _userStatisticsApiService.GetByUserIdAsync(CurrentUserId);
                 if (userStats != null)
-                {
                     Score = userStats.TotalScore;
-                }
 
                 var solvedProgress = await _sessionProgressApiService.GetAllAsync(
                     userId: CurrentUserId,
@@ -160,9 +153,8 @@ namespace CryptoPuzzles.ViewModels
                     .GroupBy(p => p.PuzzleId)
                     .Count();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Debug.WriteLine($"[UserViewModel] Error loading stats: {ex.Message}");
                 throw;
             }
         }
@@ -185,10 +177,7 @@ namespace CryptoPuzzles.ViewModels
         {
             try
             {
-                if (CurrentUser == null)
-                {
-                    CurrentUser = await _userApiService.GetByIdAsync(CurrentUserId);
-                }
+                CurrentUser ??= await _userApiService.GetByIdAsync(CurrentUserId);
 
                 if (CurrentUser == null) return;
 

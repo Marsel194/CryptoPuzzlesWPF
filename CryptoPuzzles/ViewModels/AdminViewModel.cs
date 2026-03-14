@@ -87,7 +87,6 @@ namespace CryptoPuzzles.ViewModels
             OpenProfileCommand = new AsyncRelayCommand(OpenProfileAsync);
             GoBackCommand = new AsyncRelayCommand(_ => { CurrentSection = null; return Task.CompletedTask; });
 
-            // Загружаем данные при создании ViewModel
             _ = InitializeAsync();
         }
 
@@ -126,10 +125,7 @@ namespace CryptoPuzzles.ViewModels
 
                 Username = $"{admin.FirstName} {admin.LastName}";
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"[AdminViewModel] Error loading admin data: {ex.Message}");
-            }
+            catch (Exception) { }
         }
 
         private async Task OpenProfileAsync(object? parameter = null)
@@ -153,7 +149,6 @@ namespace CryptoPuzzles.ViewModels
 
                 CurrentSection = profileVM;
 
-                // Дополнительно загружаем свежие данные с сервера
                 await profileVM.LoadAdminDataAsync();
             }
             catch (Exception ex)

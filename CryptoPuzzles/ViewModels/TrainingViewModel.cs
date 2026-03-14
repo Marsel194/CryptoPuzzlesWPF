@@ -478,7 +478,7 @@ namespace CryptoPuzzles.ViewModels
                     HasHints = Hints.Any();
                     CurrentHintIndex = -1;
                     CurrentHint = string.Empty;
-                    AreHintsVisible = HasHints; // Сразу показываем подсказки в обучении
+                    AreHintsVisible = HasHints;
                 });
             }
             catch (Exception ex)

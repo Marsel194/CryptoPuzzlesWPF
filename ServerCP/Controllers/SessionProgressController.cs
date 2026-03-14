@@ -162,7 +162,7 @@ namespace CryptoPuzzles.Server.Controllers
                     TotalScore = g.Sum(sp => sp.ScoreEarned),
                     TotalHints = g.Sum(sp => sp.HintsUsed),
                     AverageTimePerPuzzle = g.Where(sp => sp.SolvedAt != null)
-                        .Average(sp => (sp.SolvedAt.Value - sp.StartedAt).TotalSeconds),
+                        .Average(sp => ((DateTime)sp.SolvedAt! - sp.StartedAt).TotalSeconds),
                     SuccessRate = g.Count() > 0
                         ? (double)g.Count(sp => sp.Solved) / g.Count() * 100
                         : 0

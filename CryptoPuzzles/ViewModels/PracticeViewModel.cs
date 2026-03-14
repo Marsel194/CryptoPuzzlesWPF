@@ -1,5 +1,4 @@
-﻿using CryptoPuzzles.Converters;
-using CryptoPuzzles.Helpers;
+﻿using CryptoPuzzles.Helpers;
 using CryptoPuzzles.Services;
 using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.Shared;
@@ -324,10 +323,7 @@ namespace CryptoPuzzles.ViewModels
                 );
                 await _sessionApi.UpdateAsync(_currentSessionId.Value, update);
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"[Practice] Error updating session: {ex}");
-            }
+            catch (Exception) { }
         }
 
         private async Task UpdateProgressForCurrentPuzzleAsync(bool solved, int hintsUsed, int scoreEarned)
@@ -403,6 +399,7 @@ namespace CryptoPuzzles.ViewModels
 
                     if (Puzzles.Any())
                     {
+                        if (!_currentSessionId.HasValue) return;
                         var existingProgress = await _sessionProgressApi.GetAllAsync(sessionId: _currentSessionId.Value);
                         _progressByPuzzleId = existingProgress.ToDictionary(p => p.PuzzleId, p => p);
 
@@ -445,13 +442,11 @@ namespace CryptoPuzzles.ViewModels
         {
             try
             {
-                Debug.WriteLine($"[Practice] Loading hints for puzzle {puzzleId}");
                 var allHints = await _hintApi.GetAllAsync();
                 var hints = allHints
                     .Where(h => h.PuzzleId == puzzleId && !h.IsDeleted)
                     .OrderBy(h => h.HintOrder)
                     .ToList();
-                Debug.WriteLine($"[Practice] Found {hints.Count} hints for puzzle {puzzleId}");
 
                 await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
@@ -461,9 +456,8 @@ namespace CryptoPuzzles.ViewModels
                     ResetHintTimer();
                 });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Debug.WriteLine($"[Practice] Error loading hints: {ex}");
                 await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
                     Hints.Clear();

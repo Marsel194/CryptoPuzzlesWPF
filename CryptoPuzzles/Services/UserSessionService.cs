@@ -7,7 +7,7 @@
         public string? CurrentUserRole { get; private set; }
         public bool IsAuthenticated => CurrentUserId.HasValue;
 
-        public void SetUser(int userId, string login, string role = "User", string username = null, bool isAdmin = false)
+        public void SetUser(int userId, string login, string role = "User", string username = "", bool isAdmin = false)
         {
             CurrentUserId = userId;
             CurrentUserLogin = login;

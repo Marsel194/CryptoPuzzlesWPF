@@ -64,23 +64,13 @@ namespace CryptoPuzzles.ViewModels
         public string ConfirmPassword
         {
             get => _confirmPassword;
-            set
-            {
-                if (SetProperty(ref _confirmPassword, value))
-                    _saveCommand.RaiseCanExecuteChanged();
-            }
+            set => SetProperty(ref _confirmPassword, value);
         }
 
         public bool IsEditMode
         {
             get => _isEditMode;
-            set
-            {
-                if (SetProperty(ref _isEditMode, value))
-                {
-                    Debug.WriteLine($"[AdminProfile] IsEditMode changed to: {value}");
-                }
-            }
+            set => SetProperty(ref _isEditMode, value);
         }
 
         public bool IsLoading
@@ -103,7 +93,6 @@ namespace CryptoPuzzles.ViewModels
             _closeAction = closeAction ?? throw new ArgumentNullException(nameof(closeAction));
             _adminId = admin?.Id ?? throw new ArgumentNullException(nameof(admin));
 
-            // Инициализируем данными из переданного admin
             UpdateFromAdmin(admin);
 
             CloseCommand = new AsyncRelayCommand(CloseAsync);
@@ -131,14 +120,12 @@ namespace CryptoPuzzles.ViewModels
             {
                 IsLoading = true;
                 var admin = await _adminApiService.GetByIdAsync(_adminId);
+
                 if (admin != null)
-                {
                     UpdateFromAdmin(admin);
-                }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[AdminProfile] Error loading data: {ex.Message}");
                 await DialogService.ShowError($"Ошибка загрузки данных: {ex.Message}");
             }
             finally
@@ -241,7 +228,6 @@ namespace CryptoPuzzles.ViewModels
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[AdminProfile] ERROR: {ex.Message}");
                 await DialogService.ShowError($"Ошибка при сохранении: {ex.Message}");
             }
             finally
@@ -261,7 +247,6 @@ namespace CryptoPuzzles.ViewModels
 
             IsEditMode = false;
 
-            // Перезагружаем актуальные данные с сервера
             await LoadAdminDataAsync();
         }
     }

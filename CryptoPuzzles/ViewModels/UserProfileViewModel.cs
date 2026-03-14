@@ -194,7 +194,6 @@ namespace CryptoPuzzles.ViewModels
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[UserProfile] Error loading data: {ex.Message}");
                 await DialogService.ShowError($"Ошибка загрузки данных: {ex.Message}");
             }
             finally
@@ -232,7 +231,6 @@ namespace CryptoPuzzles.ViewModels
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[UserProfile] Error deleting progress: {ex.Message}");
                 await DialogService.ShowError($"Ошибка при удалении прогресса: {ex.Message}");
             }
             finally
@@ -314,7 +312,6 @@ namespace CryptoPuzzles.ViewModels
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[UserProfile] ERROR: {ex.Message}");
                 await DialogService.ShowError($"Ошибка при сохранении: {ex.Message}");
             }
             finally

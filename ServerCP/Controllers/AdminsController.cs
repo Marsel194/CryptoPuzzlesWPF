@@ -13,7 +13,6 @@ namespace CryptoPuzzles.Server.Controllers
     {
         private readonly AppDbContext _context = context;
 
-        // READ: Получить всех (кроме удаленных)
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AAdmin>>> GetAll()
         {
@@ -90,7 +89,6 @@ namespace CryptoPuzzles.Server.Controllers
             return Ok(admin);
         }
 
-        // DELETE: Мягкое удаление (флаг is_deleted)
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
