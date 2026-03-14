@@ -44,12 +44,12 @@
                       materialDesign:DataGridAssist.CellPadding="13 8 8 8"
                       materialDesign:DataGridAssist.ColumnHeaderPadding="8">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="50"/>
-                    <DataGridTextColumn Header="Головоломка" Binding="{Binding PuzzleTitle}" IsReadOnly="True" Width="150"/>
-                    <DataGridTextColumn Header="Текст подсказки" Binding="{Binding HintText, UpdateSourceTrigger=PropertyChanged}" Width="300"/>
-                    <DataGridTextColumn Header="Порядок" Binding="{Binding HintOrder, UpdateSourceTrigger=PropertyChanged}" Width="80"/>
-                    <DataGridTextColumn Header="Дата создания" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="150"/>
-                    <DataGridTemplateColumn Header="Действия" Width="100">
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="Auto" MinWidth="50"/>
+                    <DataGridTextColumn Header="Головоломка" Binding="{Binding PuzzleTitle}" IsReadOnly="True" Width="Auto" MinWidth="150"/>
+                    <DataGridTextColumn Header="Текст подсказки" Binding="{Binding HintText, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="300"/>
+                    <DataGridTextColumn Header="Порядок" Binding="{Binding HintOrder, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="80"/>
+                    <DataGridTextColumn Header="Дата создания" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150"/>
+                    <DataGridTemplateColumn Header="Действия" Width="Auto" MinWidth="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 

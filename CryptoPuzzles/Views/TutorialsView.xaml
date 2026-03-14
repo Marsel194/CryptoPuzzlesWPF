@@ -48,13 +48,13 @@
                       materialDesign:DataGridAssist.CellPadding="13 8 8 8"
                       materialDesign:DataGridAssist.ColumnHeaderPadding="8">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="50"/>
-                    <DataGridTextColumn Header="Метод" Binding="{Binding MethodName}" IsReadOnly="True" Width="120"/>
-                    <DataGridTextColumn Header="Заголовок" Binding="{Binding TheoryTitle, UpdateSourceTrigger=PropertyChanged}" Width="200"/>
-                    <DataGridTextColumn Header="Содержание" Binding="{Binding TheoryContent, UpdateSourceTrigger=PropertyChanged}" Width="300"/>
-                    <DataGridTextColumn Header="Порядок" Binding="{Binding SortOrder}" Width="80"/>
-                    <DataGridTextColumn Header="Создан" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="150"/>
-                    <DataGridTemplateColumn Header="Действия" Width="100">
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="Auto" MinWidth="50"/>
+                    <DataGridTextColumn Header="Метод" Binding="{Binding MethodName}" IsReadOnly="True" Width="Auto" MinWidth="120"/>
+                    <DataGridTextColumn Header="Заголовок" Binding="{Binding TheoryTitle, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="200"/>
+                    <DataGridTextColumn Header="Содержание" Binding="{Binding TheoryContent, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="300"/>
+                    <DataGridTextColumn Header="Порядок" Binding="{Binding SortOrder}" Width="Auto" MinWidth="80"/>
+                    <DataGridTextColumn Header="Создан" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150"/>
+                    <DataGridTemplateColumn Header="Действия" Width="Auto" MinWidth="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 

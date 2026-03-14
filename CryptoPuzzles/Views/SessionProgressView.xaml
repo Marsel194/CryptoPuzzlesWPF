@@ -42,19 +42,19 @@
                       materialDesign:DataGridAssist.CellPadding="13 8 8 8"
                       materialDesign:DataGridAssist.ColumnHeaderPadding="8">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="50"/>
-                    <DataGridTextColumn Header="ID сессии" Binding="{Binding SessionId}" Width="70"/>
-                    <DataGridTextColumn Header="Пользователь" Binding="{Binding UserLogin}" Width="100"/>
-                    <DataGridTextColumn Header="Имя" Binding="{Binding Username}" Width="120"/>
-                    <DataGridTextColumn Header="ID головоломки" Binding="{Binding PuzzleId}" Width="80"/>
-                    <DataGridTextColumn Header="Головоломка" Binding="{Binding PuzzleTitle}" Width="150"/>
-                    <DataGridTextColumn Header="Порядок" Binding="{Binding PuzzleOrder}" Width="60"/>
-                    <DataGridCheckBoxColumn Header="Решено" Binding="{Binding Solved}"/>
-                    <DataGridTextColumn Header="Подсказок" Binding="{Binding HintsUsed}" Width="70"/>
-                    <DataGridTextColumn Header="Очки" Binding="{Binding ScoreEarned}" Width="70"/>
-                    <DataGridTextColumn Header="Начало" Binding="{Binding StartedAt, StringFormat='dd.MM.yyyy HH:mm'}" Width="130"/>
-                    <DataGridTextColumn Header="Решено" Binding="{Binding SolvedAt, StringFormat='dd.MM.yyyy HH:mm'}" Width="130"/>
-                    <DataGridTextColumn Header="Время решения" Binding="{Binding TimeToSolve, StringFormat='hh\\:mm\\:ss'}" Width="100"/>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="Auto" MinWidth="50"/>
+                    <DataGridTextColumn Header="ID сессии" Binding="{Binding SessionId}" Width="Auto" MinWidth="70"/>
+                    <DataGridTextColumn Header="Пользователь" Binding="{Binding UserLogin}" Width="Auto" MinWidth="100"/>
+                    <DataGridTextColumn Header="Имя" Binding="{Binding Username}" Width="Auto" MinWidth="120"/>
+                    <DataGridTextColumn Header="ID головоломки" Binding="{Binding PuzzleId}" Width="Auto" MinWidth="80"/>
+                    <DataGridTextColumn Header="Головоломка" Binding="{Binding PuzzleTitle}" Width="Auto" MinWidth="150"/>
+                    <DataGridTextColumn Header="Порядок" Binding="{Binding PuzzleOrder}" Width="Auto" MinWidth="60"/>
+                    <DataGridCheckBoxColumn Header="Решено" Binding="{Binding Solved}" Width="Auto" MinWidth="70"/>
+                    <DataGridTextColumn Header="Подсказок" Binding="{Binding HintsUsed}" Width="Auto" MinWidth="70"/>
+                    <DataGridTextColumn Header="Очки" Binding="{Binding ScoreEarned}" Width="Auto" MinWidth="70"/>
+                    <DataGridTextColumn Header="Начало" Binding="{Binding StartedAt, StringFormat='dd.MM.yyyy HH:mm'}" Width="Auto" MinWidth="130"/>
+                    <DataGridTextColumn Header="Решено" Binding="{Binding SolvedAt, StringFormat='dd.MM.yyyy HH:mm'}" Width="Auto" MinWidth="130"/>
+                    <DataGridTextColumn Header="Время решения" Binding="{Binding TimeToSolve, StringFormat='hh\\:mm\\:ss'}" Width="Auto" MinWidth="100"/>
                 </DataGrid.Columns>
             </DataGrid>
         </controls:EntityListControl.MainContent>

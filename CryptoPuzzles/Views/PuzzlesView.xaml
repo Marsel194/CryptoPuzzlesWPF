@@ -22,8 +22,11 @@
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="3*"/>
                     <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBox Grid.Column="0" Text="{Binding NewItem.Title, UpdateSourceTrigger=PropertyChanged}" 
@@ -32,13 +35,19 @@
                          materialDesign:HintAssist.Hint="Содержание" Margin="4"/>
                 <TextBox Grid.Column="2" Text="{Binding NewItem.Answer, UpdateSourceTrigger=PropertyChanged}" 
                          materialDesign:HintAssist.Hint="Ответ" Margin="4"/>
-                <ComboBox Grid.Column="3" ItemsSource="{Binding Difficulties}" SelectedValuePath="Id" 
+                <TextBox Grid.Column="3" Text="{Binding NewItem.MaxScore, UpdateSourceTrigger=PropertyChanged}" 
+                         materialDesign:HintAssist.Hint="Макс. балл" Margin="4"/>
+                <ComboBox Grid.Column="4" ItemsSource="{Binding Difficulties}" SelectedValuePath="Id" 
                           DisplayMemberPath="DifficultyName" SelectedValue="{Binding NewItem.DifficultyId}" 
                           helpers:ComboBoxBehavior.AutoOpenOnEdit="True" materialDesign:HintAssist.Hint="Сложность" Margin="4"/>
-                <ComboBox Grid.Column="4" ItemsSource="{Binding Methods}" SelectedValuePath="Id" 
+                <ComboBox Grid.Column="5" ItemsSource="{Binding Methods}" SelectedValuePath="Id" 
                           DisplayMemberPath="Name" SelectedValue="{Binding NewItem.MethodId}" 
                           helpers:ComboBoxBehavior.AutoOpenOnEdit="True" materialDesign:HintAssist.Hint="Метод" Margin="4"/>
-                <Button Grid.Column="5" Command="{Binding AddCommand}" Content="Добавить" 
+                <CheckBox Grid.Column="6" Content="Обучение" IsChecked="{Binding NewItem.IsTraining}" 
+                          VerticalAlignment="Center" Margin="4"/>
+                <TextBox Grid.Column="7" Text="{Binding NewItem.TutorialOrder, UpdateSourceTrigger=PropertyChanged}" 
+                         materialDesign:HintAssist.Hint="Порядок в обуч." Margin="4"/>
+                <Button Grid.Column="8" Command="{Binding AddCommand}" Content="Добавить" 
                         Style="{StaticResource PrimaryButton}" Margin="4,0"/>
             </Grid>
         </controls:EntityListControl.AddPanelContent>
@@ -51,13 +60,13 @@
                           materialDesign:DataGridAssist.ColumnHeaderPadding="8"
                           HorizontalScrollBarVisibility="Disabled">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="SizeToHeader" MinWidth="50"/>
-                        <DataGridTextColumn Header="Название" Binding="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Width="*" MinWidth="150"/>
-                        <DataGridTextColumn Header="Содержание" Binding="{Binding Content, UpdateSourceTrigger=PropertyChanged}" Width="2*" MinWidth="200"/>
-                        <DataGridTextColumn Header="Ответ" Binding="{Binding Answer, UpdateSourceTrigger=PropertyChanged}" Width="SizeToHeader" MinWidth="100"/>
-                        <DataGridTextColumn Header="Макс. балл" Binding="{Binding MaxScore, UpdateSourceTrigger=PropertyChanged}" Width="SizeToHeader" MinWidth="100"/>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="Auto" MinWidth="50"/>
+                        <DataGridTextColumn Header="Название" Binding="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="150"/>
+                        <DataGridTextColumn Header="Содержание" Binding="{Binding Content, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="200"/>
+                        <DataGridTextColumn Header="Ответ" Binding="{Binding Answer, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="100"/>
+                        <DataGridTextColumn Header="Макс. балл" Binding="{Binding MaxScore, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="100"/>
 
-                        <DataGridTemplateColumn Header="Сложность" Width="SizeToHeader" MinWidth="120">
+                        <DataGridTemplateColumn Header="Сложность" Width="Auto" MinWidth="120">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding DifficultyName}"/>
@@ -72,7 +81,7 @@
                             </DataGridTemplateColumn.CellEditingTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTemplateColumn Header="Метод" Width="SizeToHeader" MinWidth="120">
+                        <DataGridTemplateColumn Header="Метод" Width="Auto" MinWidth="120">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding MethodName}"/>
@@ -87,10 +96,14 @@
                             </DataGridTemplateColumn.CellEditingTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridCheckBoxColumn Header="Обучение" Binding="{Binding IsTraining}" Width="SizeToHeader" MinWidth="90"/>
-                        <DataGridTextColumn Header="Порядок в обуч." Binding="{Binding TutorialOrder}" Width="SizeToHeader" MinWidth="130"/>
+                        <DataGridCheckBoxColumn Header="Обучение" Binding="{Binding IsTraining}" Width="Auto" MinWidth="90"/>
+                        <DataGridTextColumn Header="Порядок в обуч." Binding="{Binding TutorialOrder}" Width="Auto" MinWidth="130"/>
 
-                        <DataGridTemplateColumn Header="Действия" Width="SizeToHeader" MinWidth="110">
+                        <!-- Добавленные столбцы -->
+                        <DataGridTextColumn Header="Создал администратор" Binding="{Binding CreatedByAdminName}" Width="Auto" MinWidth="120"/>
+                        <DataGridTextColumn Header="Дата создания" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" Width="Auto" MinWidth="150"/>
+
+                        <DataGridTemplateColumn Header="Действия" Width="Auto" MinWidth="110">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 

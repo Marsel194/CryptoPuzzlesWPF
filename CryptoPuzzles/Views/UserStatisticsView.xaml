@@ -19,17 +19,17 @@
                       materialDesign:DataGridAssist.CellPadding="13 8 8 8"
                       materialDesign:DataGridAssist.ColumnHeaderPadding="8">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID пользователя" Binding="{Binding UserId}" Width="80"/>
-                    <DataGridTextColumn Header="Логин" Binding="{Binding UserLogin}" Width="100"/>
-                    <DataGridTextColumn Header="Имя" Binding="{Binding Username}" Width="120"/>
-                    <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="150"/>
-                    <DataGridTextColumn Header="Сессий" Binding="{Binding TotalSessions}" Width="60"/>
-                    <DataGridTextColumn Header="Решено" Binding="{Binding TotalPuzzlesSolved}" Width="70"/>
-                    <DataGridTextColumn Header="Очки" Binding="{Binding TotalScore}" Width="80"/>
-                    <DataGridTextColumn Header="Подсказок" Binding="{Binding TotalHintsUsed}" Width="80"/>
-                    <DataGridTextColumn Header="Ср. балл" Binding="{Binding AvgScorePerSession}" Width="70"/>
-                    <DataGridTextColumn Header="Последняя активность" Binding="{Binding LastActive, StringFormat='dd.MM.yyyy HH:mm'}" Width="150"/>
-                    <DataGridTextColumn Header="Дата регистрации" Binding="{Binding RegisteredAt, StringFormat='dd.MM.yyyy HH:mm'}" Width="150"/>
+                    <DataGridTextColumn Header="ID пользователя" Binding="{Binding UserId}" Width="Auto" MinWidth="80"/>
+                    <DataGridTextColumn Header="Логин" Binding="{Binding UserLogin}" Width="Auto" MinWidth="100"/>
+                    <DataGridTextColumn Header="Имя" Binding="{Binding Username}" Width="Auto" MinWidth="120"/>
+                    <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="Auto" MinWidth="150"/>
+                    <DataGridTextColumn Header="Сессий" Binding="{Binding TotalSessions}" Width="Auto" MinWidth="60"/>
+                    <DataGridTextColumn Header="Решено" Binding="{Binding TotalPuzzlesSolved}" Width="Auto" MinWidth="70"/>
+                    <DataGridTextColumn Header="Очки" Binding="{Binding TotalScore}" Width="Auto" MinWidth="80"/>
+                    <DataGridTextColumn Header="Подсказок" Binding="{Binding TotalHintsUsed}" Width="Auto" MinWidth="80"/>
+                    <DataGridTextColumn Header="Ср. балл" Binding="{Binding AvgScorePerSession}" Width="Auto" MinWidth="70"/>
+                    <DataGridTextColumn Header="Последняя активность" Binding="{Binding LastActive, StringFormat='dd.MM.yyyy HH:mm'}" Width="Auto" MinWidth="150"/>
+                    <DataGridTextColumn Header="Дата регистрации" Binding="{Binding RegisteredAt, StringFormat='dd.MM.yyyy HH:mm'}" Width="Auto" MinWidth="150"/>
                 </DataGrid.Columns>
             </DataGrid>
         </controls:EntityListControl.MainContent>
