@@ -1,22 +1,15 @@
-﻿using CryptoPuzzles.Shared;
-
-namespace CryptoPuzzles.Server.Models
+﻿namespace CryptoPuzzles.Server.Models
 {
     public class Hint
     {
-        [ExportName("ID")]
         public int Id { get; set; }
 
-        [ExportName("ID пазла")]
         public int PuzzleId { get; set; }
 
-        [ExportName("Текст подсказки")]
         public required string HintText { get; set; }
 
-        [ExportName("Порядок подсказки")]
         public int HintOrder { get; set; } = 1;
 
-        [ExportName("Дата создания")]
         public DateTime CreatedAt { get; set; }
 
         public bool IsDeleted { get; set; }

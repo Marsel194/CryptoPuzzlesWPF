@@ -262,6 +262,15 @@ namespace CryptoPuzzles.ViewModels.Base
             await Task.CompletedTask;
         }
 
+        protected virtual IEnumerable<PropertyInfo> GetExportProperties()
+        {
+            return typeof(T).GetProperties()
+                .Where(p => p.CanRead)
+                .Where(p => !p.Name.EndsWith("Id", StringComparison.OrdinalIgnoreCase))
+                .Where(p => p.Name != "IsDeleted" && p.Name != "DeletedAt")
+                .Where(p => p.PropertyType.IsValueType || p.PropertyType == typeof(string) || p.PropertyType == typeof(DateTime?));
+        }
+
         private async Task ExportToExcelAsync()
         {
             try
@@ -284,27 +293,57 @@ namespace CryptoPuzzles.ViewModels.Base
                 }
 
                 using var workbook = new XLWorkbook();
-                var worksheet = workbook.Worksheets.Add("Data");
+                var worksheet = workbook.Worksheets.Add("Отчет");
 
-                var properties = typeof(T).GetProperties()
-                    .Where(p => p.CanRead && (p.PropertyType.IsValueType || p.PropertyType == typeof(string) || p.PropertyType == typeof(DateTime?)))
-                    .ToList();
+                var properties = GetExportProperties().ToList();
+                if (properties.Count == 0)
+                {
+                    await DialogService.ShowMessage("Нет полей для экспорта.");
+                    return;
+                }
+
+                int currentRow = 1;
+
+                worksheet.Range(currentRow, 1, currentRow, properties.Count).Merge();
+                worksheet.Cell(currentRow, 1).Value = "ОТЧЕТ";
+                worksheet.Cell(currentRow, 1).Style
+                    .Font.SetBold()
+                    .Font.SetFontSize(16)
+                    .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+                currentRow++;
+
+                worksheet.Cell(currentRow, 1).Value = $"Дата экспорта: {DateTime.Now:dd.MM.yyyy HH:mm:ss}";
+                worksheet.Cell(currentRow, 1).Style.Font.SetItalic();
+                currentRow++;
+
+                string filterInfo = string.IsNullOrWhiteSpace(FilterText) ? "Все записи" : $"Фильтр: {FilterText}";
+                worksheet.Cell(currentRow, 1).Value = filterInfo;
+                worksheet.Cell(currentRow, 1).Style.Font.SetItalic();
+                currentRow++;
+
+                currentRow++;
 
                 for (int i = 0; i < properties.Count; i++)
                 {
                     var prop = properties[i];
                     var exportNameAttr = prop.GetCustomAttribute<ExportNameAttribute>();
                     string headerName = exportNameAttr?.Name ?? prop.Name;
-                    worksheet.Cell(1, i + 1).Value = headerName;
+                    worksheet.Cell(currentRow, i + 1).Value = headerName;
+                    worksheet.Cell(currentRow, i + 1).Style
+                        .Font.SetBold()
+                        .Fill.SetBackgroundColor(XLColor.LightGray)
+                        .Border.SetOutsideBorder(XLBorderStyleValues.Thin);
                 }
+                currentRow++;
 
                 for (int row = 0; row < data.Count; row++)
                 {
                     var item = data[row];
                     for (int col = 0; col < properties.Count; col++)
                     {
-                        var value = properties[col].GetValue(item);
-                        worksheet.Cell(row + 2, col + 1).Value = value?.ToString() ?? "";
+                        var prop = properties[col];
+                        var value = prop.GetValue(item);
+                        worksheet.Cell(row + currentRow, col + 1).Value = value?.ToString() ?? "";
                     }
                 }
 

@@ -15,11 +15,21 @@ namespace CryptoPuzzles.Shared
         private DateTime? _deletedAt;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
+        [ExportName("Логин")]
         public string Login { get => _login; set { _login = value; OnPropertyChanged(); } }
+
+        [ExportName("Имя")]
         public string FirstName { get => _firstName; set { _firstName = value; OnPropertyChanged(); } }
+
+        [ExportName("Фамилия")]
         public string LastName { get => _lastName; set { _lastName = value; OnPropertyChanged(); } }
+
+        [ExportName("Отчество")]
         public string? MiddleName { get => _middleName; set { _middleName = value; OnPropertyChanged(); } }
+
+        [ExportName("Дата создания")]
         public DateTime CreatedAt { get => _createdAt; set { _createdAt = value; OnPropertyChanged(); } }
+
         public bool IsDeleted { get => _isDeleted; set { _isDeleted = value; OnPropertyChanged(); } }
         public DateTime? DeletedAt { get => _deletedAt; set { _deletedAt = value; OnPropertyChanged(); } }
 
@@ -52,7 +62,10 @@ namespace CryptoPuzzles.Shared
         private DateTime? _deletedAt;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
+
+        [ExportName("Название сложности")]
         public string DifficultyName { get => _difficultyName; set { _difficultyName = value; OnPropertyChanged(); } }
+
         public bool IsDeleted { get => _isDeleted; set { _isDeleted = value; OnPropertyChanged(); } }
         public DateTime? DeletedAt { get => _deletedAt; set { _deletedAt = value; OnPropertyChanged(); } }
 
@@ -78,7 +91,10 @@ namespace CryptoPuzzles.Shared
         private DateTime? _deletedAt;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
+
+        [ExportName("Название метода")]
         public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
+
         public bool IsDeleted { get => _isDeleted; set { _isDeleted = value; OnPropertyChanged(); } }
         public DateTime? DeletedAt { get => _deletedAt; set { _deletedAt = value; OnPropertyChanged(); } }
 
@@ -116,23 +132,45 @@ namespace CryptoPuzzles.Shared
         private DateTime? _deletedAt;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
+
+        [ExportName("Название")]
         public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
+
         public string Content { get => _content; set { _content = value; OnPropertyChanged(); } }
         public string Answer { get => _answer; set { _answer = value; OnPropertyChanged(); } }
+
+        [ExportName("Макс. балл")]
         public int MaxScore { get => _maxScore; set { _maxScore = value; OnPropertyChanged(); } }
+
         public int DifficultyId { get => _difficultyId; set { _difficultyId = value; OnPropertyChanged(); } }
+
+        [ExportName("Сложность")]
         public string DifficultyName { get => _difficultyName; set { _difficultyName = value; OnPropertyChanged(); } }
+
         public int? MethodId { get => _methodId; set { _methodId = value; OnPropertyChanged(); } }
+
+        [ExportName("Метод")]
         public string? MethodName { get => _methodName; set { _methodName = value; OnPropertyChanged(); } }
+
         public bool IsTraining { get => _isTraining; set { _isTraining = value; OnPropertyChanged(); } }
+
+        [ExportName("Порядок обучения")]
         public int? TutorialOrder { get => _tutorialOrder; set { _tutorialOrder = value; OnPropertyChanged(); } }
+
         public int? CreatedByAdminId { get => _createdByAdminId; set { _createdByAdminId = value; OnPropertyChanged(); } }
+
+        [ExportName("Создал администратор")]
         public string? CreatedByAdminName { get => _createdByAdminName; set { _createdByAdminName = value; OnPropertyChanged(); } }
+
+        [ExportName("Дата создания")]
         public DateTime CreatedAt { get => _createdAt; set { _createdAt = value; OnPropertyChanged(); } }
+
         public bool IsDeleted { get => _isDeleted; set { _isDeleted = value; OnPropertyChanged(); } }
         public DateTime? DeletedAt { get => _deletedAt; set { _deletedAt = value; OnPropertyChanged(); } }
 
+        [ExportName("Тип")]
         public string PuzzleType => IsTraining ? "Обучение" : "Практика";
+
         public string HasMethod => MethodId.HasValue ? "Да" : "Нет";
 
         public APuzzle(int id, string title, string content, string answer, int maxScore,
@@ -177,10 +215,19 @@ namespace CryptoPuzzles.Shared
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
         public int PuzzleId { get => _puzzleId; set { _puzzleId = value; OnPropertyChanged(); } }
+
+        [ExportName("Головоломка")]
         public string PuzzleTitle { get => _puzzleTitle; set { _puzzleTitle = value; OnPropertyChanged(); } }
+
+        [ExportName("Текст подсказки")]
         public string HintText { get => _hintText; set { _hintText = value; OnPropertyChanged(); } }
+
+        [ExportName("Порядок")]
         public int HintOrder { get => _hintOrder; set { _hintOrder = value; OnPropertyChanged(); } }
+
+        [ExportName("Дата создания")]
         public DateTime CreatedAt { get => _createdAt; set { _createdAt = value; OnPropertyChanged(); } }
+
         public bool IsDeleted { get => _isDeleted; set { _isDeleted = value; OnPropertyChanged(); } }
         public DateTime? DeletedAt { get => _deletedAt; set { _deletedAt = value; OnPropertyChanged(); } }
 
@@ -222,21 +269,45 @@ namespace CryptoPuzzles.Shared
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
         public int UserId { get => _userId; set { _userId = value; OnPropertyChanged(); } }
+
+        [ExportName("Логин пользователя")]
         public string UserLogin { get => _userLogin; set { _userLogin = value; OnPropertyChanged(); } }
+
+        [ExportName("Имя пользователя")]
         public string Username { get => _username; set { _username = value; OnPropertyChanged(); } }
+
+        [ExportName("Тип сессии")]
         public string SessionType { get => _sessionType; set { _sessionType = value; OnPropertyChanged(); } }
+
+        [ExportName("Всего очков")]
         public int TotalScore { get => _totalScore; set { _totalScore = value; OnPropertyChanged(); } }
+
+        [ExportName("Начало сессии")]
         public DateTime SessionStart { get => _sessionStart; set { _sessionStart = value; OnPropertyChanged(); } }
+
+        [ExportName("Завершена")]
         public DateTime? CompletedAt { get => _completedAt; set { _completedAt = value; OnPropertyChanged(); } }
+
         public bool IsCompleted { get => _isCompleted; set { _isCompleted = value; OnPropertyChanged(); } }
         public bool IsDeleted { get => _isDeleted; set { _isDeleted = value; OnPropertyChanged(); } }
         public DateTime? DeletedAt { get => _deletedAt; set { _deletedAt = value; OnPropertyChanged(); } }
+
+        [ExportName("Всего головоломок")]
         public int PuzzlesCount { get => _puzzlesCount; set { _puzzlesCount = value; OnPropertyChanged(); } }
+
+        [ExportName("Решено")]
         public int SolvedCount { get => _solvedCount; set { _solvedCount = value; OnPropertyChanged(); } }
+
+        [ExportName("Текущий шаг")]
         public int? CurrentTutorialIndex { get => _currentTutorialIndex; set { _currentTutorialIndex = value; OnPropertyChanged(); } }
 
+        [ExportName("Статус")]
         public string Status => IsCompleted ? "Завершена" : "Активна";
+
+        [ExportName("Длительность")]
         public string Duration => CompletedAt.HasValue ? (CompletedAt.Value - SessionStart).ToString(@"hh\:mm\:ss") : "—";
+
+        [ExportName("Прогресc %")]
         public double Progress => PuzzlesCount > 0 ? (double)SolvedCount / PuzzlesCount * 100 : 0;
 
         public AGameSession(int id, int userId, string userLogin, string username, string sessionType,
@@ -280,11 +351,21 @@ namespace CryptoPuzzles.Shared
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
         public int MethodId { get => _methodId; set { _methodId = value; OnPropertyChanged(); } }
+
+        [ExportName("Метод")]
         public string MethodName { get => _methodName; set { _methodName = value; OnPropertyChanged(); } }
+
+        [ExportName("Название теории")]
         public string TheoryTitle { get => _theoryTitle; set { _theoryTitle = value; OnPropertyChanged(); } }
+
         public string TheoryContent { get => _theoryContent; set { _theoryContent = value; OnPropertyChanged(); } }
+
+        [ExportName("Порядок")]
         public int SortOrder { get => _sortOrder; set { _sortOrder = value; OnPropertyChanged(); } }
+
+        [ExportName("Дата создания")]
         public DateTime CreatedAt { get => _createdAt; set { _createdAt = value; OnPropertyChanged(); } }
+
         public bool IsDeleted { get => _isDeleted; set { _isDeleted = value; OnPropertyChanged(); } }
         public DateTime? DeletedAt { get => _deletedAt; set { _deletedAt = value; OnPropertyChanged(); } }
 
@@ -323,14 +404,29 @@ namespace CryptoPuzzles.Shared
         private int _puzzlesSolved;
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
+
+        [ExportName("Логин")]
         public string Login { get => _login; set { _login = value; OnPropertyChanged(); } }
+
+        [ExportName("Имя пользователя")]
         public string Username { get => _username; set { _username = value; OnPropertyChanged(); } }
+
+        [ExportName("Почта")]
         public string Email { get => _email; set { _email = value; OnPropertyChanged(); } }
+
+        [ExportName("Дата регистрации")]
         public DateTime? CreatedAt { get => _createdAt; set { _createdAt = value; OnPropertyChanged(); } }
+
         public bool IsDeleted { get => _isDeleted; set { _isDeleted = value; OnPropertyChanged(); } }
         public DateTime? DeletedAt { get => _deletedAt; set { _deletedAt = value; OnPropertyChanged(); } }
+
+        [ExportName("Всего сессий")]
         public int TotalSessions { get => _totalSessions; set { _totalSessions = value; OnPropertyChanged(); } }
+
+        [ExportName("Всего очков")]
         public int TotalScore { get => _totalScore; set { _totalScore = value; OnPropertyChanged(); } }
+
+        [ExportName("Решено головоломок")]
         public int PuzzlesSolved { get => _puzzlesSolved; set { _puzzlesSolved = value; OnPropertyChanged(); } }
 
         public AUser(int id, string login, string username, string email, DateTime? createdAt,
@@ -375,21 +471,45 @@ namespace CryptoPuzzles.Shared
 
         public int Id { get => _id; set { _id = value; OnPropertyChanged(); } }
         public int SessionId { get => _sessionId; set { _sessionId = value; OnPropertyChanged(); } }
+
+        [ExportName("Логин пользователя")]
         public string UserLogin { get => _userLogin; set { _userLogin = value; OnPropertyChanged(); } }
+
+        [ExportName("Имя пользователя")]
         public string Username { get => _username; set { _username = value; OnPropertyChanged(); } }
+
         public int PuzzleId { get => _puzzleId; set { _puzzleId = value; OnPropertyChanged(); } }
+
+        [ExportName("Головоломка")]
         public string PuzzleTitle { get => _puzzleTitle; set { _puzzleTitle = value; OnPropertyChanged(); } }
+
+        [ExportName("Порядок")]
         public int PuzzleOrder { get => _puzzleOrder; set { _puzzleOrder = value; OnPropertyChanged(); } }
+
         public bool Solved { get => _solved; set { _solved = value; OnPropertyChanged(); } }
+
+        [ExportName("Использовано подсказок")]
         public int HintsUsed { get => _hintsUsed; set { _hintsUsed = value; OnPropertyChanged(); } }
+
+        [ExportName("Заработано очков")]
         public int ScoreEarned { get => _scoreEarned; set { _scoreEarned = value; OnPropertyChanged(); } }
+
+        [ExportName("Начало")]
         public DateTime StartedAt { get => _startedAt; set { _startedAt = value; OnPropertyChanged(); } }
+
+        [ExportName("Время решения")]
         public DateTime? SolvedAt { get => _solvedAt; set { _solvedAt = value; OnPropertyChanged(); } }
+
+        [ExportName("Затраченное время")]
         public TimeSpan? TimeToSolve { get => _timeToSolve; set { _timeToSolve = value; OnPropertyChanged(); } }
+
         public bool IsDeleted { get => _isDeleted; set { _isDeleted = value; OnPropertyChanged(); } }
         public DateTime? DeletedAt { get => _deletedAt; set { _deletedAt = value; OnPropertyChanged(); } }
 
+        [ExportName("Статус")]
         public string Status => Solved ? "Решено" : "Не решено";
+
+        [ExportName("Время")]
         public string TimeSpent => TimeToSolve?.ToString(@"hh\:mm\:ss") ?? "—";
 
         public ASessionProgress(int id, int sessionId, string userLogin, string username,
@@ -435,20 +555,43 @@ namespace CryptoPuzzles.Shared
         private DateTime? _registeredAt;
 
         public int UserId { get => _userId; set { _userId = value; OnPropertyChanged(); } }
+
+        [ExportName("Логин пользователя")]
         public string UserLogin { get => _userLogin; set { _userLogin = value; OnPropertyChanged(); } }
+
+        [ExportName("Имя пользователя")]
         public string Username { get => _username; set { _username = value; OnPropertyChanged(); } }
+
+        [ExportName("Почта")]
         public string Email { get => _email; set { _email = value; OnPropertyChanged(); } }
+
+        [ExportName("Всего сессий")]
         public int TotalSessions { get => _totalSessions; set { _totalSessions = value; OnPropertyChanged(); } }
+
+        [ExportName("Решено головоломок")]
         public int TotalPuzzlesSolved { get => _totalPuzzlesSolved; set { _totalPuzzlesSolved = value; OnPropertyChanged(); } }
+
+        [ExportName("Всего очков")]
         public int TotalScore { get => _totalScore; set { _totalScore = value; OnPropertyChanged(); } }
+
+        [ExportName("Всего подсказок")]
         public int TotalHintsUsed { get => _totalHintsUsed; set { _totalHintsUsed = value; OnPropertyChanged(); } }
+
+        [ExportName("Средний балл за сессию")]
         public decimal AvgScorePerSession { get => _avgScorePerSession; set { _avgScorePerSession = value; OnPropertyChanged(); } }
+
+        [ExportName("Последняя активность")]
         public DateTime? LastActive { get => _lastActive; set { _lastActive = value; OnPropertyChanged(); } }
+
+        [ExportName("Дата регистрации")]
         public DateTime? RegisteredAt { get => _registeredAt; set { _registeredAt = value; OnPropertyChanged(); } }
 
+        [ExportName("Процент успеха")]
         public double SuccessRate => TotalPuzzlesSolved > 0
             ? (double)TotalPuzzlesSolved / (TotalPuzzlesSolved + TotalHintsUsed) * 100
             : 0;
+
+        [ExportName("Последняя активность")]
         public string LastActiveFormatted => LastActive?.ToString("dd.MM.yyyy HH:mm") ?? "—";
 
         public AUserStatistic(int userId, string userLogin, string username, string email,
