@@ -206,28 +206,26 @@ namespace CryptoPuzzles.ViewModels
         {
             try
             {
-                var activeSessions = await _gameSessionApi.GetAllAsync(userId: _userId, isCompleted: false);
-                var session = activeSessions?.FirstOrDefault();
-                if (session == null)
+                var allSessions = await _gameSessionApi.GetAllAsync(userId: _userId);
+                if (allSessions == null || allSessions.Count == 0)
                 {
                     HasActiveSession = false;
                     return;
                 }
 
                 bool confirmed = await DialogService.ShowConfirmation(
-                    "Вы действительно хотите удалить текущий прогресс? Все несохранённые данные будут потеряны.");
+                    "Вы действительно хотите удалить ВЕСЬ прогресс? Все ваши сессии будут безвозвратно удалены.");
                 if (!confirmed)
                     return;
 
                 IsLoading = true;
 
-                await _gameSessionApi.DeleteAsync(session.Id);
+                foreach (var session in allSessions)
+                    await _gameSessionApi.DeleteAsync(session.Id);
 
                 HasActiveSession = false;
-
                 await LoadUserDataAsync();
-
-                await DialogService.ShowMessage("Текущий прогресс успешно удалён.");
+                await DialogService.ShowMessage("Весь прогресс успешно удалён.");
             }
             catch (Exception ex)
             {
