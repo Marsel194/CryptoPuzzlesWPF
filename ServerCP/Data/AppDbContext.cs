@@ -31,7 +31,7 @@ namespace CryptoPuzzles.Server.Data
                 entity.Property(u => u.Email).HasColumnName("email");
                 entity.Property(u => u.Username).HasColumnName("username");
                 entity.Property(u => u.PasswordHash).HasColumnName("password_hash");
-                entity.Property(u => u.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(u => u.CreatedAt).HasColumnName("created_at");
                 entity.Property(u => u.IsDeleted).HasColumnName("is_deleted");
                 entity.Property(u => u.DeletedAt).HasColumnName("deleted_at");
 
@@ -44,7 +44,7 @@ namespace CryptoPuzzles.Server.Data
                 entity.ToTable("admins");
                 entity.Property(a => a.Id).HasColumnName("id");
                 entity.Property(a => a.Login).HasColumnName("login");
-                entity.Property(a => a.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(a => a.CreatedAt).HasColumnName("created_at");
                 entity.Property(a => a.PasswordHash).HasColumnName("password_hash");
                 entity.Property(a => a.FirstName).HasColumnName("first_name");
                 entity.Property(a => a.LastName).HasColumnName("last_name");
@@ -81,13 +81,13 @@ namespace CryptoPuzzles.Server.Data
                 entity.Property(p => p.Title).HasColumnName("title").IsRequired();
                 entity.Property(p => p.Content).HasColumnName("content").IsRequired();
                 entity.Property(p => p.Answer).HasColumnName("answer").IsRequired();
-                entity.Property(p => p.MaxScore).HasColumnName("max_score").HasDefaultValue(50);
+                entity.Property(p => p.MaxScore).HasColumnName("max_score");
                 entity.Property(p => p.DifficultyId).HasColumnName("difficulty_id");
                 entity.Property(p => p.MethodId).HasColumnName("method_id");
                 entity.Property(p => p.IsTraining).HasColumnName("is_training");
                 entity.Property(p => p.TutorialOrder).HasColumnName("tutorial_order");
                 entity.Property(p => p.CreatedByAdminId).HasColumnName("created_by_admin_id");
-                entity.Property(p => p.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(p => p.CreatedAt).HasColumnName("created_at");
                 entity.Property(p => p.IsDeleted).HasColumnName("is_deleted");
                 entity.Property(p => p.DeletedAt).HasColumnName("deleted_at");
 
@@ -118,8 +118,8 @@ namespace CryptoPuzzles.Server.Data
                 entity.Property(h => h.Id).HasColumnName("id");
                 entity.Property(h => h.PuzzleId).HasColumnName("puzzle_id");
                 entity.Property(h => h.HintText).HasColumnName("hint_text").IsRequired();
-                entity.Property(h => h.HintOrder).HasColumnName("hint_order").HasDefaultValue(1);
-                entity.Property(h => h.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(h => h.HintOrder).HasColumnName("hint_order");
+                entity.Property(h => h.CreatedAt).HasColumnName("created_at");
                 entity.Property(h => h.IsDeleted).HasColumnName("is_deleted");
                 entity.Property(h => h.DeletedAt).HasColumnName("deleted_at");
 
@@ -146,23 +146,19 @@ namespace CryptoPuzzles.Server.Data
 
                 entity.Property(e => e.SessionType)
                     .HasColumnName("session_type")
-                    .HasMaxLength(20)
-                    .HasDefaultValue("training");
+                    .HasMaxLength(20);
 
                 entity.Property(e => e.TotalScore)
-                    .HasColumnName("total_score")
-                    .HasDefaultValue(0);
+                    .HasColumnName("total_score");
 
                 entity.Property(e => e.SessionStart)
-                    .HasColumnName("session_start")
-                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                    .HasColumnName("session_start");
 
                 entity.Property(e => e.CompletedAt)
                     .HasColumnName("completed_at");
 
                 entity.Property(e => e.IsCompleted)
-                    .HasColumnName("is_completed")
-                    .HasDefaultValue(false);
+                    .HasColumnName("is_completed");
 
                 entity.Property(e => e.CurrentTutorialIndex)
                     .HasColumnName("current_tutorial_index");
@@ -201,10 +197,11 @@ namespace CryptoPuzzles.Server.Data
                 entity.Property(sp => sp.SessionId).HasColumnName("session_id");
                 entity.Property(sp => sp.PuzzleId).HasColumnName("puzzle_id");
                 entity.Property(sp => sp.PuzzleOrder).HasColumnName("puzzle_order");
-                entity.Property(sp => sp.Solved).HasColumnName("solved").HasDefaultValue(false);
-                entity.Property(sp => sp.HintsUsed).HasColumnName("hints_used").HasDefaultValue(0);
-                entity.Property(sp => sp.ScoreEarned).HasColumnName("score_earned").HasDefaultValue(0);
-                entity.Property(sp => sp.StartedAt).HasColumnName("started_at").HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(sp => sp.Solved).HasColumnName("solved");
+                entity.Property(sp => sp.HintsUsed).HasColumnName("hints_used");
+                entity.Property(sp => sp.ScoreEarned).HasColumnName("score_earned");
+                entity.Property(sp => sp.StartedAt).HasColumnName("started_at");
+                entity.Property(sp => sp.TimeToSolve).HasColumnName("time_to_solve");
                 entity.Property(sp => sp.SolvedAt).HasColumnName("solved_at");
                 entity.Property(sp => sp.IsDeleted).HasColumnName("is_deleted");
                 entity.Property(sp => sp.DeletedAt).HasColumnName("deleted_at");
@@ -233,11 +230,11 @@ namespace CryptoPuzzles.Server.Data
                 entity.ToTable("user_statistics");
                 entity.HasKey(us => us.UserId);
                 entity.Property(us => us.UserId).HasColumnName("user_id");
-                entity.Property(us => us.TotalSessions).HasColumnName("total_sessions").HasDefaultValue(0);
-                entity.Property(us => us.TotalPuzzlesSolved).HasColumnName("total_puzzles_solved").HasDefaultValue(0);
-                entity.Property(us => us.TotalScore).HasColumnName("total_score").HasDefaultValue(0);
-                entity.Property(us => us.TotalHintsUsed).HasColumnName("total_hints_used").HasDefaultValue(0);
-                entity.Property(us => us.AvgScorePerSession).HasColumnName("avg_score_per_session").HasDefaultValue(0).HasPrecision(5, 2);
+                entity.Property(us => us.TotalSessions).HasColumnName("total_sessions");
+                entity.Property(us => us.TotalPuzzlesSolved).HasColumnName("total_puzzles_solved");
+                entity.Property(us => us.TotalScore).HasColumnName("total_score");
+                entity.Property(us => us.TotalHintsUsed).HasColumnName("total_hints_used");
+                entity.Property(us => us.AvgScorePerSession).HasColumnName("avg_score_per_session").HasPrecision(5, 2);
                 entity.Property(us => us.LastActive).HasColumnName("last_active");
 
                 entity.HasOne(us => us.User)
@@ -258,7 +255,7 @@ namespace CryptoPuzzles.Server.Data
                 entity.Property(t => t.TheoryTitle).HasColumnName("theory_title").IsRequired();
                 entity.Property(t => t.TheoryContent).HasColumnName("theory_content").IsRequired();
                 entity.Property(t => t.SortOrder).HasColumnName("sort_order");
-                entity.Property(t => t.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(t => t.CreatedAt).HasColumnName("created_at");
                 entity.Property(t => t.IsDeleted).HasColumnName("is_deleted");
                 entity.Property(t => t.DeletedAt).HasColumnName("deleted_at");
 
