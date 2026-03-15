@@ -1,8 +1,8 @@
 ﻿<UserControl x:Class="CryptoPuzzles.Views.TrainingView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:helpers="clr-namespace:CryptoPuzzles.Helpers">
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                 xmlns:helpers="clr-namespace:CryptoPuzzles.Helpers">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
     </UserControl.Resources>
@@ -20,18 +20,18 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Button Command="{Binding GoBackCommand}"
-                    Style="{StaticResource MaterialDesignFlatButton}"
-                    HorizontalAlignment="Left">
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        HorizontalAlignment="Left">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="ArrowLeft" Width="24" Height="24"/>
                     <TextBlock Text="Назад" Margin="8,0,0,0" FontSize="16"/>
                 </StackPanel>
             </Button>
             <TextBlock Grid.Column="1" Text="Обучение"
-                       FontSize="28" FontWeight="Bold"
-                       Foreground="{DynamicResource PrimaryHueMidBrush}"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"/>
+                           FontSize="28" FontWeight="Bold"
+                           Foreground="{DynamicResource PrimaryHueMidBrush}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
         </Grid>
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
@@ -39,15 +39,15 @@
 
                 <StackPanel Visibility="{Binding IsTheoryMode, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="{Binding TheoryTitle, FallbackValue='Загрузка...'}"
-                               FontSize="22" FontWeight="SemiBold"
-                               Foreground="{DynamicResource PrimaryHueMidBrush}"
-                               Margin="0,0,0,16"/>
+                                   FontSize="22" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                   Margin="0,0,0,16"/>
                     <TextBlock Text="{Binding TheoryContent, FallbackValue='Загрузка...'}"
-                               FontSize="16"
-                               Foreground="{DynamicResource MaterialDesignBody}"
-                               TextWrapping="Wrap"
-                               Background="{DynamicResource MaterialDesignPaper}"
-                               Margin="0,0,0,24"/>
+                                   FontSize="16"
+                                   Foreground="{DynamicResource MaterialDesignBody}"
+                                   TextWrapping="Wrap"
+                                   Background="{DynamicResource MaterialDesignPaper}"
+                                   Margin="0,0,0,24"/>
 
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -56,9 +56,9 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Button Grid.Column="0" Command="{Binding PreviousTheoryCommand}"
-                                Style="{StaticResource MaterialDesignFlatButton}"
-                                HorizontalAlignment="Left"
-                                IsEnabled="{Binding CanGoPrevious}">
+                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    HorizontalAlignment="Left"
+                                    IsEnabled="{Binding CanGoPrevious}">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="ChevronLeft" Width="20" Height="20"/>
                                 <TextBlock Text="Предыдущая" Margin="5,0,0,0"/>
@@ -66,9 +66,9 @@
                         </Button>
                         <TextBlock Grid.Column="1" Text="{Binding TheoryProgress}" VerticalAlignment="Center"/>
                         <Button Grid.Column="2" Command="{Binding NextTheoryCommand}"
-                                Style="{StaticResource MaterialDesignFlatButton}"
-                                HorizontalAlignment="Right"
-                                IsEnabled="{Binding CanGoNext}">
+                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    HorizontalAlignment="Right"
+                                    IsEnabled="{Binding CanGoNext}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Следующая" Margin="0,0,5,0"/>
                                 <materialDesign:PackIcon Kind="ChevronRight" Width="20" Height="20"/>
@@ -76,48 +76,49 @@
                         </Button>
                     </Grid>
                     <Button Content="Начать тренировочные задания"
-                        Command="{Binding StartTrainingPracticeCommand}"
-                        Style="{StaticResource PrimaryButton}"
-                        HorizontalAlignment="Center"
-                        Margin="0,32,0,16"
-                        Padding="32,12"
-                        FontSize="16"
-                        MinWidth="280"
-                        Visibility="{Binding IsButtonCanVisible, Converter={StaticResource BoolToVis}}"/>
+                            Command="{Binding StartTrainingPracticeCommand}"
+                            Style="{StaticResource PrimaryButton}"
+                            HorizontalAlignment="Center"
+                            Margin="0,32,0,16"
+                            Padding="32,12"
+                            FontSize="16"
+                            MinWidth="280"
+                            Visibility="{Binding IsButtonCanVisible, Converter={StaticResource BoolToVis}}"/>
                 </StackPanel>
 
                 <StackPanel Visibility="{Binding IsPuzzleMode, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="{Binding PuzzleTitle, FallbackValue='Загрузка...'}"
-                               FontSize="22" FontWeight="SemiBold"
-                               Foreground="{DynamicResource PrimaryHueMidBrush}"
-                               Margin="0,0,0,16"/>
+                                   FontSize="22" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                   Margin="0,0,0,16"/>
                     <TextBlock Text="{Binding PuzzleContent, FallbackValue='Загрузка...'}"
-                               FontSize="16"
-                               Foreground="{DynamicResource MaterialDesignBody}"
-                               TextWrapping="Wrap"
-                               Margin="0,0,0,24"/>
+                                   FontSize="16"
+                                   Foreground="{DynamicResource MaterialDesignBody}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,24"/>
 
-                    <Expander Header="Подсказка" 
-                              IsExpanded="False"
-                              Margin="0,0,0,16"
-                              Visibility="{Binding AreHintsVisible, Converter={StaticResource BoolToVis}}">
+                    <Expander Header="Подсказка"
+          IsExpanded="False"
+          Margin="0,0,0,16"
+          Visibility="{Binding AreHintsVisible, Converter={StaticResource BoolToVis}}"
+          Style="{StaticResource DistinctMaterialDesignExpander}">
                         <StackPanel>
                             <TextBlock Text="{Binding CurrentHint}"
-                                       TextWrapping="Wrap"
-                                       Margin="0,8,0,8"
-                                       Foreground="{DynamicResource MaterialDesignBody}"/>
+                   TextWrapping="Wrap"
+                   Margin="0,8,0,8"
+                   Foreground="{DynamicResource MaterialDesignBody}"/>
                             <Button Command="{Binding NextHintCommand}"
-                                    Content="Следующая подсказка"
-                                    HorizontalAlignment="Right"
-                                    IsEnabled="{Binding HasNextHint}"
-                                    Style="{StaticResource MaterialDesignFlatButton}"/>
+                Content="Следующая подсказка"
+                HorizontalAlignment="Right"
+                IsEnabled="{Binding HasNextHint}"
+                Style="{StaticResource MaterialDesignFlatButton}"/>
                         </StackPanel>
                     </Expander>
 
                     <TextBox Text="{Binding UserAnswer, UpdateSourceTrigger=PropertyChanged}"
-                             materialDesign:HintAssist.Hint="Ваш ответ"
-                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                             Margin="0,0,0,16"/>
+                                 materialDesign:HintAssist.Hint="Ваш ответ"
+                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                 Margin="0,0,0,16"/>
 
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -125,32 +126,32 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding PuzzleProgress}" 
-                                   VerticalAlignment="Center"/>
+                                       VerticalAlignment="Center"/>
                         <Button Grid.Column="1" Command="{Binding CheckAnswerCommand}"
-                                Content="Проверить"
-                                Style="{StaticResource PrimaryButton}"
-                                Padding="24,0"/>
+                                    Content="Проверить"
+                                    Style="{StaticResource PrimaryButton}"
+                                    Padding="24,0"/>
                     </Grid>
                 </StackPanel>
 
                 <StackPanel Visibility="{Binding IsCompleted, Converter={StaticResource BoolToVis}}"
-                            HorizontalAlignment="Center" Margin="0,48">
+                                HorizontalAlignment="Center" Margin="0,48">
                     <materialDesign:PackIcon Kind="Trophy" Width="80" Height="80"
-                                           Foreground="Gold" HorizontalAlignment="Center"/>
+                                               Foreground="Gold" HorizontalAlignment="Center"/>
                     <TextBlock Text="Поздравляем!" 
-                               FontSize="28" FontWeight="Bold"
-                               Foreground="{DynamicResource PrimaryHueMidBrush}"
-                               HorizontalAlignment="Center"
-                               Margin="0,24,0,12"/>
+                                   FontSize="28" FontWeight="Bold"
+                                   Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,24,0,12"/>
                     <TextBlock Text="Вы успешно завершили обучение"
-                               FontSize="18"
-                               Foreground="{DynamicResource MaterialDesignBodyLight}"
-                               HorizontalAlignment="Center"
-                               Margin="0,0,0,32"/>
+                                   FontSize="18"
+                                   Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,32"/>
                     <Button Command="{Binding GoBackCommand}"
-                            Content="На главную"
-                            Style="{StaticResource PrimaryButton}"
-                            Width="200"/>
+                                Content="На главную"
+                                Style="{StaticResource PrimaryButton}"
+                                Width="200"/>
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

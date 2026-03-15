@@ -109,7 +109,8 @@
                     <Expander Header="Подсказка" 
                               IsExpanded="False"
                               Margin="0,0,0,16"
-                              Visibility="{Binding AreHintsVisible, Converter={StaticResource BoolToVis}}">
+                              Visibility="{Binding AreHintsVisible, Converter={StaticResource BoolToVis}}"
+                              Style="{StaticResource DistinctMaterialDesignExpander}">
                         <StackPanel>
                             <TextBlock Text="{Binding CurrentHint}"
                                        TextWrapping="Wrap"

@@ -297,6 +297,39 @@
                     </Style>
                 </Style.Resources>
             </Style>
+
+            <Style x:Key="DistinctMaterialDesignExpander" 
+       TargetType="Expander" 
+       BasedOn="{StaticResource MaterialDesignExpander}">
+
+                <!-- Фон и рамка всего Expander (как карточка) -->
+                <Setter Property="Background" Value="{DynamicResource MaterialDesignCardBackground}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignDivider}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+
+                <!-- Фон заголовка — используем светлый/тёмный вариант акцентного цвета (PrimaryHueLightBrush) -->
+                <Setter Property="materialDesign:ExpanderAssist.HeaderBackground" 
+            Value="{DynamicResource PrimaryHueLightBrush}"/>
+
+                <!-- Лёгкая тень для выделения -->
+                <Setter Property="Effect">
+                    <Setter.Value>
+                        <DropShadowEffect BlurRadius="8" 
+                              ShadowDepth="2" 
+                              Opacity="0.15" 
+                              Color="Black"/>
+                    </Setter.Value>
+                </Setter>
+
+                <!-- Цвет стрелки-иконки (ToggleButton) делаем акцентным -->
+                <Style.Resources>
+                    <Style TargetType="ToggleButton" 
+               BasedOn="{StaticResource MaterialDesignExpanderToggleButton}">
+                        <Setter Property="Foreground" 
+                    Value="{DynamicResource PrimaryHueMidBrush}"/>
+                    </Style>
+                </Style.Resources>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
