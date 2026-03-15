@@ -14,7 +14,8 @@
         FilterText="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
         IsAddPanelVisible="True"
         AddPanelTitle="Новый урок"
-        IsSaveButtonVisible="True">
+        IsSaveButtonVisible="True"
+        Foreground="{StaticResource MaterialDesignBody}">
 
         <!-- Панель добавления -->
         <controls:EntityListControl.AddPanelContent>
@@ -28,16 +29,16 @@
                 </Grid.ColumnDefinitions>
                 <ComboBox Grid.Column="0" ItemsSource="{Binding Methods}" SelectedValuePath="Id" DisplayMemberPath="Name" 
                           SelectedValue="{Binding NewItem.MethodId}" helpers:ComboBoxBehavior.AutoOpenOnEdit="True" 
-                          materialDesign:HintAssist.Hint="Метод" Margin="4"/>
+                          materialDesign:HintAssist.Hint="Метод" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                 <TextBox Grid.Column="1" Text="{Binding NewItem.TheoryTitle, UpdateSourceTrigger=PropertyChanged}" 
-                         materialDesign:HintAssist.Hint="Заголовок" Margin="4"/>
+                         materialDesign:HintAssist.Hint="Заголовок" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                 <TextBox Grid.Column="2" Text="{Binding NewItem.TheoryContent, UpdateSourceTrigger=PropertyChanged}" 
                          materialDesign:HintAssist.Hint="Содержание" AcceptsReturn="True" TextWrapping="Wrap" 
-                         VerticalScrollBarVisibility="Auto" MinHeight="60" Margin="4"/>
+                         VerticalScrollBarVisibility="Auto" MinHeight="60" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                 <TextBox Grid.Column="3" Text="{Binding NewItem.SortOrder, UpdateSourceTrigger=PropertyChanged}" 
-                         materialDesign:HintAssist.Hint="Порядок" Margin="4"/>
+                         materialDesign:HintAssist.Hint="Порядок" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                 <Button Grid.Column="4" Command="{Binding AddCommand}" Content="Добавить" 
-                        Style="{StaticResource PrimaryButton}" Margin="4,0"/>
+                        Style="{StaticResource PrimaryButton}" Margin="4,0" Foreground="{StaticResource MaterialDesignBody}"/>
             </Grid>
         </controls:EntityListControl.AddPanelContent>
 
@@ -46,14 +47,15 @@
             <DataGrid ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
                       AutoGenerateColumns="False" IsReadOnly="False" CanUserAddRows="False"
                       materialDesign:DataGridAssist.CellPadding="13 8 8 8"
-                      materialDesign:DataGridAssist.ColumnHeaderPadding="8">
+                      materialDesign:DataGridAssist.ColumnHeaderPadding="8"
+                      Foreground="{StaticResource MaterialDesignBody}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="Auto" MinWidth="50"/>
-                    <DataGridTextColumn Header="Метод" Binding="{Binding MethodName}" IsReadOnly="True" Width="Auto" MinWidth="120"/>
-                    <DataGridTextColumn Header="Заголовок" Binding="{Binding TheoryTitle, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="200"/>
-                    <DataGridTextColumn Header="Содержание" Binding="{Binding TheoryContent, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="300"/>
-                    <DataGridTextColumn Header="Порядок" Binding="{Binding SortOrder}" Width="Auto" MinWidth="80"/>
-                    <DataGridTextColumn Header="Создан" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150"/>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="Auto" MinWidth="50" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridTextColumn Header="Метод" Binding="{Binding MethodName}" IsReadOnly="True" Width="Auto" MinWidth="120" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridTextColumn Header="Заголовок" Binding="{Binding TheoryTitle, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="200" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridTextColumn Header="Содержание" Binding="{Binding TheoryContent, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="300" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridTextColumn Header="Порядок" Binding="{Binding SortOrder}" Width="Auto" MinWidth="80" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridTextColumn Header="Создан" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
                     <DataGridTemplateColumn Header="Действия" Width="Auto" MinWidth="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

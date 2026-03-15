@@ -11,9 +11,9 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="0,0,0,24">
             <Button Command="{Binding CloseCommand}"
-                Style="{StaticResource MaterialDesignFlatButton}"
-                HorizontalAlignment="Left"
-                Margin="0,0,0,16">
+                    Style="{StaticResource MaterialDesignFlatButton}"
+                    HorizontalAlignment="Left"
+                    Margin="0,0,0,16">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="ArrowLeft" Width="24" Height="24"/>
                     <TextBlock Text="Назад" Margin="8,0,0,0" FontSize="16"/>
@@ -22,7 +22,7 @@
 
             <TextBlock Text="Профиль пользователя"
                        FontSize="28" FontWeight="Bold"
-                       Foreground="{DynamicResource PrimaryHueMidBrush}"
+                       Foreground="{StaticResource MaterialDesignBody}"
                        Margin="0,0,0,24"/>
 
             <Border Background="{DynamicResource MaterialDesignCardBackground}"
@@ -33,9 +33,10 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
+
                     <StackPanel Grid.Column="0">
                         <TextBlock Text="Обучение" FontSize="18" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,0,12"/>
+                                   Foreground="{DynamicResource MaterialDesignBody}" Margin="0,0,0,12"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -46,25 +47,26 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <materialDesign:PackIcon Grid.Row="0" Grid.Column="0"
-                                                   Kind="BookOpenOutline" Width="24" Height="24"
-                                                   Foreground="{DynamicResource PrimaryHueMidBrush}"
-                                                   Margin="0,0,12,0"/>
+                                                     Kind="BookOpenOutline" Width="24" Height="24"
+                                                     Foreground="{DynamicResource MaterialDesignBody}"
+                                                     Margin="0,0,12,0"/>
                             <TextBlock Grid.Row="0" Grid.Column="1"
                                        Text="{Binding TrainingProgress, StringFormat={}{0}%}"
                                        FontSize="20" FontWeight="Bold"
-                                       Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                                       Foreground="{DynamicResource MaterialDesignBody}"/>
                             <ProgressBar Grid.Row="1" Grid.ColumnSpan="2"
                                          Value="{Binding TrainingProgress, Mode=OneWay}" Maximum="100"
                                          Height="8" Margin="0,8,0,0"
-                                         Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                                         Foreground="{DynamicResource MaterialDesignBody}"/>
                         </Grid>
                         <TextBlock Text="{Binding TrainingProgress, StringFormat=Пройдено {0} из 100%}"
-                                   FontSize="12" Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                   FontSize="12" Foreground="{DynamicResource MaterialDesignBody}"
                                    Margin="0,8,0,0"/>
                     </StackPanel>
+
                     <StackPanel Grid.Column="1" Margin="24,0,0,0">
                         <TextBlock Text="Практика" FontSize="18" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource SecondaryHueMidBrush}" Margin="0,0,0,12"/>
+                                   Foreground="{DynamicResource MaterialDesignBody}" Margin="0,0,0,12"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -75,20 +77,20 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <materialDesign:PackIcon Grid.Row="0" Grid.Column="0"
-                                                   Kind="PuzzleOutline" Width="24" Height="24"
-                                                   Foreground="{DynamicResource SecondaryHueMidBrush}"
-                                                   Margin="0,0,12,0"/>
+                                                     Kind="PuzzleOutline" Width="24" Height="24"
+                                                     Foreground="{DynamicResource MaterialDesignBody}"
+                                                     Margin="0,0,12,0"/>
                             <TextBlock Grid.Row="0" Grid.Column="1"
                                        Text="{Binding PracticeProgress, StringFormat={}{0}%}"
                                        FontSize="20" FontWeight="Bold"
-                                       Foreground="{DynamicResource SecondaryHueMidBrush}"/>
+                                       Foreground="{DynamicResource MaterialDesignBody}"/>
                             <ProgressBar Grid.Row="1" Grid.ColumnSpan="2"
                                          Value="{Binding PracticeProgress, Mode=OneWay}" Maximum="100"
                                          Height="8" Margin="0,8,0,0"
-                                         Foreground="{DynamicResource SecondaryHueMidBrush}"/>
+                                         Foreground="{DynamicResource MaterialDesignBody}"/>
                         </Grid>
                         <TextBlock Text="{Binding PracticeProgress, StringFormat=Решено {0} из 100%}"
-                                   FontSize="12" Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                   FontSize="12" Foreground="{DynamicResource MaterialDesignBody}"
                                    Margin="0,8,0,0"/>
                     </StackPanel>
                 </Grid>
@@ -106,7 +108,7 @@
                         <TextBlock Grid.Column="0"
                                    Text="Личные данные"
                                    FontSize="22" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                                   Foreground="{DynamicResource MaterialDesignBody}"/>
                         <Button Grid.Column="1"
                                 Command="{Binding EditCommand}"
                                 Style="{StaticResource MaterialDesignFlatButton}">
@@ -132,7 +134,7 @@
 
                         <TextBlock Grid.Row="0" Grid.Column="0"
                                    Text="Логин:" FontSize="16"
-                                   Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                   Foreground="{DynamicResource MaterialDesignBody}"
                                    VerticalAlignment="Center" Margin="0,0,16,16"/>
                         <TextBlock Grid.Row="0" Grid.Column="1"
                                    Text="{Binding Login}" FontSize="16"
@@ -141,7 +143,7 @@
 
                         <TextBlock Grid.Row="1" Grid.Column="0"
                                    Text="Email:" FontSize="16"
-                                   Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                   Foreground="{DynamicResource MaterialDesignBody}"
                                    VerticalAlignment="Center" Margin="0,0,16,16"/>
                         <TextBlock Grid.Row="1" Grid.Column="1"
                                    Text="{Binding Email}" FontSize="16"
@@ -156,7 +158,7 @@
 
                         <TextBlock Grid.Row="2" Grid.Column="0"
                                    Text="Имя:" FontSize="16"
-                                   Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                   Foreground="{DynamicResource MaterialDesignBody}"
                                    VerticalAlignment="Center" Margin="0,0,16,16"/>
                         <TextBlock Grid.Row="2" Grid.Column="1"
                                    Text="{Binding Username}" FontSize="16"
@@ -176,19 +178,20 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Border Grid.Column="0" Width="44" Height="44" 
-                                    Background="{DynamicResource PrimaryHueLightBrush}"
+                                    Background="{DynamicResource MaterialDesignBody}"
                                     CornerRadius="22" Margin="0,0,12,0">
                                 <materialDesign:PackIcon Kind="Lock" Width="22" Height="22" 
-                                                       Foreground="{DynamicResource PrimaryHueMidBrush}"
-                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                         Foreground="{DynamicResource MaterialDesignBody}"
+                                                         HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <PasswordBox x:Name="txtNewPassword"
-                               Grid.Column="1"
-                               materialDesign:HintAssist.Hint="Новый пароль (оставьте пустым, если не меняете)"
-                               helpers:PasswordHelper.Attach="True"
-                               helpers:PasswordHelper.Password="{Binding NewPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                               MaxLength="64"
-                               Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"/>
+                                         Grid.Column="1"
+                                         materialDesign:HintAssist.Hint="Новый пароль (оставьте пустым, если не меняете)"
+                                         helpers:PasswordHelper.Attach="True"
+                                         helpers:PasswordHelper.Password="{Binding NewPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         MaxLength="64"
+                                         Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"
+                                         Foreground="{StaticResource MaterialDesignBody}"/>
                         </Grid>
 
                         <Grid Grid.Row="4" Grid.ColumnSpan="2" Margin="0,8,0,16"
@@ -198,19 +201,20 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Border Grid.Column="0" Width="44" Height="44" 
-                                    Background="{DynamicResource PrimaryHueLightBrush}"
+                                    Background="{DynamicResource MaterialDesignBody}"
                                     CornerRadius="22" Margin="0,0,12,0">
                                 <materialDesign:PackIcon Kind="LockCheck" Width="22" Height="22" 
-                                                       Foreground="{DynamicResource PrimaryHueMidBrush}"
-                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                         Foreground="{DynamicResource MaterialDesignBody}"
+                                                         HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <PasswordBox x:Name="txtConfirmPassword"
-                               Grid.Column="1"
-                               materialDesign:HintAssist.Hint="Подтверждение пароля"
-                               helpers:PasswordHelper.Attach="True"
-                               helpers:PasswordHelper.Password="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                               MaxLength="64"
-                               Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"/>
+                                         Grid.Column="1"
+                                         materialDesign:HintAssist.Hint="Подтверждение пароля"
+                                         helpers:PasswordHelper.Attach="True"
+                                         helpers:PasswordHelper.Password="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         MaxLength="64"
+                                         Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"
+                                         Foreground="{StaticResource MaterialDesignBody}"/>
                         </Grid>
                     </Grid>
 
@@ -219,10 +223,17 @@
                                 Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}">
                         <Button Command="{Binding SaveCommand}"
                                 Style="{StaticResource PrimaryButton}"
-                                Content="Сохранить" Margin="0,0,16,0"/>
+                                Content="Сохранить" 
+                                Margin="0,0,16,0"
+                                Foreground="{StaticResource MaterialDesignBody}"
+                                Padding="24,8"
+                                MinWidth="120"/>
                         <Button Command="{Binding CancelCommand}"
                                 Style="{StaticResource MaterialDesignFlatButton}"
-                                Content="Отмена"/>
+                                Content="Отмена"
+                                Foreground="{StaticResource MaterialDesignBody}"
+                                Padding="24,8"
+                                MinWidth="120"/>
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -241,7 +252,7 @@
                                Margin="0,0,0,16"/>
                     <Button Command="{Binding DeleteProgressCommand}"
                             Style="{StaticResource MaterialDesignRaisedButton}"
-                            Background="{DynamicResource MaterialDesignError}"
+                            Background="Red"
                             Foreground="White"
                             Height="44"
                             materialDesign:ButtonAssist.CornerRadius="22"

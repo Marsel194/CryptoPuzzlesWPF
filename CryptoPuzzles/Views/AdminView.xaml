@@ -29,33 +29,33 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="ShieldCrown" Width="32" Height="32" Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"/>
-                    <TextBlock Text="CryptoPuzzles Admin" Foreground="{DynamicResource PrimaryHueMidForegroundBrush}" FontSize="22" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                    <materialDesign:PackIcon Kind="ShieldCrown" Width="32" Height="32" Foreground="{DynamicResource MaterialDesignBody}"/>
+                    <TextBlock Text="CryptoPuzzles Admin" Foreground="{DynamicResource MaterialDesignBody}" FontSize="22" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
                 </StackPanel>
 
                 <TextBlock Grid.Column="1"
                            Text="{Binding Username, StringFormat='Привет, {0}!'}"
-                           Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"
+                           Foreground="{DynamicResource MaterialDesignBody}"
                            FontSize="18" FontWeight="SemiBold"
                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
                     <Button Command="{Binding LoadStatsCommand}" ToolTip="Обновить статистику" Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,8,0">
-                        <materialDesign:PackIcon Kind="Refresh" Width="20" Height="20" Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"/>
+                        <materialDesign:PackIcon Kind="Refresh" Width="20" Height="20" Foreground="{DynamicResource MaterialDesignBody}"/>
                     </Button>
                     <Button Command="{Binding OpenProfileCommand}" Cursor="Hand" Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,8,0">
-                        <materialDesign:PackIcon Kind="AccountCircle" Width="24" Height="24" Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"/>
+                        <materialDesign:PackIcon Kind="AccountCircle" Width="24" Height="24" Foreground="{DynamicResource MaterialDesignBody}"/>
                     </Button>
                     <Button Command="{Binding ToggleThemeCommand}" Cursor="Hand" Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,8,0">
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="ThemeLightDark" Width="20" Height="20" Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"/>
-                            <TextBlock Text="Тема" Foreground="{DynamicResource PrimaryHueMidForegroundBrush}" Margin="5,0,0,0"/>
+                            <materialDesign:PackIcon Kind="ThemeLightDark" Width="20" Height="20" Foreground="{DynamicResource MaterialDesignBody}"/>
+                            <TextBlock Text="Тема" Foreground="{DynamicResource MaterialDesignBody}" Margin="5,0,0,0"/>
                         </StackPanel>
                     </Button>
                     <Button Command="{Binding LogoutCommand}" Style="{StaticResource MaterialDesignFlatButton}">
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="Logout" Width="20" Height="20" Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"/>
-                            <TextBlock Text="Выход" Foreground="{DynamicResource PrimaryHueMidForegroundBrush}" Margin="5,0,0,0"/>
+                            <materialDesign:PackIcon Kind="Logout" Width="20" Height="20" Foreground="{DynamicResource MaterialDesignBody}"/>
+                            <TextBlock Text="Выход" Foreground="{DynamicResource MaterialDesignBody}" Margin="5,0,0,0"/>
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -70,24 +70,24 @@
                         <Border Style="{StaticResource AdminCardStyle}" Width="260" Margin="8">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                                    <materialDesign:PackIcon Kind="AccountGroup" Width="32" Height="32" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                                    <TextBlock Text="Пользователи" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                    <materialDesign:PackIcon Kind="AccountGroup" Width="32" Height="32" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                    <TextBlock Text="Пользователи" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="8,0,0,0" VerticalAlignment="Center"/>
                                 </StackPanel>
                                 <Grid Margin="0,0,0,8">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Всего:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding TotalUsers}" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="8,0,0,0"/>
+                                    <TextBlock Text="Всего:" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding TotalUsers}" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="8,0,0,0"/>
                                 </Grid>
                                 <Grid Margin="0,0,0,12">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Новых сегодня:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding NewUsersToday}" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignValidationSuccessBrush}" Margin="8,0,0,0"/>
+                                    <TextBlock Text="Новых сегодня:" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding NewUsersToday}" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="8,0,0,0"/>
                                 </Grid>
                                 <Button Content="Управление" Command="{Binding NavigateToUsersCommand}" Style="{StaticResource AdminActionButton}" HorizontalAlignment="Stretch"/>
                             </StackPanel>
@@ -96,16 +96,16 @@
                         <Border Style="{StaticResource AdminCardStyle}" Width="260" Margin="8">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                                    <materialDesign:PackIcon Kind="ShieldAccount" Width="32" Height="32" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                                    <TextBlock Text="Администраторы" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                    <materialDesign:PackIcon Kind="ShieldAccount" Width="32" Height="32" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                    <TextBlock Text="Администраторы" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="8,0,0,0" VerticalAlignment="Center"/>
                                 </StackPanel>
                                 <Grid Margin="0,0,0,12">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Всего:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding TotalAdmins}" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="8,0,0,0"/>
+                                    <TextBlock Text="Всего:" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding TotalAdmins}" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="8,0,0,0"/>
                                 </Grid>
                                 <Button Content="Управление" Command="{Binding NavigateToAdminsCommand}" Style="{StaticResource AdminActionButton}" HorizontalAlignment="Stretch"/>
                             </StackPanel>
@@ -114,8 +114,8 @@
                         <Border Style="{StaticResource AdminCardStyle}" Width="260" Margin="8">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                                    <materialDesign:PackIcon Kind="Lock" Width="32" Height="32" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                                    <TextBlock Text="Методы шифрования" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="8,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                    <materialDesign:PackIcon Kind="Lock" Width="32" Height="32" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                    <TextBlock Text="Методы шифрования" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="8,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
                                 </StackPanel>
                                 <Grid Margin="0,0,0,12">
                                     <Grid.ColumnDefinitions>
@@ -123,7 +123,7 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="Всего:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding TotalMethods}" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="8,0,0,0"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding TotalMethods}" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="8,0,0,0"/>
                                 </Grid>
                                 <Button Content="Управление" Command="{Binding NavigateToMethodsCommand}" Style="{StaticResource AdminActionButton}" HorizontalAlignment="Stretch"/>
                             </StackPanel>
@@ -132,8 +132,8 @@
                         <Border Style="{StaticResource AdminCardStyle}" Width="260" Margin="8">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                                    <materialDesign:PackIcon Kind="Puzzle" Width="32" Height="32" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                                    <TextBlock Text="Головоломки" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                    <materialDesign:PackIcon Kind="Puzzle" Width="32" Height="32" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                    <TextBlock Text="Головоломки" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="8,0,0,0" VerticalAlignment="Center"/>
                                 </StackPanel>
                                 <Grid Margin="0,0,0,12">
                                     <Grid.ColumnDefinitions>
@@ -141,7 +141,7 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="Всего:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding TotalPuzzles}" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="8,0,0,0"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding TotalPuzzles}" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="8,0,0,0"/>
                                 </Grid>
                                 <Button Content="Управление" Command="{Binding NavigateToPuzzlesCommand}" Style="{StaticResource AdminActionButton}" HorizontalAlignment="Stretch"/>
                             </StackPanel>
@@ -150,16 +150,16 @@
                         <Border Style="{StaticResource AdminCardStyle}" Width="260" Margin="8">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                                    <materialDesign:PackIcon Kind="LightbulbOn" Width="32" Height="32" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                                    <TextBlock Text="Подсказки" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                    <materialDesign:PackIcon Kind="LightbulbOn" Width="32" Height="32" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                    <TextBlock Text="Подсказки" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="8,0,0,0" VerticalAlignment="Center"/>
                                 </StackPanel>
                                 <Grid Margin="0,0,0,12">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Всего:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding TotalHints}" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="8,0,0,0"/>
+                                    <TextBlock Text="Всего:" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding TotalHints}" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="8,0,0,0"/>
                                 </Grid>
                                 <Button Content="Управление" Command="{Binding NavigateToHintsCommand}" Style="{StaticResource AdminActionButton}" HorizontalAlignment="Stretch"/>
                             </StackPanel>
@@ -168,40 +168,40 @@
                         <Border Style="{StaticResource AdminCardStyle}" Width="260" Margin="8">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                                    <materialDesign:PackIcon Kind="Gamepad" Width="32" Height="32" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                                    <TextBlock Text="Игровые сессии" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                    <materialDesign:PackIcon Kind="Gamepad" Width="32" Height="32" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                    <TextBlock Text="Игровые сессии" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="8,0,0,0" VerticalAlignment="Center"/>
                                 </StackPanel>
                                 <Grid Margin="0,0,0,4">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Активных:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding ActiveSessions}" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignValidationSuccessBrush}" Margin="8,0,0,0"/>
+                                    <TextBlock Text="Активных:" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding ActiveSessions}" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="8,0,0,0"/>
                                 </Grid>
                                 <Grid Margin="0,0,0,4">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Решено всего:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding TotalSolved}" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="8,0,0,0"/>
+                                    <TextBlock Text="Решено всего:" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding TotalSolved}" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="8,0,0,0"/>
                                 </Grid>
                                 <Grid Margin="0,0,0,4">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Решено сегодня:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding SolvedToday}" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignInfoBrush}" Margin="8,0,0,0"/>
+                                    <TextBlock Text="Решено сегодня:" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding SolvedToday}" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="8,0,0,0"/>
                                 </Grid>
                                 <Grid Margin="0,0,0,12">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Ср. балл:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding AvgScore}" FontWeight="Bold" Foreground="{DynamicResource SecondaryHueMidBrush}" Margin="8,0,0,0"/>
+                                    <TextBlock Text="Ср. балл:" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding AvgScore}" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="8,0,0,0"/>
                                 </Grid>
                                 <Button Content="Управление" Command="{Binding NavigateToSessionsCommand}" Style="{StaticResource AdminActionButton}" HorizontalAlignment="Stretch"/>
                             </StackPanel>
@@ -210,16 +210,16 @@
                         <Border Style="{StaticResource AdminCardStyle}" Width="260" Margin="8">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                                    <materialDesign:PackIcon Kind="School" Width="32" Height="32" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                                    <TextBlock Text="Туториалы" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                    <materialDesign:PackIcon Kind="School" Width="32" Height="32" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                    <TextBlock Text="Туториалы" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="8,0,0,0" VerticalAlignment="Center"/>
                                 </StackPanel>
                                 <Grid Margin="0,0,0,12">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Всего:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding TotalTutorials}" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="8,0,0,0"/>
+                                    <TextBlock Text="Всего:" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding TotalTutorials}" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="8,0,0,0"/>
                                 </Grid>
                                 <Button Content="Управление" Command="{Binding NavigateToTutorialsCommand}" Style="{StaticResource AdminActionButton}" HorizontalAlignment="Stretch"/>
                             </StackPanel>
@@ -228,16 +228,16 @@
                         <Border Style="{StaticResource AdminCardStyle}" Width="260" Margin="8">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                                    <materialDesign:PackIcon Kind="Speedometer" Width="32" Height="32" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                                    <TextBlock Text="Сложности" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                    <materialDesign:PackIcon Kind="Speedometer" Width="32" Height="32" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                    <TextBlock Text="Сложности" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="8,0,0,0" VerticalAlignment="Center"/>
                                 </StackPanel>
                                 <Grid Margin="0,0,0,12">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Всего:" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding TotalDifficulties}" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="8,0,0,0"/>
+                                    <TextBlock Text="Всего:" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding TotalDifficulties}" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="8,0,0,0"/>
                                 </Grid>
                                 <Button Content="Управление" Command="{Binding NavigateToDifficultiesCommand}" Style="{StaticResource AdminActionButton}" HorizontalAlignment="Stretch"/>
                             </StackPanel>
@@ -246,8 +246,8 @@
                         <Border Style="{StaticResource AdminCardStyle}" Width="260" Margin="8">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                                    <materialDesign:PackIcon Kind="Timeline" Width="32" Height="32" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                                    <TextBlock Text="Прогресс по сессиям" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="8,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                    <materialDesign:PackIcon Kind="Timeline" Width="32" Height="32" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                    <TextBlock Text="Прогресс по сессиям" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="8,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
                                 </StackPanel>
                                 <TextBlock Text="Детализация решений" Foreground="{DynamicResource MaterialDesignBodyLight}" Margin="0,0,0,12" TextWrapping="Wrap"/>
                                 <Button Content="Управление" Command="{Binding NavigateToSessionProgressCommand}" Style="{StaticResource AdminActionButton}" HorizontalAlignment="Stretch"/>
@@ -257,10 +257,10 @@
                         <Border Style="{StaticResource AdminCardStyle}" Width="280" Margin="8">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                                    <materialDesign:PackIcon Kind="ChartBar" Width="32" Height="32" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                                    <TextBlock Text="Статистика пользователей" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="8,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                    <materialDesign:PackIcon Kind="ChartBar" Width="32" Height="32" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                    <TextBlock Text="Статистика пользователей" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="8,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
                                 </StackPanel>
-                                <TextBlock Text="Сводка по игрокам" Foreground="{DynamicResource MaterialDesignBodyLight}" Margin="0,0,0,12" TextWrapping="Wrap"/>
+                                <TextBlock Text="Сводка по игрокам" Foreground="{DynamicResource MaterialDesignBody}" Margin="0,0,0,12" TextWrapping="Wrap"/>
                                 <Button Content="Управление" Command="{Binding NavigateToUserStatisticsCommand}" Style="{StaticResource AdminActionButton}" HorizontalAlignment="Stretch"/>
                             </StackPanel>
                         </Border>

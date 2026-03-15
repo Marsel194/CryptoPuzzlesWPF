@@ -14,7 +14,8 @@
         FilterText="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
         IsAddPanelVisible="True"
         AddPanelTitle="Новая головоломка"
-        IsSaveButtonVisible="True">
+        IsSaveButtonVisible="True"
+        Foreground="{StaticResource MaterialDesignBody}">
 
         <controls:EntityListControl.AddPanelContent>
             <Grid>
@@ -30,25 +31,30 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBox Grid.Column="0" Text="{Binding NewItem.Title, UpdateSourceTrigger=PropertyChanged}" 
-                         materialDesign:HintAssist.Hint="Название" Margin="4"/>
+                         materialDesign:HintAssist.Hint="Название" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                 <TextBox Grid.Column="1" Text="{Binding NewItem.Content, UpdateSourceTrigger=PropertyChanged}" 
-                         materialDesign:HintAssist.Hint="Содержание" Margin="4"/>
+                         materialDesign:HintAssist.Hint="Содержание" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                 <TextBox Grid.Column="2" Text="{Binding NewItem.Answer, UpdateSourceTrigger=PropertyChanged}" 
-                         materialDesign:HintAssist.Hint="Ответ" Margin="4"/>
+                         materialDesign:HintAssist.Hint="Ответ" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                 <TextBox Grid.Column="3" Text="{Binding NewItem.MaxScore, UpdateSourceTrigger=PropertyChanged}" 
-                         materialDesign:HintAssist.Hint="Макс. балл" Margin="4"/>
+                         materialDesign:HintAssist.Hint="Макс. балл" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                 <ComboBox Grid.Column="4" ItemsSource="{Binding Difficulties}" SelectedValuePath="Id" 
                           DisplayMemberPath="DifficultyName" SelectedValue="{Binding NewItem.DifficultyId}" 
-                          helpers:ComboBoxBehavior.AutoOpenOnEdit="True" materialDesign:HintAssist.Hint="Сложность" Margin="4"/>
+                          helpers:ComboBoxBehavior.AutoOpenOnEdit="True" materialDesign:HintAssist.Hint="Сложность" Margin="4"
+                          Foreground="{StaticResource MaterialDesignBody}"/>
                 <ComboBox Grid.Column="5" ItemsSource="{Binding Methods}" SelectedValuePath="Id" 
                           DisplayMemberPath="Name" SelectedValue="{Binding NewItem.MethodId}" 
-                          helpers:ComboBoxBehavior.AutoOpenOnEdit="True" materialDesign:HintAssist.Hint="Метод" Margin="4"/>
+                          helpers:ComboBoxBehavior.AutoOpenOnEdit="True" materialDesign:HintAssist.Hint="Метод" Margin="4"
+                          Foreground="{StaticResource MaterialDesignBody}"/>
                 <CheckBox Grid.Column="6" Content="Обучение" IsChecked="{Binding NewItem.IsTraining}" 
-                          VerticalAlignment="Center" Margin="4"/>
+                          VerticalAlignment="Center" Margin="4"
+                          Foreground="{StaticResource MaterialDesignBody}"/>
                 <TextBox Grid.Column="7" Text="{Binding NewItem.TutorialOrder, UpdateSourceTrigger=PropertyChanged}" 
-                         materialDesign:HintAssist.Hint="Порядок в обуч." Margin="4"/>
+                         materialDesign:HintAssist.Hint="Порядок в обуч." Margin="4"
+                         Foreground="{StaticResource MaterialDesignBody}"/>
                 <Button Grid.Column="8" Command="{Binding AddCommand}" Content="Добавить" 
-                        Style="{StaticResource PrimaryButton}" Margin="4,0"/>
+                        Style="{StaticResource PrimaryButton}" Margin="4,0"
+                        Foreground="{StaticResource MaterialDesignBody}"/>
             </Grid>
         </controls:EntityListControl.AddPanelContent>
 
@@ -58,13 +64,14 @@
                           AutoGenerateColumns="False" IsReadOnly="False" CanUserAddRows="False"
                           materialDesign:DataGridAssist.CellPadding="13 8 8 8"
                           materialDesign:DataGridAssist.ColumnHeaderPadding="8"
-                          HorizontalScrollBarVisibility="Disabled">
+                          HorizontalScrollBarVisibility="Disabled"
+                          Foreground="{StaticResource MaterialDesignBody}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="Auto" MinWidth="50"/>
-                        <DataGridTextColumn Header="Название" Binding="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="150"/>
-                        <DataGridTextColumn Header="Содержание" Binding="{Binding Content, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="200"/>
-                        <DataGridTextColumn Header="Ответ" Binding="{Binding Answer, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="100"/>
-                        <DataGridTextColumn Header="Макс. балл" Binding="{Binding MaxScore, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="100"/>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="Auto" MinWidth="50" Foreground="{StaticResource MaterialDesignBody}"/>
+                        <DataGridTextColumn Header="Название" Binding="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
+                        <DataGridTextColumn Header="Содержание" Binding="{Binding Content, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="200" Foreground="{StaticResource MaterialDesignBody}"/>
+                        <DataGridTextColumn Header="Ответ" Binding="{Binding Answer, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="100" Foreground="{StaticResource MaterialDesignBody}"/>
+                        <DataGridTextColumn Header="Макс. балл" Binding="{Binding MaxScore, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="100" Foreground="{StaticResource MaterialDesignBody}"/>
 
                         <DataGridTemplateColumn Header="Сложность" Width="Auto" MinWidth="120">
                             <DataGridTemplateColumn.CellTemplate>
@@ -76,7 +83,7 @@
                                 <DataTemplate>
                                     <ComboBox ItemsSource="{Binding DataContext.Difficulties, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                               SelectedValuePath="Id" DisplayMemberPath="DifficultyName"
-                                              SelectedValue="{Binding DifficultyId, UpdateSourceTrigger=PropertyChanged}"/>
+                                              SelectedValue="{Binding DifficultyId, UpdateSourceTrigger=PropertyChanged}" Foreground="{StaticResource MaterialDesignBody}"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellEditingTemplate>
                         </DataGridTemplateColumn>
@@ -84,24 +91,24 @@
                         <DataGridTemplateColumn Header="Метод" Width="Auto" MinWidth="120">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding MethodName}"/>
+                                    <TextBlock Text="{Binding MethodName}" Foreground="{StaticResource MaterialDesignBody}"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                             <DataGridTemplateColumn.CellEditingTemplate>
                                 <DataTemplate>
                                     <ComboBox ItemsSource="{Binding DataContext.Methods, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                               SelectedValuePath="Id" DisplayMemberPath="Name"
-                                              SelectedValue="{Binding MethodId, UpdateSourceTrigger=PropertyChanged}"/>
+                                              SelectedValue="{Binding MethodId, UpdateSourceTrigger=PropertyChanged}" Foreground="{StaticResource MaterialDesignBody}"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellEditingTemplate>
                         </DataGridTemplateColumn>
 
                         <DataGridCheckBoxColumn Header="Обучение" Binding="{Binding IsTraining}" Width="Auto" MinWidth="90"/>
-                        <DataGridTextColumn Header="Порядок в обуч." Binding="{Binding TutorialOrder}" Width="Auto" MinWidth="130"/>
+                        <DataGridTextColumn Header="Порядок в обуч." Binding="{Binding TutorialOrder}" Width="Auto" MinWidth="130" Foreground="{StaticResource MaterialDesignBody}"/>
 
                         <!-- Добавленные столбцы -->
-                        <DataGridTextColumn Header="Создал администратор" Binding="{Binding CreatedByAdminName}" Width="Auto" MinWidth="120"/>
-                        <DataGridTextColumn Header="Дата создания" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" Width="Auto" MinWidth="150"/>
+                        <DataGridTextColumn Header="Создал администратор" Binding="{Binding CreatedByAdminName}" Width="Auto" MinWidth="120" Foreground="{StaticResource MaterialDesignBody}"/>
+                        <DataGridTextColumn Header="Дата создания" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
 
                         <DataGridTemplateColumn Header="Действия" Width="Auto" MinWidth="110">
                             <DataGridTemplateColumn.CellTemplate>

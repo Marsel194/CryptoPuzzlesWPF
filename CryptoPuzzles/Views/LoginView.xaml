@@ -29,13 +29,13 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="0" Style="{StaticResource LogoCircle}" Margin="0,0,0,-30">
+            <Border Grid.Row="0" Style="{StaticResource LogoCircle}" Margin="0,0,0,-20">
                 <Viewbox Width="50" Height="50">
                     <materialDesign:PackIcon Kind="Puzzle"  Foreground="{DynamicResource MaterialDesignBody}"/>
                 </Viewbox>
             </Border>
 
-            <Border Grid.Row="1" Background="{DynamicResource MaterialDesignPaper}" 
+            <Border Grid.Row="1" Background="{DynamicResource MaterialDesignCardBackground}" 
                     CornerRadius="24" Padding="40 45 40 40" 
                     Width="450" materialDesign:ElevationAssist.Elevation="Dp8">
                 <StackPanel>
@@ -56,7 +56,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <Border Grid.Column="0" Width="44" Height="44" 
-                                        Background="{DynamicResource PrimaryHueLightBrush}"
+                                        Background="{DynamicResource MaterialDesignCardBackground}"
                                         CornerRadius="22" Margin="0,0,12,0">
                                     <materialDesign:PackIcon Kind="Account" Width="22" Height="22" 
                                                            Foreground="{DynamicResource MaterialDesignBody}"
@@ -86,7 +86,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <Border Grid.Column="0" Width="44" Height="44" 
-                                        Background="{DynamicResource PrimaryHueLightBrush}"
+                                        Background="{DynamicResource MaterialDesignCardBackground}"
                                         CornerRadius="22" Margin="0,0,12,0">
                                     <materialDesign:PackIcon Kind="Lock" Width="22" Height="22" 
                                                            Foreground="{DynamicResource MaterialDesignBody}"
@@ -177,13 +177,12 @@
                         </StackPanel>
                     </Border>
 
-                    <Button x:Name="btnLogin" 
+                    <Button x:Name="btnLogin" Style="{StaticResource PrimaryButton}"
                           Content="{Binding IsBusy, Converter={StaticResource BusyToTextConverter}, ConverterParameter='ВОЙТИ|Вход...'}"
-                          Background="{DynamicResource PrimaryHueMidBrush}"
                           Foreground="{DynamicResource MaterialDesignBody}"
                           Command="{Binding LoginCommand}"
                           Height="52" FontSize="16" FontWeight="Bold"
-                          Margin="0,16,0,24" Cursor=""
+                          Margin="0,16,0,24"
                           materialDesign:ButtonAssist.CornerRadius="26"
                           IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBool}}"/>
 
@@ -207,15 +206,16 @@
                         </Grid.ColumnDefinitions>
 
                         <Border Grid.Column="0" Height="1" Background="{DynamicResource MaterialDesignDivider}" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" Text="Нет аккаунта?" Margin="16,0" FontSize="13" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                        <TextBlock Grid.Column="1" Text="Нет аккаунта?" Margin="16,0" FontSize="13" Foreground="{DynamicResource MaterialDesignBody}"/>
                         <Border Grid.Column="2" Height="1" Background="{DynamicResource MaterialDesignDivider}" VerticalAlignment="Center"/>
                     </Grid>
 
                     <Button Command="{Binding ShowRegisterCommand}"
-        BorderBrush="{DynamicResource PrimaryHueMidBrush}"
-        BorderThickness="2" Height="48" FontSize="15" FontWeight="SemiBold"
-        materialDesign:ButtonAssist.CornerRadius="26" Cursor="Hand"
-        Style="{StaticResource RoundedOutlinedButton}">
+                        BorderBrush="{DynamicResource PrimaryHueMidBrush}"
+                        BorderThickness="2" Height="48" FontSize="15" FontWeight="SemiBold"
+                        materialDesign:ButtonAssist.CornerRadius="26" Cursor="Hand"
+                        Style="{StaticResource RoundedOutlinedButton}"
+                        Foreground="{DynamicResource MaterialDesignBody}">
                         <Button.ContentTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">

@@ -30,15 +30,15 @@
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Puzzle" Width="32" Height="32" 
-                                              Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"/>
+                                              Foreground="{DynamicResource MaterialDesignBody}"/>
                     <TextBlock Text="CryptoPuzzles" 
-                               Foreground="{DynamicResource PrimaryHueMidForegroundBrush}" 
+                               Foreground="{DynamicResource MaterialDesignBody}" 
                                FontSize="22" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
                 </StackPanel>
 
                 <TextBlock Grid.Column="1"
                            Text="{Binding Username, StringFormat='Привет, {0}!'}"
-                           Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"
+                           Foreground="{DynamicResource MaterialDesignBody}"
                            FontSize="18"
                            FontWeight="SemiBold"
                            HorizontalAlignment="Center"
@@ -50,7 +50,7 @@
                             Style="{StaticResource MaterialDesignFlatButton}"
                             Margin="0,0,8,0">
                         <materialDesign:PackIcon Kind="AccountCircle" Width="24" Height="24" 
-                                                  Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"/>
+                                                  Foreground="{DynamicResource MaterialDesignBody}"/>
                     </Button>
 
                     <Button Command="{Binding ToggleThemeCommand}"
@@ -58,9 +58,9 @@
                             Style="{StaticResource MaterialDesignFlatButton}">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="ThemeLightDark" Width="20" Height="20"
-                                                      Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"/>
+                                                      Foreground="{DynamicResource MaterialDesignBody}"/>
                             <TextBlock Text="Тема" 
-                                       Foreground="{DynamicResource PrimaryHueMidForegroundBrush}" 
+                                       Foreground="{DynamicResource MaterialDesignBody}" 
                                        Margin="5,0,0,0"/>
                         </StackPanel>
                     </Button>
@@ -70,9 +70,9 @@
                             Style="{StaticResource MaterialDesignFlatButton}">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="Logout" Width="20" Height="20"
-                                                      Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"/>
+                                                      Foreground="{DynamicResource MaterialDesignBody}"/>
                             <TextBlock Text="Выход" 
-                                       Foreground="{DynamicResource PrimaryHueMidForegroundBrush}" 
+                                       Foreground="{DynamicResource MaterialDesignBody}" 
                                        Margin="5,0,0,0"/>
                         </StackPanel>
                     </Button>
@@ -99,16 +99,16 @@
                                 <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center">
                                     <materialDesign:PackIcon Kind="CheckCircle" Width="32" Height="32" Foreground="Green" Margin="0,0,8,0"/>
                                     <StackPanel>
-                                        <TextBlock Text="Решено" FontSize="12" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
-                                        <TextBlock Text="{Binding SolvedCount}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                                        <TextBlock Text="Решено" FontSize="12" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                        <TextBlock Text="{Binding SolvedCount}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}"/>
                                     </StackPanel>
                                 </StackPanel>
 
-                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Background="{DynamicResource MaterialDesignCardBackground}">
                                     <materialDesign:PackIcon Kind="Star" Width="32" Height="32" Foreground="Gold" Margin="0,0,8,0"/>
                                     <StackPanel>
-                                        <TextBlock Text="Очки" FontSize="12" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
-                                        <TextBlock Text="{Binding Score}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                                        <TextBlock Text="Очки" FontSize="12" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                        <TextBlock Text="{Binding Score}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}"/>
                                     </StackPanel>
                                 </StackPanel>
                             </Grid>
@@ -117,7 +117,7 @@
                         <!-- Карточки выбора режима -->
                         <TextBlock Text="Выберите режим"
                                    FontSize="28" FontWeight="Bold"
-                                   Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                   Foreground="{DynamicResource MaterialDesignBody}"
                                    HorizontalAlignment="Center"
                                    Margin="0,0,0,24"/>
 
@@ -134,16 +134,16 @@
                                 </Border.InputBindings>
                                 <StackPanel VerticalAlignment="Center" Margin="24">
                                     <materialDesign:PackIcon Kind="School" Width="80" Height="80"
-                                                           Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                                           Foreground="{DynamicResource MaterialDesignBody}"
                                                            HorizontalAlignment="Center"/>
                                     <TextBlock Text="Обучение"
                                                FontSize="28" FontWeight="Bold"
-                                               Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                               Foreground="{DynamicResource MaterialDesignBody}"
                                                HorizontalAlignment="Center"
                                                Margin="0,24,0,12"/>
                                     <TextBlock Text="Изучите теорию шифрования и пройдите обучающие уроки"
                                                FontSize="14"
-                                               Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                               Foreground="{DynamicResource MaterialDesignBody}"
                                                TextWrapping="Wrap"
                                                TextAlignment="Center"/>
                                 </StackPanel>
@@ -161,16 +161,16 @@
                                 </Border.InputBindings>
                                 <StackPanel VerticalAlignment="Center" Margin="24">
                                     <materialDesign:PackIcon Kind="Puzzle" Width="80" Height="80"
-                                                           Foreground="{DynamicResource SecondaryHueMidBrush}"
+                                                           Foreground="{DynamicResource MaterialDesignBody}"
                                                            HorizontalAlignment="Center"/>
                                     <TextBlock Text="Практика"
                                                FontSize="28" FontWeight="Bold"
-                                               Foreground="{DynamicResource SecondaryHueMidBrush}"
+                                               Foreground="{DynamicResource MaterialDesignBody}"
                                                HorizontalAlignment="Center"
                                                Margin="0,24,0,12"/>
                                     <TextBlock Text="Решайте криптографические головоломки разной сложности"
                                                FontSize="14"
-                                               Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                               Foreground="{DynamicResource MaterialDesignBody}"
                                                TextWrapping="Wrap"
                                                TextAlignment="Center"/>
                                 </StackPanel>

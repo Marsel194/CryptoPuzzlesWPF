@@ -14,7 +14,8 @@
         FilterText="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
         IsAddPanelVisible="True"
         AddPanelTitle="Новый администратор"
-        IsSaveButtonVisible="True">
+        IsSaveButtonVisible="True"
+        Foreground="{StaticResource MaterialDesignBody}">
 
         <!-- Панель добавления -->
         <controls:EntityListControl.AddPanelContent>
@@ -28,18 +29,18 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBox Grid.Column="0" Text="{Binding NewItem.Login, UpdateSourceTrigger=PropertyChanged}" 
-                         materialDesign:HintAssist.Hint="Логин" Margin="4"/>
+                         materialDesign:HintAssist.Hint="Логин" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                 <TextBox Grid.Column="1" Text="{Binding NewItem.FirstName, UpdateSourceTrigger=PropertyChanged}" 
-                         materialDesign:HintAssist.Hint="Имя" Margin="4"/>
+                         materialDesign:HintAssist.Hint="Имя" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                 <TextBox Grid.Column="2" Text="{Binding NewItem.LastName, UpdateSourceTrigger=PropertyChanged}" 
-                         materialDesign:HintAssist.Hint="Фамилия" Margin="4"/>
+                         materialDesign:HintAssist.Hint="Фамилия" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                 <TextBox Grid.Column="3" Text="{Binding NewItem.MiddleName, UpdateSourceTrigger=PropertyChanged}" 
-                         materialDesign:HintAssist.Hint="Отчество" Margin="4"/>
+                         materialDesign:HintAssist.Hint="Отчество" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                 <PasswordBox Grid.Column="4" helpers:PasswordHelper.Attach="True" 
                              helpers:PasswordHelper.Password="{Binding NewPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                             materialDesign:HintAssist.Hint="Пароль" Margin="4"/>
+                             materialDesign:HintAssist.Hint="Пароль" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                 <Button Grid.Column="5" Command="{Binding AddCommand}" Content="Добавить" 
-                        Style="{StaticResource PrimaryButton}" Margin="4,0"/>
+                        Style="{StaticResource PrimaryButton}" Margin="4,0" Foreground="{StaticResource MaterialDesignBody}"/>
             </Grid>
         </controls:EntityListControl.AddPanelContent>
 
@@ -48,14 +49,15 @@
             <DataGrid ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
                       AutoGenerateColumns="False" IsReadOnly="False" CanUserAddRows="False"
                       materialDesign:DataGridAssist.CellPadding="13 8 8 8"
-                      materialDesign:DataGridAssist.ColumnHeaderPadding="8">
+                      materialDesign:DataGridAssist.ColumnHeaderPadding="8"
+                      Foreground="{StaticResource MaterialDesignBody}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="Auto" MinWidth="50"/>
-                    <DataGridTextColumn Header="Логин" Binding="{Binding Login, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="120"/>
-                    <DataGridTextColumn Header="Имя" Binding="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="120"/>
-                    <DataGridTextColumn Header="Фамилия" Binding="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="120"/>
-                    <DataGridTextColumn Header="Отчество" Binding="{Binding MiddleName, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="120"/>
-                    <DataGridTextColumn Header="Дата создания" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150"/>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="Auto" MinWidth="50" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridTextColumn Header="Логин" Binding="{Binding Login, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="120" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridTextColumn Header="Имя" Binding="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="120" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridTextColumn Header="Фамилия" Binding="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="120" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridTextColumn Header="Отчество" Binding="{Binding MiddleName, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="120" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridTextColumn Header="Дата создания" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
                     <DataGridTemplateColumn Header="Действия" Width="Auto" MinWidth="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

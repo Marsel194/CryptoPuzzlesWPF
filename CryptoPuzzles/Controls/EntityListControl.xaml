@@ -21,7 +21,7 @@
             <Button Grid.Column="0" Command="{Binding BackCommand, ElementName=ControlRoot}"
                     Style="{StaticResource MaterialDesignFlatButton}" ToolTip="Вернуться в админ-панель" Margin="0,0,16,0">
                 <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="ArrowLeft" Width="24" Height="24" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                    <materialDesign:PackIcon Kind="ArrowLeft" Width="24" Height="24"/>
                     <TextBlock Text="Назад" FontSize="16" VerticalAlignment="Center" Margin="8,0,0,0"/>
                 </StackPanel>
             </Button>
@@ -31,7 +31,8 @@
 
         <!-- Панель добавления -->
         <Border Grid.Row="1" Style="{StaticResource InputContainer}" Margin="0,0,0,16"
-                Visibility="{Binding IsAddPanelVisible, ElementName=ControlRoot, Converter={StaticResource BoolToVis}}">
+                Visibility="{Binding IsAddPanelVisible, ElementName=ControlRoot, Converter={StaticResource BoolToVis}}"
+                Background="{DynamicResource MaterialDesignCardBackground}">
             <StackPanel>
                 <TextBlock Text="{Binding AddPanelTitle, ElementName=ControlRoot}"
                            FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
@@ -47,13 +48,15 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" Text="Поиск:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <TextBlock Grid.Column="0" Text="Поиск:" VerticalAlignment="Center" Margin="0,0,8,0"
+                       Foreground="{StaticResource MaterialDesignBody}"/>
             <TextBox Grid.Column="1" Text="{Binding FilterText, ElementName=ControlRoot, UpdateSourceTrigger=PropertyChanged}"
-                     materialDesign:HintAssist.Hint="Введите текст..." Padding="4"/>
+                     materialDesign:HintAssist.Hint="Введите текст..." Padding="4" Foreground="{StaticResource MaterialDesignBody}"/>
             <Button Grid.Column="2" Command="{Binding ClearFilterCommand, ElementName=ControlRoot}"
                     Content="Очистить" Style="{StaticResource MaterialDesignFlatButton}" Margin="8,0,0,0"/>
             <Button Grid.Column="3" Command="{Binding ExportToExcelCommand, ElementName=ControlRoot}"
-                    Content="Экспорт в Excel" Style="{StaticResource PrimaryButton}" Margin="8,0,0,0" MinWidth="140" Padding="8,0"/>
+                    Content="Экспорт в Excel" Style="{StaticResource PrimaryButton}" Margin="8,0,0,0" MinWidth="140" Padding="8,0"
+                    Foreground="{StaticResource MaterialDesignBody}"/>
         </Grid>
 
         <!-- Основное содержимое (DataGrid) -->
@@ -64,6 +67,7 @@
                 Command="{Binding SaveCommand, ElementName=ControlRoot}"
                 Content="Сохранить изменения" Style="{StaticResource PrimaryButton}"
                 Margin="0,16,0,0" MinWidth="200" Padding="16,0"
-                Visibility="{Binding IsSaveButtonVisible, ElementName=ControlRoot, Converter={StaticResource BoolToVis}}"/>
+                Visibility="{Binding IsSaveButtonVisible, ElementName=ControlRoot, Converter={StaticResource BoolToVis}}"
+                Foreground="{StaticResource MaterialDesignBody}"/>
     </Grid>
 </UserControl>

@@ -24,7 +24,7 @@
             <!-- Заголовок -->
             <TextBlock Text="Профиль администратора"
                        FontSize="28" FontWeight="Bold"
-                       Foreground="{DynamicResource PrimaryHueMidBrush}"
+                       Foreground="{DynamicResource MaterialDesignBody}"
                        Margin="0,0,0,24"/>
 
             <!-- Карточка с данными -->
@@ -43,7 +43,7 @@
                         <TextBlock Grid.Column="0"
                                    Text="Личные данные"
                                    FontSize="22" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                                   Foreground="{DynamicResource MaterialDesignBody}"/>
 
                         <!-- Кнопка Изменить (показывается когда не в режиме редактирования) -->
                         <Button Grid.Column="1"
@@ -76,7 +76,7 @@
                         <TextBlock Grid.Row="0" Grid.Column="0"
                                    Text="Логин:"
                                    FontSize="16"
-                                   Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                   Foreground="{DynamicResource MaterialDesignBody}"
                                    VerticalAlignment="Center"
                                    Margin="0,0,16,16"/>
                         <TextBlock Grid.Row="0" Grid.Column="1"
@@ -90,7 +90,7 @@
                         <TextBlock Grid.Row="1" Grid.Column="0"
                                    Text="Имя:"
                                    FontSize="16"
-                                   Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                   Foreground="{DynamicResource MaterialDesignBody}"
                                    VerticalAlignment="Center"
                                    Margin="0,0,16,16"/>
                         <TextBlock Grid.Row="1" Grid.Column="1"
@@ -111,7 +111,7 @@
                         <TextBlock Grid.Row="2" Grid.Column="0"
                                    Text="Фамилия:"
                                    FontSize="16"
-                                   Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                   Foreground="{DynamicResource MaterialDesignBody}"
                                    VerticalAlignment="Center"
                                    Margin="0,0,16,16"/>
                         <TextBlock Grid.Row="2" Grid.Column="1"
@@ -132,7 +132,7 @@
                         <TextBlock Grid.Row="3" Grid.Column="0"
                                    Text="Отчество:"
                                    FontSize="16"
-                                   Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                   Foreground="{DynamicResource MaterialDesignBody}"
                                    VerticalAlignment="Center"
                                    Margin="0,0,16,16"/>
                         <TextBlock Grid.Row="3" Grid.Column="1"
@@ -157,10 +157,10 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Border Grid.Column="0" Width="44" Height="44" 
-                                    Background="{DynamicResource PrimaryHueLightBrush}"
+                                    Background="{DynamicResource MaterialDesignCardBackground}"
                                     CornerRadius="22" Margin="0,0,12,0">
                                 <materialDesign:PackIcon Kind="Lock" Width="22" Height="22" 
-                                                       Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                                       Foreground="{DynamicResource MaterialDesignBody}"
                                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <PasswordBox x:Name="txtNewPassword"
@@ -180,10 +180,10 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Border Grid.Column="0" Width="44" Height="44" 
-                                    Background="{DynamicResource PrimaryHueLightBrush}"
+                                    Background="{DynamicResource MaterialDesignCardBackground}"
                                     CornerRadius="22" Margin="0,0,12,0">
                                 <materialDesign:PackIcon Kind="LockCheck" Width="22" Height="22" 
-                                                       Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                                       Foreground="{DynamicResource MaterialDesignBody}"
                                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <PasswordBox x:Name="txtConfirmPassword"
@@ -203,10 +203,12 @@
                         <Button Command="{Binding SaveCommand}"
                                 Style="{StaticResource PrimaryButton}"
                                 Content="Сохранить"
-                                Margin="0,0,16,0"/>
+                                Margin="0,0,16,0"
+                                Foreground="{DynamicResource MaterialDesignBody}"/>
                         <Button Command="{Binding CancelCommand}"
                                 Style="{StaticResource MaterialDesignFlatButton}"
-                                Content="Отмена" Cursor=""/>
+                                Content="Отмена" Cursor=""
+                                Foreground="{DynamicResource MaterialDesignBody}"/>
                     </StackPanel>
                 </StackPanel>
             </Border>

@@ -10,26 +10,28 @@
         ExportToExcelCommand="{Binding ExportToExcelCommand}"
         FilterText="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
         IsAddPanelVisible="False"
-        IsSaveButtonVisible="False">
+        IsSaveButtonVisible="False"
+        Foreground="{StaticResource MaterialDesignBody}">
 
         <!-- Основное содержимое (DataGrid) -->
         <controls:EntityListControl.MainContent>
             <DataGrid ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
                       AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
                       materialDesign:DataGridAssist.CellPadding="13 8 8 8"
-                      materialDesign:DataGridAssist.ColumnHeaderPadding="8">
+                      materialDesign:DataGridAssist.ColumnHeaderPadding="8"
+                      Foreground="{StaticResource MaterialDesignBody}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID пользователя" Binding="{Binding UserId}" Width="Auto" MinWidth="80"/>
-                    <DataGridTextColumn Header="Логин" Binding="{Binding UserLogin}" Width="Auto" MinWidth="100"/>
-                    <DataGridTextColumn Header="Имя" Binding="{Binding Username}" Width="Auto" MinWidth="120"/>
-                    <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="Auto" MinWidth="150"/>
-                    <DataGridTextColumn Header="Сессий" Binding="{Binding TotalSessions}" Width="Auto" MinWidth="60"/>
-                    <DataGridTextColumn Header="Решено" Binding="{Binding TotalPuzzlesSolved}" Width="Auto" MinWidth="70"/>
-                    <DataGridTextColumn Header="Очки" Binding="{Binding TotalScore}" Width="Auto" MinWidth="80"/>
-                    <DataGridTextColumn Header="Подсказок" Binding="{Binding TotalHintsUsed}" Width="Auto" MinWidth="80"/>
-                    <DataGridTextColumn Header="Ср. балл" Binding="{Binding AvgScorePerSession}" Width="Auto" MinWidth="70"/>
-                    <DataGridTextColumn Header="Последняя активность" Binding="{Binding LastActive, StringFormat='dd.MM.yyyy HH:mm'}" Width="Auto" MinWidth="150"/>
-                    <DataGridTextColumn Header="Дата регистрации" Binding="{Binding RegisteredAt, StringFormat='dd.MM.yyyy HH:mm'}" Width="Auto" MinWidth="150"/>
+                    <DataGridTextColumn Header="ID пользователя" Binding="{Binding UserId}" Width="Auto" MinWidth="80" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridTextColumn Header="Логин" Binding="{Binding UserLogin}" Width="Auto" MinWidth="100" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridTextColumn Header="Имя" Binding="{Binding Username}" Width="Auto" MinWidth="120" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridTextColumn Header="Сессий" Binding="{Binding TotalSessions}" Width="Auto" MinWidth="60" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridTextColumn Header="Решено" Binding="{Binding TotalPuzzlesSolved}" Width="Auto" MinWidth="70" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridTextColumn Header="Очки" Binding="{Binding TotalScore}" Width="Auto" MinWidth="80" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridTextColumn Header="Подсказок" Binding="{Binding TotalHintsUsed}" Width="Auto" MinWidth="80" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridTextColumn Header="Ср. балл" Binding="{Binding AvgScorePerSession}" Width="Auto" MinWidth="70" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridTextColumn Header="Последняя активность" Binding="{Binding LastActive, StringFormat='dd.MM.yyyy HH:mm'}" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridTextColumn Header="Дата регистрации" Binding="{Binding RegisteredAt, StringFormat='dd.MM.yyyy HH:mm'}" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
                 </DataGrid.Columns>
             </DataGrid>
         </controls:EntityListControl.MainContent>

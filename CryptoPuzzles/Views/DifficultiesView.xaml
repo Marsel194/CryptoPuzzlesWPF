@@ -13,7 +13,8 @@
         FilterText="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
         IsAddPanelVisible="True"
         AddPanelTitle="Новый уровень сложности"
-        IsSaveButtonVisible="True">
+        IsSaveButtonVisible="True"
+        Foreground="{StaticResource MaterialDesignBody}">
 
         <!-- Панель добавления -->
         <controls:EntityListControl.AddPanelContent>
@@ -23,9 +24,9 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBox Grid.Column="0" Text="{Binding NewItem.DifficultyName, UpdateSourceTrigger=PropertyChanged}" 
-                         materialDesign:HintAssist.Hint="Название" Margin="4"/>
+                         materialDesign:HintAssist.Hint="Название" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                 <Button Grid.Column="1" Command="{Binding AddCommand}" Content="Добавить" 
-                        Style="{StaticResource PrimaryButton}" Margin="4,0"/>
+                        Style="{StaticResource PrimaryButton}" Margin="4,0" Foreground="{StaticResource MaterialDesignBody}"/>
             </Grid>
         </controls:EntityListControl.AddPanelContent>
 
@@ -34,10 +35,11 @@
             <DataGrid ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
                       AutoGenerateColumns="False" IsReadOnly="False" CanUserAddRows="False"
                       materialDesign:DataGridAssist.CellPadding="13 8 8 8"
-                      materialDesign:DataGridAssist.ColumnHeaderPadding="8">
+                      materialDesign:DataGridAssist.ColumnHeaderPadding="8"
+                      Foreground="{StaticResource MaterialDesignBody}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="Auto" MinWidth="50"/>
-                    <DataGridTextColumn Header="Название" Binding="{Binding DifficultyName, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="150"/>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="Auto" MinWidth="50" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridTextColumn Header="Название" Binding="{Binding DifficultyName, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
                     <DataGridTemplateColumn Header="Действия" Width="Auto" MinWidth="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

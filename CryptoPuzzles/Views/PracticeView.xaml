@@ -107,20 +107,21 @@
                        Margin="0,0,0,24"/>
 
                     <Expander Header="Подсказка" 
-                              IsExpanded="False"
-                              Margin="0,0,0,16"
-                              Visibility="{Binding AreHintsVisible, Converter={StaticResource BoolToVis}}"
-                              Style="{StaticResource DistinctMaterialDesignExpander}">
-                        <StackPanel>
-                            <TextBlock Text="{Binding CurrentHint}"
-                                       TextWrapping="Wrap"
-                                       Margin="0,8,0,8"/>
-                            <Button Command="{Binding NextHintCommand}"
-                                    Content="Следующая подсказка"
-                                    HorizontalAlignment="Right"
-                                    IsEnabled="{Binding HasNextHint}"
-                                    Style="{StaticResource MaterialDesignFlatButton}"/>
-                        </StackPanel>
+                        IsExpanded="False"
+                        Margin="0,0,0,16"
+                        Visibility="{Binding AreHintsVisible, Converter={StaticResource BoolToVis}}"
+                        Style="{StaticResource DistinctMaterialDesignExpander}">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding CurrentHint}"
+                                TextWrapping="Wrap"
+                                TextAlignment="Center"
+                                Margin="0,8,0,8"/>
+                    <Button Command="{Binding NextHintCommand}"
+                            Content="Следующая подсказка"
+                            HorizontalAlignment="Right"
+                            IsEnabled="{Binding HasNextHint}"
+                            Style="{StaticResource MaterialDesignFlatButton}"/>
+                </StackPanel>
                     </Expander>
 
                     <TextBox Text="{Binding UserAnswer, UpdateSourceTrigger=PropertyChanged}"

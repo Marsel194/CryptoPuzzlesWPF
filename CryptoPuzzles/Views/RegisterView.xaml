@@ -379,8 +379,8 @@
                         </Border>
 
                         <Button Content="{Binding IsBusy, Converter={StaticResource BusyToTextConverter}, ConverterParameter='ЗАРЕГИСТРИРОВАТЬСЯ|Регистрация...'}"
+                                Style="{StaticResource PrimaryButton}"
                                 Command="{Binding RegisterCommand}"
-                                Background="{DynamicResource PrimaryHueMidBrush}"
                                 Foreground="{DynamicResource MaterialDesignBody}"
                                 Height="52" FontSize="16" FontWeight="Bold"
                                 Margin="0,16,0,24" Cursor="Hand"
@@ -431,13 +431,12 @@
         </ScrollViewer>
 
         <Button Command="{Binding ShowLoginCommand}"
-                Foreground="{DynamicResource MaterialDesignBody}"
                 FontWeight="SemiBold" Cursor="Hand"
                 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20"
                 Style="{StaticResource MaterialDesignFlatButton}">
             <StackPanel Orientation="Horizontal">
-                <materialDesign:PackIcon Kind="ArrowLeft" Width="20" Height="20" Margin="0,0,5,0" Foreground="{DynamicResource MaterialDesignBody}"/>
-                <TextBlock Text="На главную" Foreground="{DynamicResource MaterialDesignBody}"/>
+                <materialDesign:PackIcon Kind="ArrowLeft" Width="20" Height="20" Margin="0,0,5,0"/>
+                <TextBlock Text="На главную"/>
             </StackPanel>
         </Button>
     </Grid>
