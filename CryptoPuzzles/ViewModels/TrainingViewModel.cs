@@ -4,7 +4,6 @@ using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.Shared;
 using CryptoPuzzles.ViewModels.Base;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -493,9 +492,9 @@ namespace CryptoPuzzles.ViewModels
                 {
                     Hints = new ObservableCollection<AHint>(hints);
                     HasHints = Hints.Any();
-                    CurrentHintIndex = -1;
-                    ResetHintTimer();
+                    RestoreHintIndexForCurrentPuzzle();
 
+                    ResetHintTimer();
                     ((AsyncRelayCommand)NextHintCommand).RaiseCanExecuteChanged();
                 });
             }
@@ -510,6 +509,25 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
+        private void RestoreHintIndexForCurrentPuzzle()
+        {
+            if (CurrentPuzzleIndex < 0 || CurrentPuzzleIndex >= Puzzles.Count)
+                return;
+
+            var currentPuzzle = Puzzles[CurrentPuzzleIndex];
+
+            if (_progressByPuzzleId.TryGetValue(currentPuzzle.Id, out var progress) && progress.HintsUsed > 0)
+            {
+                int lastUsedIndex = progress.HintsUsed - 1;
+                if (lastUsedIndex < Hints.Count)
+                    CurrentHintIndex = lastUsedIndex;
+                else
+                    CurrentHintIndex = Hints.Count - 1;
+            }
+            else
+                CurrentHintIndex = Hints.Any() ? 0 : -1;
+        }
+
         private void UpdatePuzzleDisplay()
         {
             if (CurrentPuzzleIndex >= 0 && CurrentPuzzleIndex < Puzzles.Count)
@@ -519,9 +537,6 @@ namespace CryptoPuzzles.ViewModels
                 PuzzleContent = p.Content ?? string.Empty;
                 PuzzleProgress = $"{CurrentPuzzleIndex + 1}/{Puzzles.Count}";
                 UserAnswer = string.Empty;
-                CurrentHintIndex = -1;
-                CurrentHint = string.Empty;
-                ((AsyncRelayCommand)NextHintCommand).RaiseCanExecuteChanged();
                 _ = LoadHintsForPuzzleAsync(p.Id);
             }
         }
