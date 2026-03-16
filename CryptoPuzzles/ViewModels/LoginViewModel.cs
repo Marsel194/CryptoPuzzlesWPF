@@ -61,6 +61,24 @@ namespace CryptoPuzzles.ViewModels
             LoginCommand = new AsyncRelayCommand(OnLoginAsync, _ => !IsBusy);
             ShowRegisterCommand = new AsyncRelayCommand(_ => _navigationService.NavigateToAsync<RegisterViewModel>());
             KeyDownCommand = new AsyncRelayCommand<KeyEventArgs>(OnKeyDownAsync, _ => !IsBusy);
+
+            _ = CheckConnection();
+        }
+
+        private async Task CheckConnection()
+        {
+            try
+            {
+                _ = await _adminApiService.GetAllAsync();
+            }
+            catch (OperationCanceledException)
+            {
+                await DialogService.ShowError("Сервер не отвечает. Проверьте подключение.");
+            }
+            catch (Exception ex)
+            {
+                await DialogService.ShowError($"Ошибка подключения: {ex.Message}");
+            }
         }
 
         private async Task OnLoginAsync(object? parameter = null)

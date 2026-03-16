@@ -10,9 +10,12 @@ namespace CryptoPuzzles.Services.Api.Base
 
         protected readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
 
+        private readonly int _timeoutSeconds = 10;
+
         protected BaseApiService(HttpClient httpClient)
         {
             _httpClient = httpClient;
+            _httpClient.Timeout = TimeSpan.FromSeconds(_timeoutSeconds + 2);
         }
 
         protected async Task<T> SendAsync<T>(Func<Task<HttpResponseMessage>> action)

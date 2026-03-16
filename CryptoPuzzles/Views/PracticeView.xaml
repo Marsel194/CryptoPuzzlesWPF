@@ -18,32 +18,41 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <Button Command="{Binding GoBackCommand}"
-                Style="{StaticResource MaterialDesignFlatButton}"
-                HorizontalAlignment="Left">
+
+            <Button Grid.Column="0" 
+                    Command="{Binding GoBackCommand}"
+                    Style="{StaticResource MaterialDesignFlatButton}"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="ArrowLeft" Width="24" Height="24"/>
                     <TextBlock Text="Назад" Margin="8,0,0,0" FontSize="16"/>
                 </StackPanel>
             </Button>
 
-            <TextBlock Grid.Column="1" Text="Практика"
-                   FontSize="28" FontWeight="Bold"
-                   Foreground="{DynamicResource MaterialDesignBody}"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="1" 
+                       Text="Практика"
+                       FontSize="28" FontWeight="Bold"
+                       Foreground="{DynamicResource MaterialDesignBody}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+
+            <!-- Пустой элемент для симметрии -->
+            <Grid Grid.Column="2" Width="80"/>
         </Grid>
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <StackPanel>
 
+                <!-- Заголовок "Выберите сложность" теперь отдельно, на равне с "Практика" -->
                 <StackPanel Visibility="{Binding IsSelectingDifficulty, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="Выберите сложность"
-                               FontSize="22" FontWeight="SemiBold"
+                               FontSize="28" FontWeight="Bold"
                                Foreground="{DynamicResource MaterialDesignBody}"
                                HorizontalAlignment="Center"
-                               Margin="0,0,0,24"/>
+                               Margin="0,0,0,32"/>
 
                     <ListBox ItemsSource="{Binding Difficulties}"
                              SelectedItem="{Binding SelectedDifficulty}"
@@ -112,19 +121,19 @@
                         Visibility="{Binding AreHintsVisible, Converter={StaticResource BoolToVis}}"
                         Style="{StaticResource DistinctMaterialDesignExpander}"
                         Foreground="{DynamicResource MaterialDesignBody}">
-                                    <StackPanel>
-                                        <TextBlock Text="{Binding CurrentHint}"
+                        <StackPanel>
+                            <TextBlock Text="{Binding CurrentHint}"
                                 TextWrapping="Wrap"
                                 TextAlignment="Center"
                                 Margin="0,8,0,8"
                                 FontSize="24"
                                 Foreground="{DynamicResource MaterialDesignBody}"/>
-                    <Button Command="{Binding NextHintCommand}"
+                            <Button Command="{Binding NextHintCommand}"
                             Content="Следующая подсказка"
                             HorizontalAlignment="Right"
                             IsEnabled="{Binding HasNextHint}"
                             Style="{StaticResource MaterialDesignFlatButton}"/>
-                </StackPanel>
+                        </StackPanel>
                     </Expander>
 
                     <TextBox Text="{Binding UserAnswer, UpdateSourceTrigger=PropertyChanged}"
@@ -143,10 +152,10 @@
                 <StackPanel Visibility="{Binding IsResult, Converter={StaticResource BoolToVis}}"
                             HorizontalAlignment="Center" Margin="0,24">
                     <materialDesign:PackIcon Kind="{Binding ResultIcon}" Width="64" Height="64"
-                                           Foreground="{Binding MaterialDesignBody}" HorizontalAlignment="Center"/>
+                                           Foreground="{DynamicResource MaterialDesignBody}" HorizontalAlignment="Center"/>
                     <TextBlock Text="{Binding ResultMessage}"
                                FontSize="24" FontWeight="Bold"
-                               Foreground="{Binding ResultColor}"
+                               Foreground="{DynamicResource MaterialDesignBody}"
                                HorizontalAlignment="Center"
                                Margin="0,16,0,8"/>
                     <TextBlock Text="{Binding EarnedScore, StringFormat='Начислено очков: {0}'}"
