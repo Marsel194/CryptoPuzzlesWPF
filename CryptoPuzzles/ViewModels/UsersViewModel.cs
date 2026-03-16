@@ -12,6 +12,14 @@ namespace CryptoPuzzles.ViewModels
         private string _loginFilter = string.Empty;
         private string _nameFilter = string.Empty;
         private string _emailFilter = string.Empty;
+        private DateTime? _minCreatedAt;
+        private DateTime? _maxCreatedAt;
+        private int? _minTotalSessions;
+        private int? _maxTotalSessions;
+        private int? _minTotalScore;
+        private int? _maxTotalScore;
+        private int? _minPuzzlesSolved;
+        private int? _maxPuzzlesSolved;
 
         public UsersViewModel(UserApiService apiService) : base(apiService) { }
 
@@ -57,6 +65,86 @@ namespace CryptoPuzzles.ViewModels
             set
             {
                 if (SetProperty(ref _emailFilter, value))
+                    ApplyFilter();
+            }
+        }
+
+        public DateTime? MinCreatedAt
+        {
+            get => _minCreatedAt;
+            set
+            {
+                if (SetProperty(ref _minCreatedAt, value))
+                    ApplyFilter();
+            }
+        }
+
+        public DateTime? MaxCreatedAt
+        {
+            get => _maxCreatedAt;
+            set
+            {
+                if (SetProperty(ref _maxCreatedAt, value))
+                    ApplyFilter();
+            }
+        }
+
+        public int? MinTotalSessions
+        {
+            get => _minTotalSessions;
+            set
+            {
+                if (SetProperty(ref _minTotalSessions, value))
+                    ApplyFilter();
+            }
+        }
+
+        public int? MaxTotalSessions
+        {
+            get => _maxTotalSessions;
+            set
+            {
+                if (SetProperty(ref _maxTotalSessions, value))
+                    ApplyFilter();
+            }
+        }
+
+        public int? MinTotalScore
+        {
+            get => _minTotalScore;
+            set
+            {
+                if (SetProperty(ref _minTotalScore, value))
+                    ApplyFilter();
+            }
+        }
+
+        public int? MaxTotalScore
+        {
+            get => _maxTotalScore;
+            set
+            {
+                if (SetProperty(ref _maxTotalScore, value))
+                    ApplyFilter();
+            }
+        }
+
+        public int? MinPuzzlesSolved
+        {
+            get => _minPuzzlesSolved;
+            set
+            {
+                if (SetProperty(ref _minPuzzlesSolved, value))
+                    ApplyFilter();
+            }
+        }
+
+        public int? MaxPuzzlesSolved
+        {
+            get => _maxPuzzlesSolved;
+            set
+            {
+                if (SetProperty(ref _maxPuzzlesSolved, value))
                     ApplyFilter();
             }
         }
@@ -149,7 +237,11 @@ namespace CryptoPuzzles.ViewModels
                    x.DeletedAt == y.DeletedAt;
         }
 
-        protected override bool HasAdditionalFilters() => !ShowDeleted || !string.IsNullOrWhiteSpace(LoginFilter) || !string.IsNullOrWhiteSpace(NameFilter) || !string.IsNullOrWhiteSpace(EmailFilter);
+        protected override bool HasAdditionalFilters() =>
+            !ShowDeleted || !string.IsNullOrWhiteSpace(LoginFilter) || !string.IsNullOrWhiteSpace(NameFilter) ||
+            !string.IsNullOrWhiteSpace(EmailFilter) || MinCreatedAt.HasValue || MaxCreatedAt.HasValue ||
+            MinTotalSessions.HasValue || MaxTotalSessions.HasValue || MinTotalScore.HasValue ||
+            MaxTotalScore.HasValue || MinPuzzlesSolved.HasValue || MaxPuzzlesSolved.HasValue;
 
         protected override bool FilterPredicate(AUser item)
         {
@@ -163,7 +255,31 @@ namespace CryptoPuzzles.ViewModels
             bool emailMatch = string.IsNullOrWhiteSpace(EmailFilter) ||
                               item.Email.Contains(EmailFilter, StringComparison.OrdinalIgnoreCase);
 
-            return loginMatch && nameMatch && emailMatch;
+            bool createdMatch = true;
+            if (MinCreatedAt.HasValue)
+                createdMatch = item.CreatedAt >= MinCreatedAt.Value;
+            if (createdMatch && MaxCreatedAt.HasValue)
+                createdMatch = item.CreatedAt <= MaxCreatedAt.Value;
+
+            bool sessionsMatch = true;
+            if (MinTotalSessions.HasValue)
+                sessionsMatch = item.TotalSessions >= MinTotalSessions.Value;
+            if (sessionsMatch && MaxTotalSessions.HasValue)
+                sessionsMatch = item.TotalSessions <= MaxTotalSessions.Value;
+
+            bool scoreMatch = true;
+            if (MinTotalScore.HasValue)
+                scoreMatch = item.TotalScore >= MinTotalScore.Value;
+            if (scoreMatch && MaxTotalScore.HasValue)
+                scoreMatch = item.TotalScore <= MaxTotalScore.Value;
+
+            bool solvedMatch = true;
+            if (MinPuzzlesSolved.HasValue)
+                solvedMatch = item.PuzzlesSolved >= MinPuzzlesSolved.Value;
+            if (solvedMatch && MaxPuzzlesSolved.HasValue)
+                solvedMatch = item.PuzzlesSolved <= MaxPuzzlesSolved.Value;
+
+            return loginMatch && nameMatch && emailMatch && createdMatch && sessionsMatch && scoreMatch && solvedMatch;
         }
     }
 }

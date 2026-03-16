@@ -1,5 +1,4 @@
 ﻿using CryptoPuzzles.Services;
-using CryptoPuzzles.Services.ApiService;
 using CryptoPuzzles.Shared;
 using CryptoPuzzles.ViewModels.Base;
 
@@ -11,6 +10,15 @@ namespace CryptoPuzzles.ViewModels
         private int? _sessionIdFilter;
         private string _userFilter = string.Empty;
         private string _puzzleFilter = string.Empty;
+        private bool? _solvedFilter;
+        private int? _minHintsUsed;
+        private int? _maxHintsUsed;
+        private int? _minScoreEarned;
+        private int? _maxScoreEarned;
+        private DateTime? _minStartedAt;
+        private DateTime? _maxStartedAt;
+        private DateTime? _minSolvedAt;
+        private DateTime? _maxSolvedAt;
 
         public SessionProgressViewModel(SessionProgressApiService apiService) : base(apiService) { }
 
@@ -50,6 +58,96 @@ namespace CryptoPuzzles.ViewModels
             set
             {
                 if (SetProperty(ref _puzzleFilter, value))
+                    ApplyFilter();
+            }
+        }
+
+        public bool? SolvedFilter
+        {
+            get => _solvedFilter;
+            set
+            {
+                if (SetProperty(ref _solvedFilter, value))
+                    ApplyFilter();
+            }
+        }
+
+        public int? MinHintsUsed
+        {
+            get => _minHintsUsed;
+            set
+            {
+                if (SetProperty(ref _minHintsUsed, value))
+                    ApplyFilter();
+            }
+        }
+
+        public int? MaxHintsUsed
+        {
+            get => _maxHintsUsed;
+            set
+            {
+                if (SetProperty(ref _maxHintsUsed, value))
+                    ApplyFilter();
+            }
+        }
+
+        public int? MinScoreEarned
+        {
+            get => _minScoreEarned;
+            set
+            {
+                if (SetProperty(ref _minScoreEarned, value))
+                    ApplyFilter();
+            }
+        }
+
+        public int? MaxScoreEarned
+        {
+            get => _maxScoreEarned;
+            set
+            {
+                if (SetProperty(ref _maxScoreEarned, value))
+                    ApplyFilter();
+            }
+        }
+
+        public DateTime? MinStartedAt
+        {
+            get => _minStartedAt;
+            set
+            {
+                if (SetProperty(ref _minStartedAt, value))
+                    ApplyFilter();
+            }
+        }
+
+        public DateTime? MaxStartedAt
+        {
+            get => _maxStartedAt;
+            set
+            {
+                if (SetProperty(ref _maxStartedAt, value))
+                    ApplyFilter();
+            }
+        }
+
+        public DateTime? MinSolvedAt
+        {
+            get => _minSolvedAt;
+            set
+            {
+                if (SetProperty(ref _minSolvedAt, value))
+                    ApplyFilter();
+            }
+        }
+
+        public DateTime? MaxSolvedAt
+        {
+            get => _maxSolvedAt;
+            set
+            {
+                if (SetProperty(ref _maxSolvedAt, value))
                     ApplyFilter();
             }
         }
@@ -107,7 +205,12 @@ namespace CryptoPuzzles.ViewModels
             x.IsDeleted == y.IsDeleted &&
             x.DeletedAt == y.DeletedAt;
 
-        protected override bool HasAdditionalFilters() => !ShowDeleted || SessionIdFilter.HasValue || !string.IsNullOrWhiteSpace(UserFilter) || !string.IsNullOrWhiteSpace(PuzzleFilter);
+        protected override bool HasAdditionalFilters() =>
+            !ShowDeleted || SessionIdFilter.HasValue || !string.IsNullOrWhiteSpace(UserFilter) ||
+            !string.IsNullOrWhiteSpace(PuzzleFilter) || SolvedFilter.HasValue ||
+            MinHintsUsed.HasValue || MaxHintsUsed.HasValue || MinScoreEarned.HasValue ||
+            MaxScoreEarned.HasValue || MinStartedAt.HasValue || MaxStartedAt.HasValue ||
+            MinSolvedAt.HasValue || MaxSolvedAt.HasValue;
 
         protected override bool FilterPredicate(ASessionProgress item)
         {
@@ -124,7 +227,33 @@ namespace CryptoPuzzles.ViewModels
             bool puzzleMatch = string.IsNullOrWhiteSpace(PuzzleFilter) ||
                                (item.PuzzleTitle?.Contains(PuzzleFilter, StringComparison.OrdinalIgnoreCase) == true);
 
-            return userMatch && puzzleMatch;
+            bool solvedMatch = !SolvedFilter.HasValue || item.Solved == SolvedFilter.Value;
+
+            bool hintsMatch = true;
+            if (MinHintsUsed.HasValue)
+                hintsMatch = item.HintsUsed >= MinHintsUsed.Value;
+            if (hintsMatch && MaxHintsUsed.HasValue)
+                hintsMatch = item.HintsUsed <= MaxHintsUsed.Value;
+
+            bool scoreMatch = true;
+            if (MinScoreEarned.HasValue)
+                scoreMatch = item.ScoreEarned >= MinScoreEarned.Value;
+            if (scoreMatch && MaxScoreEarned.HasValue)
+                scoreMatch = item.ScoreEarned <= MaxScoreEarned.Value;
+
+            bool startedMatch = true;
+            if (MinStartedAt.HasValue)
+                startedMatch = item.StartedAt >= MinStartedAt.Value;
+            if (startedMatch && MaxStartedAt.HasValue)
+                startedMatch = item.StartedAt <= MaxStartedAt.Value;
+
+            bool solvedAtMatch = true;
+            if (MinSolvedAt.HasValue)
+                solvedAtMatch = item.SolvedAt >= MinSolvedAt.Value;
+            if (solvedAtMatch && MaxSolvedAt.HasValue)
+                solvedAtMatch = item.SolvedAt <= MaxSolvedAt.Value;
+
+            return userMatch && puzzleMatch && solvedMatch && hintsMatch && scoreMatch && startedMatch && solvedAtMatch;
         }
     }
 }

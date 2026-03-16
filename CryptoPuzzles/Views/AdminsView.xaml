@@ -52,6 +52,12 @@
                              materialDesign:HintAssist.Hint="Логин" Width="120" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                     <TextBox Text="{Binding NameFilter, UpdateSourceTrigger=PropertyChanged}" 
                              materialDesign:HintAssist.Hint="Имя/Фамилия" Width="150" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DatePicker SelectedDate="{Binding MinCreatedAt}" 
+                                materialDesign:HintAssist.Hint="С даты" Width="140" Margin="4" 
+                                Style="{StaticResource MaterialDesignDatePicker}" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DatePicker SelectedDate="{Binding MaxCreatedAt}" 
+                                materialDesign:HintAssist.Hint="По дату" Width="140" Margin="4" 
+                                Style="{StaticResource MaterialDesignDatePicker}" Foreground="{StaticResource MaterialDesignBody}"/>
                 </WrapPanel>
                 <DataGrid ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
                           AutoGenerateColumns="False" IsReadOnly="False" CanUserAddRows="False"

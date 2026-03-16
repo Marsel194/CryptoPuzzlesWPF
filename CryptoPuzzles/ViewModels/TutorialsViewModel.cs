@@ -13,6 +13,10 @@ namespace CryptoPuzzles.ViewModels
         private bool _showDeleted = true;
         private AEncryptionMethod? _selectedMethodFilter;
         private string _titleFilter = string.Empty;
+        private int? _minSortOrder;
+        private int? _maxSortOrder;
+        private DateTime? _minCreatedAt;
+        private DateTime? _maxCreatedAt;
 
         public TutorialsViewModel(TutorialApiService tutorialApi, EncryptionMethodApiService methodApi) : base(tutorialApi)
         {
@@ -48,6 +52,46 @@ namespace CryptoPuzzles.ViewModels
             set
             {
                 if (SetProperty(ref _titleFilter, value))
+                    ApplyFilter();
+            }
+        }
+
+        public int? MinSortOrder
+        {
+            get => _minSortOrder;
+            set
+            {
+                if (SetProperty(ref _minSortOrder, value))
+                    ApplyFilter();
+            }
+        }
+
+        public int? MaxSortOrder
+        {
+            get => _maxSortOrder;
+            set
+            {
+                if (SetProperty(ref _maxSortOrder, value))
+                    ApplyFilter();
+            }
+        }
+
+        public DateTime? MinCreatedAt
+        {
+            get => _minCreatedAt;
+            set
+            {
+                if (SetProperty(ref _minCreatedAt, value))
+                    ApplyFilter();
+            }
+        }
+
+        public DateTime? MaxCreatedAt
+        {
+            get => _maxCreatedAt;
+            set
+            {
+                if (SetProperty(ref _maxCreatedAt, value))
                     ApplyFilter();
             }
         }
@@ -134,7 +178,9 @@ namespace CryptoPuzzles.ViewModels
                    x.DeletedAt == y.DeletedAt;
         }
 
-        protected override bool HasAdditionalFilters() => !ShowDeleted || SelectedMethodFilter != null || !string.IsNullOrWhiteSpace(TitleFilter);
+        protected override bool HasAdditionalFilters() =>
+            !ShowDeleted || SelectedMethodFilter != null || !string.IsNullOrWhiteSpace(TitleFilter) ||
+            MinSortOrder.HasValue || MaxSortOrder.HasValue || MinCreatedAt.HasValue || MaxCreatedAt.HasValue;
 
         protected override bool FilterPredicate(ATutorial item)
         {
@@ -147,7 +193,20 @@ namespace CryptoPuzzles.ViewModels
             bool titleMatch = string.IsNullOrWhiteSpace(TitleFilter) ||
                               item.TheoryTitle.Contains(TitleFilter, StringComparison.OrdinalIgnoreCase);
 
-            if (!titleMatch) return false;
+            bool orderMatch = true;
+            if (MinSortOrder.HasValue)
+                orderMatch = item.SortOrder >= MinSortOrder.Value;
+            if (orderMatch && MaxSortOrder.HasValue)
+                orderMatch = item.SortOrder <= MaxSortOrder.Value;
+
+            bool createdMatch = true;
+            if (MinCreatedAt.HasValue)
+                createdMatch = item.CreatedAt >= MinCreatedAt.Value;
+            if (createdMatch && MaxCreatedAt.HasValue)
+                createdMatch = item.CreatedAt <= MaxCreatedAt.Value;
+
+            if (!titleMatch || !orderMatch || !createdMatch)
+                return false;
 
             if (string.IsNullOrWhiteSpace(FilterText)) return true;
 

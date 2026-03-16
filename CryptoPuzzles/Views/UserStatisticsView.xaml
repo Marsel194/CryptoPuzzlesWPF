@@ -14,8 +14,16 @@
         Foreground="{StaticResource MaterialDesignBody}">
 
         <controls:EntityListControl.MainContent>
-            <StackPanel>
-                <WrapPanel Margin="0,0,0,8">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <WrapPanel Grid.Row="0" Margin="0,0,0,8">
                     <CheckBox Content="Показывать удалённые" IsChecked="{Binding ShowDeleted}" 
                               VerticalAlignment="Center" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                     <TextBox Text="{Binding LoginFilter, UpdateSourceTrigger=PropertyChanged}" 
@@ -23,7 +31,43 @@
                     <TextBox Text="{Binding NameFilter, UpdateSourceTrigger=PropertyChanged}" 
                              materialDesign:HintAssist.Hint="Имя" Width="140" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                 </WrapPanel>
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+
+                <WrapPanel Grid.Row="1" Margin="0,4,0,8">
+                    <TextBlock Text="Сессий:" VerticalAlignment="Center" Margin="4,0,0,0" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding MinTotalSessions, TargetNullValue=''}" Width="60" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBlock Text="—" VerticalAlignment="Center" Margin="0" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding MaxTotalSessions, TargetNullValue=''}" Width="60" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBlock Text="Решено:" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding MinTotalPuzzlesSolved, TargetNullValue=''}" Width="60" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBlock Text="—" VerticalAlignment="Center" Margin="0" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding MaxTotalPuzzlesSolved, TargetNullValue=''}" Width="60" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                </WrapPanel>
+
+                <WrapPanel Grid.Row="2" Margin="0,4,0,8">
+                    <TextBlock Text="Очки:" VerticalAlignment="Center" Margin="4,0,0,0" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding MinTotalScore, TargetNullValue=''}" Width="60" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBlock Text="—" VerticalAlignment="Center" Margin="0" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding MaxTotalScore, TargetNullValue=''}" Width="60" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBlock Text="Подсказок:" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding MinTotalHintsUsed, TargetNullValue=''}" Width="60" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBlock Text="—" VerticalAlignment="Center" Margin="0" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding MaxTotalHintsUsed, TargetNullValue=''}" Width="60" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                </WrapPanel>
+
+                <WrapPanel Grid.Row="3" Margin="0,4,0,8">
+                    <TextBlock Text="Ср.балл:" VerticalAlignment="Center" Margin="4,0,0,0" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding MinAvgScorePerSession, TargetNullValue=''}" Width="60" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBlock Text="—" VerticalAlignment="Center" Margin="0" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding MaxAvgScorePerSession, TargetNullValue=''}" Width="60" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DatePicker SelectedDate="{Binding MinLastActive}" 
+                                materialDesign:HintAssist.Hint="Активность с" Width="140" Margin="10,4,4,4" 
+                                Style="{StaticResource MaterialDesignDatePicker}" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DatePicker SelectedDate="{Binding MaxLastActive}" 
+                                materialDesign:HintAssist.Hint="Активность по" Width="140" Margin="4" 
+                                Style="{StaticResource MaterialDesignDatePicker}" Foreground="{StaticResource MaterialDesignBody}"/>
+                </WrapPanel>
+
+                <ScrollViewer Grid.Row="4" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                     <DataGrid ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
                               AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
                               materialDesign:DataGridAssist.CellPadding="13 8 8 8"
@@ -46,7 +90,7 @@
                         </DataGrid.Columns>
                     </DataGrid>
                 </ScrollViewer>
-            </StackPanel>
+            </Grid>
         </controls:EntityListControl.MainContent>
     </controls:EntityListControl>
 </UserControl>

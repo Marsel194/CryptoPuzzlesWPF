@@ -12,6 +12,10 @@ namespace CryptoPuzzles.ViewModels
         private ObservableCollection<APuzzle> _puzzles = [];
         private bool _showDeleted = true;
         private APuzzle? _selectedPuzzleFilter;
+        private int? _minHintOrder;
+        private int? _maxHintOrder;
+        private DateTime? _minCreatedAt;
+        private DateTime? _maxCreatedAt;
 
         public HintsViewModel(HintApiService hintApi, PuzzleApiService puzzleApi) : base(hintApi)
         {
@@ -37,6 +41,46 @@ namespace CryptoPuzzles.ViewModels
             set
             {
                 if (SetProperty(ref _selectedPuzzleFilter, value))
+                    ApplyFilter();
+            }
+        }
+
+        public int? MinHintOrder
+        {
+            get => _minHintOrder;
+            set
+            {
+                if (SetProperty(ref _minHintOrder, value))
+                    ApplyFilter();
+            }
+        }
+
+        public int? MaxHintOrder
+        {
+            get => _maxHintOrder;
+            set
+            {
+                if (SetProperty(ref _maxHintOrder, value))
+                    ApplyFilter();
+            }
+        }
+
+        public DateTime? MinCreatedAt
+        {
+            get => _minCreatedAt;
+            set
+            {
+                if (SetProperty(ref _minCreatedAt, value))
+                    ApplyFilter();
+            }
+        }
+
+        public DateTime? MaxCreatedAt
+        {
+            get => _maxCreatedAt;
+            set
+            {
+                if (SetProperty(ref _maxCreatedAt, value))
                     ApplyFilter();
             }
         }
@@ -124,7 +168,9 @@ namespace CryptoPuzzles.ViewModels
                    x.DeletedAt == y.DeletedAt;
         }
 
-        protected override bool HasAdditionalFilters() => !ShowDeleted || SelectedPuzzleFilter != null;
+        protected override bool HasAdditionalFilters() =>
+            !ShowDeleted || SelectedPuzzleFilter != null || MinHintOrder.HasValue ||
+            MaxHintOrder.HasValue || MinCreatedAt.HasValue || MaxCreatedAt.HasValue;
 
         protected override bool FilterPredicate(AHint item)
         {
@@ -132,6 +178,21 @@ namespace CryptoPuzzles.ViewModels
                 return false;
 
             if (SelectedPuzzleFilter != null && item.PuzzleId != SelectedPuzzleFilter.Id)
+                return false;
+
+            bool orderMatch = true;
+            if (MinHintOrder.HasValue)
+                orderMatch = item.HintOrder >= MinHintOrder.Value;
+            if (orderMatch && MaxHintOrder.HasValue)
+                orderMatch = item.HintOrder <= MaxHintOrder.Value;
+
+            bool createdMatch = true;
+            if (MinCreatedAt.HasValue)
+                createdMatch = item.CreatedAt >= MinCreatedAt.Value;
+            if (createdMatch && MaxCreatedAt.HasValue)
+                createdMatch = item.CreatedAt <= MaxCreatedAt.Value;
+
+            if (!orderMatch || !createdMatch)
                 return false;
 
             if (string.IsNullOrWhiteSpace(FilterText)) return true;

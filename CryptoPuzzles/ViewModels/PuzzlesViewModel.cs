@@ -10,18 +10,29 @@ namespace CryptoPuzzles.ViewModels
     {
         private readonly DifficultyApiService _difficultyApi;
         private readonly EncryptionMethodApiService _methodApi;
+        private readonly AdminApiService _adminApi;
         private ObservableCollection<ADifficulty> _difficulties = [];
         private ObservableCollection<AEncryptionMethod> _methods = [];
+        private ObservableCollection<AAdmin> _admins = [];
         private bool _showDeleted = true;
         private ADifficulty? _selectedDifficultyFilter;
         private AEncryptionMethod? _selectedMethodFilter;
+        private AAdmin? _selectedAdminFilter;
         private bool? _isTrainingFilter;
+        private DateTime? _minCreatedAt;
+        private DateTime? _maxCreatedAt;
+        private int? _minMaxScore;
+        private int? _maxMaxScore;
+        private int? _minTutorialOrder;
+        private int? _maxTutorialOrder;
 
-        public PuzzlesViewModel(PuzzleApiService puzzleApi, DifficultyApiService difficultyApi, EncryptionMethodApiService methodApi)
+        public PuzzlesViewModel(PuzzleApiService puzzleApi, DifficultyApiService difficultyApi,
+                                 EncryptionMethodApiService methodApi, AdminApiService adminApi)
             : base(puzzleApi)
         {
             _difficultyApi = difficultyApi;
             _methodApi = methodApi;
+            _adminApi = adminApi;
             _ = LoadLookupsAsync();
         }
 
@@ -35,6 +46,12 @@ namespace CryptoPuzzles.ViewModels
         {
             get => _methods;
             set => SetProperty(ref _methods, value);
+        }
+
+        public ObservableCollection<AAdmin> Admins
+        {
+            get => _admins;
+            set => SetProperty(ref _admins, value);
         }
 
         public bool ShowDeleted
@@ -67,12 +84,82 @@ namespace CryptoPuzzles.ViewModels
             }
         }
 
+        public AAdmin? SelectedAdminFilter
+        {
+            get => _selectedAdminFilter;
+            set
+            {
+                if (SetProperty(ref _selectedAdminFilter, value))
+                    ApplyFilter();
+            }
+        }
+
         public bool? IsTrainingFilter
         {
             get => _isTrainingFilter;
             set
             {
                 if (SetProperty(ref _isTrainingFilter, value))
+                    ApplyFilter();
+            }
+        }
+
+        public DateTime? MinCreatedAt
+        {
+            get => _minCreatedAt;
+            set
+            {
+                if (SetProperty(ref _minCreatedAt, value))
+                    ApplyFilter();
+            }
+        }
+
+        public DateTime? MaxCreatedAt
+        {
+            get => _maxCreatedAt;
+            set
+            {
+                if (SetProperty(ref _maxCreatedAt, value))
+                    ApplyFilter();
+            }
+        }
+
+        public int? MinMaxScore
+        {
+            get => _minMaxScore;
+            set
+            {
+                if (SetProperty(ref _minMaxScore, value))
+                    ApplyFilter();
+            }
+        }
+
+        public int? MaxMaxScore
+        {
+            get => _maxMaxScore;
+            set
+            {
+                if (SetProperty(ref _maxMaxScore, value))
+                    ApplyFilter();
+            }
+        }
+
+        public int? MinTutorialOrder
+        {
+            get => _minTutorialOrder;
+            set
+            {
+                if (SetProperty(ref _minTutorialOrder, value))
+                    ApplyFilter();
+            }
+        }
+
+        public int? MaxTutorialOrder
+        {
+            get => _maxTutorialOrder;
+            set
+            {
+                if (SetProperty(ref _maxTutorialOrder, value))
                     ApplyFilter();
             }
         }
@@ -86,6 +173,9 @@ namespace CryptoPuzzles.ViewModels
 
                 var methods = await _methodApi.GetAllAsync();
                 Methods = new ObservableCollection<AEncryptionMethod>(methods);
+
+                var admins = await _adminApi.GetAllAsync();
+                Admins = new ObservableCollection<AAdmin>(admins);
             }
             catch (Exception ex)
             {
@@ -250,7 +340,11 @@ namespace CryptoPuzzles.ViewModels
                    x.DeletedAt == y.DeletedAt;
         }
 
-        protected override bool HasAdditionalFilters() => !ShowDeleted || SelectedDifficultyFilter != null || SelectedMethodFilter != null || IsTrainingFilter.HasValue;
+        protected override bool HasAdditionalFilters() =>
+            !ShowDeleted || SelectedDifficultyFilter != null || SelectedMethodFilter != null ||
+            SelectedAdminFilter != null || IsTrainingFilter.HasValue || MinCreatedAt.HasValue ||
+            MaxCreatedAt.HasValue || MinMaxScore.HasValue || MaxMaxScore.HasValue ||
+            MinTutorialOrder.HasValue || MaxTutorialOrder.HasValue;
 
         protected override bool FilterPredicate(APuzzle item)
         {
@@ -265,7 +359,31 @@ namespace CryptoPuzzles.ViewModels
             if (SelectedMethodFilter != null && item.MethodId != SelectedMethodFilter.Id)
                 return false;
 
+            if (SelectedAdminFilter != null && item.CreatedByAdminId != SelectedAdminFilter.Id)
+                return false;
+
             if (IsTrainingFilter.HasValue && item.IsTraining != IsTrainingFilter.Value)
+                return false;
+
+            bool createdMatch = true;
+            if (MinCreatedAt.HasValue)
+                createdMatch = item.CreatedAt >= MinCreatedAt.Value;
+            if (createdMatch && MaxCreatedAt.HasValue)
+                createdMatch = item.CreatedAt <= MaxCreatedAt.Value;
+
+            bool scoreMatch = true;
+            if (MinMaxScore.HasValue)
+                scoreMatch = item.MaxScore >= MinMaxScore.Value;
+            if (scoreMatch && MaxMaxScore.HasValue)
+                scoreMatch = item.MaxScore <= MaxMaxScore.Value;
+
+            bool orderMatch = true;
+            if (MinTutorialOrder.HasValue)
+                orderMatch = item.TutorialOrder >= MinTutorialOrder.Value;
+            if (orderMatch && MaxTutorialOrder.HasValue)
+                orderMatch = item.TutorialOrder <= MaxTutorialOrder.Value;
+
+            if (!createdMatch || !scoreMatch || !orderMatch)
                 return false;
 
             if (string.IsNullOrWhiteSpace(FilterText)) return true;

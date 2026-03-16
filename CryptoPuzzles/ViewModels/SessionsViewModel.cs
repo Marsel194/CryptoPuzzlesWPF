@@ -10,6 +10,13 @@ namespace CryptoPuzzles.ViewModels
         private bool _showDeleted = true;
         private string _userFilter = string.Empty;
         private string _typeFilter = string.Empty;
+        private bool? _isCompletedFilter;
+        private DateTime? _minSessionStart;
+        private DateTime? _maxSessionStart;
+        private DateTime? _minCompletedAt;
+        private DateTime? _maxCompletedAt;
+        private int? _minTotalScore;
+        private int? _maxTotalScore;
 
         public SessionsViewModel(GameSessionApiService apiService) : base(apiService) { }
 
@@ -39,6 +46,76 @@ namespace CryptoPuzzles.ViewModels
             set
             {
                 if (SetProperty(ref _typeFilter, value))
+                    ApplyFilter();
+            }
+        }
+
+        public bool? IsCompletedFilter
+        {
+            get => _isCompletedFilter;
+            set
+            {
+                if (SetProperty(ref _isCompletedFilter, value))
+                    ApplyFilter();
+            }
+        }
+
+        public DateTime? MinSessionStart
+        {
+            get => _minSessionStart;
+            set
+            {
+                if (SetProperty(ref _minSessionStart, value))
+                    ApplyFilter();
+            }
+        }
+
+        public DateTime? MaxSessionStart
+        {
+            get => _maxSessionStart;
+            set
+            {
+                if (SetProperty(ref _maxSessionStart, value))
+                    ApplyFilter();
+            }
+        }
+
+        public DateTime? MinCompletedAt
+        {
+            get => _minCompletedAt;
+            set
+            {
+                if (SetProperty(ref _minCompletedAt, value))
+                    ApplyFilter();
+            }
+        }
+
+        public DateTime? MaxCompletedAt
+        {
+            get => _maxCompletedAt;
+            set
+            {
+                if (SetProperty(ref _maxCompletedAt, value))
+                    ApplyFilter();
+            }
+        }
+
+        public int? MinTotalScore
+        {
+            get => _minTotalScore;
+            set
+            {
+                if (SetProperty(ref _minTotalScore, value))
+                    ApplyFilter();
+            }
+        }
+
+        public int? MaxTotalScore
+        {
+            get => _maxTotalScore;
+            set
+            {
+                if (SetProperty(ref _maxTotalScore, value))
                     ApplyFilter();
             }
         }
@@ -94,7 +171,10 @@ namespace CryptoPuzzles.ViewModels
                    x.DeletedAt == y.DeletedAt;
         }
 
-        protected override bool HasAdditionalFilters() => !ShowDeleted || !string.IsNullOrWhiteSpace(UserFilter) || !string.IsNullOrWhiteSpace(TypeFilter);
+        protected override bool HasAdditionalFilters() =>
+            !ShowDeleted || !string.IsNullOrWhiteSpace(UserFilter) || !string.IsNullOrWhiteSpace(TypeFilter) ||
+            IsCompletedFilter.HasValue || MinSessionStart.HasValue || MaxSessionStart.HasValue ||
+            MinCompletedAt.HasValue || MaxCompletedAt.HasValue || MinTotalScore.HasValue || MaxTotalScore.HasValue;
 
         protected override bool FilterPredicate(AGameSession item)
         {
@@ -108,7 +188,27 @@ namespace CryptoPuzzles.ViewModels
             bool typeMatch = string.IsNullOrWhiteSpace(TypeFilter) ||
                              item.SessionType.Contains(TypeFilter, StringComparison.OrdinalIgnoreCase);
 
-            return userMatch && typeMatch;
+            bool completedMatch = !IsCompletedFilter.HasValue || item.IsCompleted == IsCompletedFilter.Value;
+
+            bool startMatch = true;
+            if (MinSessionStart.HasValue)
+                startMatch = item.SessionStart >= MinSessionStart.Value;
+            if (startMatch && MaxSessionStart.HasValue)
+                startMatch = item.SessionStart <= MaxSessionStart.Value;
+
+            bool completedDateMatch = true;
+            if (MinCompletedAt.HasValue)
+                completedDateMatch = item.CompletedAt >= MinCompletedAt.Value;
+            if (completedDateMatch && MaxCompletedAt.HasValue)
+                completedDateMatch = item.CompletedAt <= MaxCompletedAt.Value;
+
+            bool scoreMatch = true;
+            if (MinTotalScore.HasValue)
+                scoreMatch = item.TotalScore >= MinTotalScore.Value;
+            if (scoreMatch && MaxTotalScore.HasValue)
+                scoreMatch = item.TotalScore <= MaxTotalScore.Value;
+
+            return userMatch && typeMatch && completedMatch && startMatch && completedDateMatch && scoreMatch;
         }
     }
 }

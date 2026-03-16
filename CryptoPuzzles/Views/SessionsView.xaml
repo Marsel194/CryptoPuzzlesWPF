@@ -14,16 +14,51 @@
         Foreground="{StaticResource MaterialDesignBody}">
 
         <controls:EntityListControl.MainContent>
-            <StackPanel>
-                <WrapPanel Margin="0,0,0,8">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <WrapPanel Grid.Row="0" Margin="0,0,0,8">
                     <CheckBox Content="Показывать удалённые" IsChecked="{Binding ShowDeleted}" 
                               VerticalAlignment="Center" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                     <TextBox Text="{Binding UserFilter, UpdateSourceTrigger=PropertyChanged}" 
                              materialDesign:HintAssist.Hint="Пользователь" Width="150" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                     <TextBox Text="{Binding TypeFilter, UpdateSourceTrigger=PropertyChanged}" 
                              materialDesign:HintAssist.Hint="Тип сессии" Width="120" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <ComboBox SelectedItem="{Binding IsCompletedFilter}" Width="120" Margin="4" Foreground="{StaticResource MaterialDesignBody}">
+                        <ComboBoxItem Content="Все" IsSelected="True"/>
+                        <ComboBoxItem Content="Завершена"/>
+                        <ComboBoxItem Content="Активна"/>
+                    </ComboBox>
                 </WrapPanel>
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+
+                <WrapPanel Grid.Row="1" Margin="0,4,0,8">
+                    <DatePicker SelectedDate="{Binding MinSessionStart}" 
+                                materialDesign:HintAssist.Hint="Начало с" Width="140" Margin="4" 
+                                Style="{StaticResource MaterialDesignDatePicker}" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DatePicker SelectedDate="{Binding MaxSessionStart}" 
+                                materialDesign:HintAssist.Hint="Начало по" Width="140" Margin="4" 
+                                Style="{StaticResource MaterialDesignDatePicker}" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DatePicker SelectedDate="{Binding MinCompletedAt}" 
+                                materialDesign:HintAssist.Hint="Заверш. с" Width="140" Margin="4" 
+                                Style="{StaticResource MaterialDesignDatePicker}" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DatePicker SelectedDate="{Binding MaxCompletedAt}" 
+                                materialDesign:HintAssist.Hint="Заверш. по" Width="140" Margin="4" 
+                                Style="{StaticResource MaterialDesignDatePicker}" Foreground="{StaticResource MaterialDesignBody}"/>
+                </WrapPanel>
+
+                <WrapPanel Grid.Row="2" Margin="0,4,0,8">
+                    <TextBlock Text="Счёт:" VerticalAlignment="Center" Margin="4,0,0,0" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding MinTotalScore, TargetNullValue=''}" Width="80" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBlock Text="—" VerticalAlignment="Center" Margin="0" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding MaxTotalScore, TargetNullValue=''}" Width="80" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                </WrapPanel>
+
+                <ScrollViewer Grid.Row="3" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                     <DataGrid ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
                               AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
                               materialDesign:DataGridAssist.CellPadding="13 8 8 8"
@@ -46,7 +81,7 @@
                         </DataGrid.Columns>
                     </DataGrid>
                 </ScrollViewer>
-            </StackPanel>
+            </Grid>
         </controls:EntityListControl.MainContent>
     </controls:EntityListControl>
 </UserControl>

@@ -12,6 +12,8 @@ namespace CryptoPuzzles.ViewModels
         private bool _showDeleted = true;
         private string _loginFilter = string.Empty;
         private string _nameFilter = string.Empty;
+        private DateTime? _minCreatedAt;
+        private DateTime? _maxCreatedAt;
 
         public AdminsViewModel(AdminApiService apiService, IAuthService authService) : base(apiService)
         {
@@ -50,6 +52,26 @@ namespace CryptoPuzzles.ViewModels
             set
             {
                 if (SetProperty(ref _nameFilter, value))
+                    ApplyFilter();
+            }
+        }
+
+        public DateTime? MinCreatedAt
+        {
+            get => _minCreatedAt;
+            set
+            {
+                if (SetProperty(ref _minCreatedAt, value))
+                    ApplyFilter();
+            }
+        }
+
+        public DateTime? MaxCreatedAt
+        {
+            get => _maxCreatedAt;
+            set
+            {
+                if (SetProperty(ref _maxCreatedAt, value))
                     ApplyFilter();
             }
         }
@@ -178,7 +200,8 @@ namespace CryptoPuzzles.ViewModels
         }
 
         protected override bool HasAdditionalFilters() =>
-            !string.IsNullOrWhiteSpace(LoginFilter) || !string.IsNullOrWhiteSpace(NameFilter) || !ShowDeleted;
+            !string.IsNullOrWhiteSpace(LoginFilter) || !string.IsNullOrWhiteSpace(NameFilter) || !ShowDeleted ||
+            MinCreatedAt.HasValue || MaxCreatedAt.HasValue;
 
         protected override bool FilterPredicate(AAdmin item)
         {
@@ -192,7 +215,13 @@ namespace CryptoPuzzles.ViewModels
                              item.LastName.Contains(NameFilter, StringComparison.OrdinalIgnoreCase) ||
                              (item.MiddleName != null && item.MiddleName.Contains(NameFilter, StringComparison.OrdinalIgnoreCase));
 
-            return loginMatch && nameMatch;
+            bool createdMatch = true;
+            if (MinCreatedAt.HasValue)
+                createdMatch = item.CreatedAt >= MinCreatedAt.Value;
+            if (createdMatch && MaxCreatedAt.HasValue)
+                createdMatch = item.CreatedAt <= MaxCreatedAt.Value;
+
+            return loginMatch && nameMatch && createdMatch;
         }
     }
 }

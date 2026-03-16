@@ -14,8 +14,15 @@
         Foreground="{StaticResource MaterialDesignBody}">
 
         <controls:EntityListControl.MainContent>
-            <StackPanel>
-                <WrapPanel Margin="0,0,0,8">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <WrapPanel Grid.Row="0" Margin="0,0,0,8">
                     <CheckBox Content="Показывать удалённые" IsChecked="{Binding ShowDeleted}" 
                               VerticalAlignment="Center" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                     <TextBox Text="{Binding SessionIdFilter, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}" 
@@ -24,8 +31,40 @@
                              materialDesign:HintAssist.Hint="Пользователь" Width="140" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                     <TextBox Text="{Binding PuzzleFilter, UpdateSourceTrigger=PropertyChanged}" 
                              materialDesign:HintAssist.Hint="Головоломка" Width="140" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <ComboBox SelectedItem="{Binding SolvedFilter}" Width="100" Margin="4" Foreground="{StaticResource MaterialDesignBody}">
+                        <ComboBoxItem Content="Все" IsSelected="True"/>
+                        <ComboBoxItem Content="Решено"/>
+                        <ComboBoxItem Content="Не решено"/>
+                    </ComboBox>
                 </WrapPanel>
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+
+                <WrapPanel Grid.Row="1" Margin="0,4,0,8">
+                    <TextBlock Text="Подсказок:" VerticalAlignment="Center" Margin="4,0,0,0" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding MinHintsUsed, TargetNullValue=''}" Width="60" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBlock Text="—" VerticalAlignment="Center" Margin="0" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding MaxHintsUsed, TargetNullValue=''}" Width="60" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBlock Text="Очки:" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding MinScoreEarned, TargetNullValue=''}" Width="60" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBlock Text="—" VerticalAlignment="Center" Margin="0" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding MaxScoreEarned, TargetNullValue=''}" Width="60" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                </WrapPanel>
+
+                <WrapPanel Grid.Row="2" Margin="0,4,0,8">
+                    <DatePicker SelectedDate="{Binding MinStartedAt}" 
+                                materialDesign:HintAssist.Hint="Начало с" Width="140" Margin="4" 
+                                Style="{StaticResource MaterialDesignDatePicker}" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DatePicker SelectedDate="{Binding MaxStartedAt}" 
+                                materialDesign:HintAssist.Hint="Начало по" Width="140" Margin="4" 
+                                Style="{StaticResource MaterialDesignDatePicker}" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DatePicker SelectedDate="{Binding MinSolvedAt}" 
+                                materialDesign:HintAssist.Hint="Решение с" Width="140" Margin="4" 
+                                Style="{StaticResource MaterialDesignDatePicker}" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DatePicker SelectedDate="{Binding MaxSolvedAt}" 
+                                materialDesign:HintAssist.Hint="Решение по" Width="140" Margin="4" 
+                                Style="{StaticResource MaterialDesignDatePicker}" Foreground="{StaticResource MaterialDesignBody}"/>
+                </WrapPanel>
+
+                <ScrollViewer Grid.Row="3" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                     <DataGrid ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
                               AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
                               materialDesign:DataGridAssist.CellPadding="13 8 8 8"
@@ -50,7 +89,7 @@
                         </DataGrid.Columns>
                     </DataGrid>
                 </ScrollViewer>
-            </StackPanel>
+            </Grid>
         </controls:EntityListControl.MainContent>
     </controls:EntityListControl>
 </UserControl>

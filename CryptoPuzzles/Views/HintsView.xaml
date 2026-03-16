@@ -38,31 +38,53 @@
         </controls:EntityListControl.AddPanelContent>
 
         <controls:EntityListControl.MainContent>
-            <StackPanel>
-                <WrapPanel Margin="0,0,0,8">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <WrapPanel Grid.Row="0" Margin="0,0,0,8">
                     <CheckBox Content="Показывать удалённые" IsChecked="{Binding ShowDeleted}" 
                               VerticalAlignment="Center" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                     <ComboBox ItemsSource="{Binding Puzzles}" DisplayMemberPath="Title" 
                               SelectedItem="{Binding SelectedPuzzleFilter}" 
                               materialDesign:HintAssist.Hint="Фильтр по головоломке" 
                               Width="200" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBlock Text="Порядок:" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding MinHintOrder, TargetNullValue=''}" Width="60" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBlock Text="—" VerticalAlignment="Center" Margin="0" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding MaxHintOrder, TargetNullValue=''}" Width="60" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                 </WrapPanel>
-                <DataGrid ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
-                          AutoGenerateColumns="False" IsReadOnly="False" CanUserAddRows="False"
-                          materialDesign:DataGridAssist.CellPadding="13 8 8 8"
-                          materialDesign:DataGridAssist.ColumnHeaderPadding="8"
-                          Foreground="{StaticResource MaterialDesignBody}">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="Auto" MinWidth="50" Foreground="{StaticResource MaterialDesignBody}"/>
-                        <DataGridTextColumn Header="Головоломка" Binding="{Binding PuzzleTitle}" IsReadOnly="True" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
-                        <DataGridTextColumn Header="Текст подсказки" Binding="{Binding HintText, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="300" Foreground="{StaticResource MaterialDesignBody}"/>
-                        <DataGridTextColumn Header="Порядок" Binding="{Binding HintOrder, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="80" Foreground="{StaticResource MaterialDesignBody}"/>
-                        <DataGridTextColumn Header="Дата создания" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
-                        <DataGridCheckBoxColumn Header="Удален" Binding="{Binding IsDeleted, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="150"/>
-                        <DataGridTextColumn Header="Дата удаления" Binding="{Binding DeletedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </StackPanel>
+
+                <WrapPanel Grid.Row="1" Margin="0,4,0,8">
+                    <DatePicker SelectedDate="{Binding MinCreatedAt}" 
+                                materialDesign:HintAssist.Hint="С даты созд." Width="140" Margin="4" 
+                                Style="{StaticResource MaterialDesignDatePicker}" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DatePicker SelectedDate="{Binding MaxCreatedAt}" 
+                                materialDesign:HintAssist.Hint="По дату созд." Width="140" Margin="4" 
+                                Style="{StaticResource MaterialDesignDatePicker}" Foreground="{StaticResource MaterialDesignBody}"/>
+                </WrapPanel>
+
+                <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <DataGrid ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
+                              AutoGenerateColumns="False" IsReadOnly="False" CanUserAddRows="False"
+                              materialDesign:DataGridAssist.CellPadding="13 8 8 8"
+                              materialDesign:DataGridAssist.ColumnHeaderPadding="8"
+                              Foreground="{StaticResource MaterialDesignBody}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="Auto" MinWidth="50" Foreground="{StaticResource MaterialDesignBody}"/>
+                            <DataGridTextColumn Header="Головоломка" Binding="{Binding PuzzleTitle}" IsReadOnly="True" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
+                            <DataGridTextColumn Header="Текст подсказки" Binding="{Binding HintText, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="300" Foreground="{StaticResource MaterialDesignBody}"/>
+                            <DataGridTextColumn Header="Порядок" Binding="{Binding HintOrder, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="80" Foreground="{StaticResource MaterialDesignBody}"/>
+                            <DataGridTextColumn Header="Дата создания" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
+                            <DataGridCheckBoxColumn Header="Удален" Binding="{Binding IsDeleted, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="150"/>
+                            <DataGridTextColumn Header="Дата удаления" Binding="{Binding DeletedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </ScrollViewer>
+            </Grid>
         </controls:EntityListControl.MainContent>
     </controls:EntityListControl>
 </UserControl>

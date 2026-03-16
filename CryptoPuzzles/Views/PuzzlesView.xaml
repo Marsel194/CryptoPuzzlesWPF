@@ -69,12 +69,30 @@
                     <ComboBox ItemsSource="{Binding Methods}" DisplayMemberPath="Name" 
                               SelectedItem="{Binding SelectedMethodFilter}" 
                               materialDesign:HintAssist.Hint="Метод" Width="140" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <!-- Фильтр по типу через ComboBox с тремя состояниями -->
+                    <ComboBox ItemsSource="{Binding Admins}" DisplayMemberPath="FullName" 
+                              SelectedItem="{Binding SelectedAdminFilter}" 
+                              materialDesign:HintAssist.Hint="Создатель" Width="150" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                     <ComboBox SelectedItem="{Binding IsTrainingFilter}" Width="120" Margin="4" Foreground="{StaticResource MaterialDesignBody}">
                         <ComboBoxItem Content="Все" IsSelected="True"/>
                         <ComboBoxItem Content="Обучение"/>
                         <ComboBoxItem Content="Практика"/>
                     </ComboBox>
+                </WrapPanel>
+                <WrapPanel Margin="0,4,0,8">
+                    <DatePicker SelectedDate="{Binding MinCreatedAt}" 
+                                materialDesign:HintAssist.Hint="С даты созд." Width="140" Margin="4" 
+                                Style="{StaticResource MaterialDesignDatePicker}" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DatePicker SelectedDate="{Binding MaxCreatedAt}" 
+                                materialDesign:HintAssist.Hint="По дату созд." Width="140" Margin="4" 
+                                Style="{StaticResource MaterialDesignDatePicker}" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBlock Text="Баллы:" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding MinMaxScore, TargetNullValue=''}" Width="60" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBlock Text="—" VerticalAlignment="Center" Margin="0" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding MaxMaxScore, TargetNullValue=''}" Width="60" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBlock Text="Порядок:" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding MinTutorialOrder, TargetNullValue=''}" Width="60" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBlock Text="—" VerticalAlignment="Center" Margin="0" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding MaxTutorialOrder, TargetNullValue=''}" Width="60" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                 </WrapPanel>
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                     <DataGrid ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
