@@ -12,6 +12,10 @@ namespace CryptoPuzzles.ViewModels
         private readonly EncryptionMethodApiService _methodApi;
         private ObservableCollection<ADifficulty> _difficulties = [];
         private ObservableCollection<AEncryptionMethod> _methods = [];
+        private bool _showDeleted = true;
+        private ADifficulty? _selectedDifficultyFilter;
+        private AEncryptionMethod? _selectedMethodFilter;
+        private bool? _isTrainingFilter;
 
         public PuzzlesViewModel(PuzzleApiService puzzleApi, DifficultyApiService difficultyApi, EncryptionMethodApiService methodApi)
             : base(puzzleApi)
@@ -31,6 +35,46 @@ namespace CryptoPuzzles.ViewModels
         {
             get => _methods;
             set => SetProperty(ref _methods, value);
+        }
+
+        public bool ShowDeleted
+        {
+            get => _showDeleted;
+            set
+            {
+                if (SetProperty(ref _showDeleted, value))
+                    ApplyFilter();
+            }
+        }
+
+        public ADifficulty? SelectedDifficultyFilter
+        {
+            get => _selectedDifficultyFilter;
+            set
+            {
+                if (SetProperty(ref _selectedDifficultyFilter, value))
+                    ApplyFilter();
+            }
+        }
+
+        public AEncryptionMethod? SelectedMethodFilter
+        {
+            get => _selectedMethodFilter;
+            set
+            {
+                if (SetProperty(ref _selectedMethodFilter, value))
+                    ApplyFilter();
+            }
+        }
+
+        public bool? IsTrainingFilter
+        {
+            get => _isTrainingFilter;
+            set
+            {
+                if (SetProperty(ref _isTrainingFilter, value))
+                    ApplyFilter();
+            }
         }
 
         private async Task LoadLookupsAsync()
@@ -204,12 +248,26 @@ namespace CryptoPuzzles.ViewModels
                    x.TutorialOrder == y.TutorialOrder &&
                    x.IsDeleted == y.IsDeleted &&
                    x.DeletedAt == y.DeletedAt;
-
         }
+
+        protected override bool HasAdditionalFilters() => !ShowDeleted || SelectedDifficultyFilter != null || SelectedMethodFilter != null || IsTrainingFilter.HasValue;
 
         protected override bool FilterPredicate(APuzzle item)
         {
             if (item == null) return false;
+
+            if (!ShowDeleted && item.IsDeleted)
+                return false;
+
+            if (SelectedDifficultyFilter != null && item.DifficultyId != SelectedDifficultyFilter.Id)
+                return false;
+
+            if (SelectedMethodFilter != null && item.MethodId != SelectedMethodFilter.Id)
+                return false;
+
+            if (IsTrainingFilter.HasValue && item.IsTraining != IsTrainingFilter.Value)
+                return false;
+
             if (string.IsNullOrWhiteSpace(FilterText)) return true;
 
             var f = FilterText.ToLower();

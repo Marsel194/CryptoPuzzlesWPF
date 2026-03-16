@@ -10,6 +10,9 @@ namespace CryptoPuzzles.ViewModels
     {
         private readonly EncryptionMethodApiService _methodApi;
         private ObservableCollection<AEncryptionMethod> _methods = [];
+        private bool _showDeleted = true;
+        private AEncryptionMethod? _selectedMethodFilter;
+        private string _titleFilter = string.Empty;
 
         public TutorialsViewModel(TutorialApiService tutorialApi, EncryptionMethodApiService methodApi) : base(tutorialApi)
         {
@@ -18,6 +21,36 @@ namespace CryptoPuzzles.ViewModels
         }
 
         public ObservableCollection<AEncryptionMethod> Methods { get => _methods; set => SetProperty(ref _methods, value); }
+
+        public bool ShowDeleted
+        {
+            get => _showDeleted;
+            set
+            {
+                if (SetProperty(ref _showDeleted, value))
+                    ApplyFilter();
+            }
+        }
+
+        public AEncryptionMethod? SelectedMethodFilter
+        {
+            get => _selectedMethodFilter;
+            set
+            {
+                if (SetProperty(ref _selectedMethodFilter, value))
+                    ApplyFilter();
+            }
+        }
+
+        public string TitleFilter
+        {
+            get => _titleFilter;
+            set
+            {
+                if (SetProperty(ref _titleFilter, value))
+                    ApplyFilter();
+            }
+        }
 
         private async Task LoadMethodsAsync()
         {
@@ -101,9 +134,23 @@ namespace CryptoPuzzles.ViewModels
                    x.DeletedAt == y.DeletedAt;
         }
 
+        protected override bool HasAdditionalFilters() => !ShowDeleted || SelectedMethodFilter != null || !string.IsNullOrWhiteSpace(TitleFilter);
+
         protected override bool FilterPredicate(ATutorial item)
         {
+            if (!ShowDeleted && item.IsDeleted)
+                return false;
+
+            if (SelectedMethodFilter != null && item.MethodId != SelectedMethodFilter.Id)
+                return false;
+
+            bool titleMatch = string.IsNullOrWhiteSpace(TitleFilter) ||
+                              item.TheoryTitle.Contains(TitleFilter, StringComparison.OrdinalIgnoreCase);
+
+            if (!titleMatch) return false;
+
             if (string.IsNullOrWhiteSpace(FilterText)) return true;
+
             var f = FilterText.ToLower();
             return item.MethodName.Contains(f, StringComparison.OrdinalIgnoreCase) ||
                    item.TheoryTitle.Contains(f, StringComparison.OrdinalIgnoreCase) ||

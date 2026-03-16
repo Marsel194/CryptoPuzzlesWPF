@@ -9,6 +9,9 @@ namespace CryptoPuzzles.ViewModels
     {
         private string _newPassword = string.Empty;
         private readonly IAuthService _authService;
+        private bool _showDeleted = true;
+        private string _loginFilter = string.Empty;
+        private string _nameFilter = string.Empty;
 
         public AdminsViewModel(AdminApiService apiService, IAuthService authService) : base(apiService)
         {
@@ -19,6 +22,36 @@ namespace CryptoPuzzles.ViewModels
         {
             get => _newPassword;
             set => SetProperty(ref _newPassword, value);
+        }
+
+        public bool ShowDeleted
+        {
+            get => _showDeleted;
+            set
+            {
+                if (SetProperty(ref _showDeleted, value))
+                    ApplyFilter();
+            }
+        }
+
+        public string LoginFilter
+        {
+            get => _loginFilter;
+            set
+            {
+                if (SetProperty(ref _loginFilter, value))
+                    ApplyFilter();
+            }
+        }
+
+        public string NameFilter
+        {
+            get => _nameFilter;
+            set
+            {
+                if (SetProperty(ref _nameFilter, value))
+                    ApplyFilter();
+            }
         }
 
         protected override AAdmin CreateNewItem() => new(0, "", "", "", null, DateTime.Now);
@@ -144,14 +177,22 @@ namespace CryptoPuzzles.ViewModels
                    x.DeletedAt == y.DeletedAt;
         }
 
+        protected override bool HasAdditionalFilters() =>
+            !string.IsNullOrWhiteSpace(LoginFilter) || !string.IsNullOrWhiteSpace(NameFilter) || !ShowDeleted;
+
         protected override bool FilterPredicate(AAdmin item)
         {
-            if (string.IsNullOrWhiteSpace(FilterText)) return true;
-            var f = FilterText;
-            return item.Login.Contains(f, StringComparison.OrdinalIgnoreCase) ||
-                   item.FirstName.Contains(f, StringComparison.OrdinalIgnoreCase) ||
-                   item.LastName.Contains(f, StringComparison.OrdinalIgnoreCase) ||
-                   (item.MiddleName != null && item.MiddleName.Contains(f, StringComparison.OrdinalIgnoreCase));
+            if (!ShowDeleted && item.IsDeleted)
+                return false;
+
+            bool loginMatch = string.IsNullOrWhiteSpace(LoginFilter) ||
+                              item.Login.Contains(LoginFilter, StringComparison.OrdinalIgnoreCase);
+            bool nameMatch = string.IsNullOrWhiteSpace(NameFilter) ||
+                             item.FirstName.Contains(NameFilter, StringComparison.OrdinalIgnoreCase) ||
+                             item.LastName.Contains(NameFilter, StringComparison.OrdinalIgnoreCase) ||
+                             (item.MiddleName != null && item.MiddleName.Contains(NameFilter, StringComparison.OrdinalIgnoreCase));
+
+            return loginMatch && nameMatch;
         }
     }
 }

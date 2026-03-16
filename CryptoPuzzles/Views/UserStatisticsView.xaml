@@ -13,29 +13,40 @@
         IsSaveButtonVisible="False"
         Foreground="{StaticResource MaterialDesignBody}">
 
-        <!-- Основное содержимое (DataGrid) -->
         <controls:EntityListControl.MainContent>
-            <DataGrid ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
-                      AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
-                      materialDesign:DataGridAssist.CellPadding="13 8 8 8"
-                      materialDesign:DataGridAssist.ColumnHeaderPadding="8"
-                      Foreground="{StaticResource MaterialDesignBody}">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID пользователя" Binding="{Binding UserId}" Width="Auto" MinWidth="80" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridTextColumn Header="Логин" Binding="{Binding UserLogin}" Width="Auto" MinWidth="100" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridTextColumn Header="Имя" Binding="{Binding Username}" Width="Auto" MinWidth="120" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridTextColumn Header="Сессий" Binding="{Binding TotalSessions}" Width="Auto" MinWidth="60" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridTextColumn Header="Решено" Binding="{Binding TotalPuzzlesSolved}" Width="Auto" MinWidth="70" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridTextColumn Header="Очки" Binding="{Binding TotalScore}" Width="Auto" MinWidth="80" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridTextColumn Header="Подсказок" Binding="{Binding TotalHintsUsed}" Width="Auto" MinWidth="80" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridTextColumn Header="Ср. балл" Binding="{Binding AvgScorePerSession}" Width="Auto" MinWidth="70" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridTextColumn Header="Последняя активность" Binding="{Binding LastActive, StringFormat='dd.MM.yyyy HH:mm'}" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridCheckBoxColumn Header="Удален" Binding="{Binding IsDeleted, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="150"/>
-                    <DataGridTextColumn Header="Дата удаления" Binding="{Binding DeletedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridTextColumn Header="Дата регистрации" Binding="{Binding RegisteredAt, StringFormat='dd.MM.yyyy HH:mm'}" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
-                </DataGrid.Columns>
-            </DataGrid>
+            <StackPanel>
+                <WrapPanel Margin="0,0,0,8">
+                    <CheckBox Content="Показывать удалённые" IsChecked="{Binding ShowDeleted}" 
+                              VerticalAlignment="Center" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding LoginFilter, UpdateSourceTrigger=PropertyChanged}" 
+                             materialDesign:HintAssist.Hint="Логин" Width="120" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding NameFilter, UpdateSourceTrigger=PropertyChanged}" 
+                             materialDesign:HintAssist.Hint="Имя" Width="140" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                </WrapPanel>
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <DataGrid ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
+                              AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
+                              materialDesign:DataGridAssist.CellPadding="13 8 8 8"
+                              materialDesign:DataGridAssist.ColumnHeaderPadding="8"
+                              Foreground="{StaticResource MaterialDesignBody}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID пользователя" Binding="{Binding UserId}" Width="Auto" MinWidth="80" Foreground="{StaticResource MaterialDesignBody}"/>
+                            <DataGridTextColumn Header="Логин" Binding="{Binding UserLogin}" Width="Auto" MinWidth="100" Foreground="{StaticResource MaterialDesignBody}"/>
+                            <DataGridTextColumn Header="Имя" Binding="{Binding Username}" Width="Auto" MinWidth="120" Foreground="{StaticResource MaterialDesignBody}"/>
+                            <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
+                            <DataGridTextColumn Header="Сессий" Binding="{Binding TotalSessions}" Width="Auto" MinWidth="60" Foreground="{StaticResource MaterialDesignBody}"/>
+                            <DataGridTextColumn Header="Решено" Binding="{Binding TotalPuzzlesSolved}" Width="Auto" MinWidth="70" Foreground="{StaticResource MaterialDesignBody}"/>
+                            <DataGridTextColumn Header="Очки" Binding="{Binding TotalScore}" Width="Auto" MinWidth="80" Foreground="{StaticResource MaterialDesignBody}"/>
+                            <DataGridTextColumn Header="Подсказок" Binding="{Binding TotalHintsUsed}" Width="Auto" MinWidth="80" Foreground="{StaticResource MaterialDesignBody}"/>
+                            <DataGridTextColumn Header="Ср. балл" Binding="{Binding AvgScorePerSession}" Width="Auto" MinWidth="70" Foreground="{StaticResource MaterialDesignBody}"/>
+                            <DataGridTextColumn Header="Последняя активность" Binding="{Binding LastActive, StringFormat='dd.MM.yyyy HH:mm'}" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
+                            <DataGridCheckBoxColumn Header="Удален" Binding="{Binding IsDeleted}" Width="Auto" MinWidth="150"/>
+                            <DataGridTextColumn Header="Дата удаления" Binding="{Binding DeletedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
+                            <DataGridTextColumn Header="Дата регистрации" Binding="{Binding RegisteredAt, StringFormat='dd.MM.yyyy HH:mm'}" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </ScrollViewer>
+            </StackPanel>
         </controls:EntityListControl.MainContent>
     </controls:EntityListControl>
 </UserControl>

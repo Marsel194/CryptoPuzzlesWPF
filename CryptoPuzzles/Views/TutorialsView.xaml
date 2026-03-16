@@ -17,7 +17,6 @@
         IsSaveButtonVisible="True"
         Foreground="{StaticResource MaterialDesignBody}">
 
-        <!-- Панель добавления -->
         <controls:EntityListControl.AddPanelContent>
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -42,24 +41,36 @@
             </Grid>
         </controls:EntityListControl.AddPanelContent>
 
-        <!-- Основное содержимое (DataGrid) -->
         <controls:EntityListControl.MainContent>
-            <DataGrid ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
-                      AutoGenerateColumns="False" IsReadOnly="False" CanUserAddRows="False"
-                      materialDesign:DataGridAssist.CellPadding="13 8 8 8"
-                      materialDesign:DataGridAssist.ColumnHeaderPadding="8"
-                      Foreground="{StaticResource MaterialDesignBody}">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="Auto" MinWidth="50" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridTextColumn Header="Метод" Binding="{Binding MethodName}" IsReadOnly="True" Width="Auto" MinWidth="120" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridTextColumn Header="Заголовок" Binding="{Binding TheoryTitle, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="200" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridTextColumn Header="Содержание" Binding="{Binding TheoryContent, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="300" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridTextColumn Header="Порядок" Binding="{Binding SortOrder}" Width="Auto" MinWidth="80" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridTextColumn Header="Создан" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridCheckBoxColumn Header="Удален" Binding="{Binding IsDeleted, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="150"/>
-                    <DataGridTextColumn Header="Дата удаления" Binding="{Binding DeletedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
-                </DataGrid.Columns>
-            </DataGrid>
+            <StackPanel>
+                <WrapPanel Margin="0,0,0,8">
+                    <CheckBox Content="Показывать удалённые" IsChecked="{Binding ShowDeleted}" 
+                              VerticalAlignment="Center" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <ComboBox ItemsSource="{Binding Methods}" DisplayMemberPath="Name" 
+                              SelectedItem="{Binding SelectedMethodFilter}" 
+                              materialDesign:HintAssist.Hint="Метод" Width="150" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <TextBox Text="{Binding TitleFilter, UpdateSourceTrigger=PropertyChanged}" 
+                             materialDesign:HintAssist.Hint="Заголовок" Width="150" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
+                </WrapPanel>
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <DataGrid ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
+                              AutoGenerateColumns="False" IsReadOnly="False" CanUserAddRows="False"
+                              materialDesign:DataGridAssist.CellPadding="13 8 8 8"
+                              materialDesign:DataGridAssist.ColumnHeaderPadding="8"
+                              Foreground="{StaticResource MaterialDesignBody}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="Auto" MinWidth="50" Foreground="{StaticResource MaterialDesignBody}"/>
+                            <DataGridTextColumn Header="Метод" Binding="{Binding MethodName}" IsReadOnly="True" Width="Auto" MinWidth="120" Foreground="{StaticResource MaterialDesignBody}"/>
+                            <DataGridTextColumn Header="Заголовок" Binding="{Binding TheoryTitle, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="200" Foreground="{StaticResource MaterialDesignBody}"/>
+                            <DataGridTextColumn Header="Содержание" Binding="{Binding TheoryContent, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="300" Foreground="{StaticResource MaterialDesignBody}"/>
+                            <DataGridTextColumn Header="Порядок" Binding="{Binding SortOrder}" Width="Auto" MinWidth="80" Foreground="{StaticResource MaterialDesignBody}"/>
+                            <DataGridTextColumn Header="Создан" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
+                            <DataGridCheckBoxColumn Header="Удален" Binding="{Binding IsDeleted, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="150"/>
+                            <DataGridTextColumn Header="Дата удаления" Binding="{Binding DeletedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </ScrollViewer>
+            </StackPanel>
         </controls:EntityListControl.MainContent>
     </controls:EntityListControl>
 </UserControl>

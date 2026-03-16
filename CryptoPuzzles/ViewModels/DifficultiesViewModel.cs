@@ -7,7 +7,19 @@ namespace CryptoPuzzles.ViewModels
 {
     public class DifficultiesViewModel : EntityViewModelBase<ADifficulty, ADifficultyCreate, ADifficultyUpdate>
     {
+        private bool _showDeleted = true;
+
         public DifficultiesViewModel(DifficultyApiService apiService) : base(apiService) { }
+
+        public bool ShowDeleted
+        {
+            get => _showDeleted;
+            set
+            {
+                if (SetProperty(ref _showDeleted, value))
+                    ApplyFilter();
+            }
+        }
 
         protected override ADifficulty CreateNewItem()
         {
@@ -73,8 +85,13 @@ namespace CryptoPuzzles.ViewModels
                 x.DeletedAt == y.DeletedAt;
         }
 
+        protected override bool HasAdditionalFilters() => !ShowDeleted;
+
         protected override bool FilterPredicate(ADifficulty item)
         {
+            if (!ShowDeleted && item.IsDeleted)
+                return false;
+
             if (string.IsNullOrWhiteSpace(FilterText)) return true;
             return item.DifficultyName.Contains(FilterText, StringComparison.OrdinalIgnoreCase);
         }

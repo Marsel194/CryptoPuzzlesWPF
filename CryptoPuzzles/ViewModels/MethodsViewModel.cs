@@ -7,7 +7,19 @@ namespace CryptoPuzzles.ViewModels
 {
     public class MethodsViewModel : EntityViewModelBase<AEncryptionMethod, AEncryptionMethodCreate, AEncryptionMethodUpdate>
     {
+        private bool _showDeleted = true;
+
         public MethodsViewModel(EncryptionMethodApiService apiService) : base(apiService) { }
+
+        public bool ShowDeleted
+        {
+            get => _showDeleted;
+            set
+            {
+                if (SetProperty(ref _showDeleted, value))
+                    ApplyFilter();
+            }
+        }
 
         protected override AEncryptionMethod CreateNewItem()
         {
@@ -71,8 +83,13 @@ namespace CryptoPuzzles.ViewModels
                 x.DeletedAt == y.DeletedAt;
         }
 
+        protected override bool HasAdditionalFilters() => !ShowDeleted;
+
         protected override bool FilterPredicate(AEncryptionMethod item)
         {
+            if (!ShowDeleted && item.IsDeleted)
+                return false;
+
             if (string.IsNullOrWhiteSpace(FilterText)) return true;
             return item.Name.Contains(FilterText, StringComparison.OrdinalIgnoreCase);
         }

@@ -10,6 +10,8 @@ namespace CryptoPuzzles.ViewModels
     {
         private readonly PuzzleApiService _puzzleApi;
         private ObservableCollection<APuzzle> _puzzles = [];
+        private bool _showDeleted = true;
+        private APuzzle? _selectedPuzzleFilter;
 
         public HintsViewModel(HintApiService hintApi, PuzzleApiService puzzleApi) : base(hintApi)
         {
@@ -18,6 +20,26 @@ namespace CryptoPuzzles.ViewModels
         }
 
         public ObservableCollection<APuzzle> Puzzles { get => _puzzles; set => SetProperty(ref _puzzles, value); }
+
+        public bool ShowDeleted
+        {
+            get => _showDeleted;
+            set
+            {
+                if (SetProperty(ref _showDeleted, value))
+                    ApplyFilter();
+            }
+        }
+
+        public APuzzle? SelectedPuzzleFilter
+        {
+            get => _selectedPuzzleFilter;
+            set
+            {
+                if (SetProperty(ref _selectedPuzzleFilter, value))
+                    ApplyFilter();
+            }
+        }
 
         private async Task LoadPuzzlesAsync()
         {
@@ -63,6 +85,7 @@ namespace CryptoPuzzles.ViewModels
             string puzzleTitle = puzzle?.Title ?? "";
 
             var itemToAdd = new AHint(0, NewItem.PuzzleId, puzzleTitle, NewItem.HintText, NewItem.HintOrder, DateTime.Now);
+            Items.Add(itemToAdd);
             _addedItems.Add(itemToAdd);
 
             NewItem = CreateNewItem();
@@ -101,9 +124,18 @@ namespace CryptoPuzzles.ViewModels
                    x.DeletedAt == y.DeletedAt;
         }
 
+        protected override bool HasAdditionalFilters() => !ShowDeleted || SelectedPuzzleFilter != null;
+
         protected override bool FilterPredicate(AHint item)
         {
+            if (!ShowDeleted && item.IsDeleted)
+                return false;
+
+            if (SelectedPuzzleFilter != null && item.PuzzleId != SelectedPuzzleFilter.Id)
+                return false;
+
             if (string.IsNullOrWhiteSpace(FilterText)) return true;
+
             var f = FilterText.ToLower();
             return item.PuzzleTitle.Contains(f, StringComparison.OrdinalIgnoreCase) ||
                    item.HintText.Contains(f, StringComparison.OrdinalIgnoreCase);

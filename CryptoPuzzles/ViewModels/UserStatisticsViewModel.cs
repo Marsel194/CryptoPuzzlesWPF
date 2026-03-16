@@ -7,7 +7,41 @@ namespace CryptoPuzzles.ViewModels
 {
     public class UserStatisticsViewModel : EntityViewModelBase<AUserStatistic, object, object>
     {
+        private bool _showDeleted = true;
+        private string _loginFilter = string.Empty;
+        private string _nameFilter = string.Empty;
+
         public UserStatisticsViewModel(UserStatisticsApiService apiService) : base(apiService) { }
+
+        public bool ShowDeleted
+        {
+            get => _showDeleted;
+            set
+            {
+                if (SetProperty(ref _showDeleted, value))
+                    ApplyFilter();
+            }
+        }
+
+        public string LoginFilter
+        {
+            get => _loginFilter;
+            set
+            {
+                if (SetProperty(ref _loginFilter, value))
+                    ApplyFilter();
+            }
+        }
+
+        public string NameFilter
+        {
+            get => _nameFilter;
+            set
+            {
+                if (SetProperty(ref _nameFilter, value))
+                    ApplyFilter();
+            }
+        }
 
         protected override AUserStatistic CreateNewItem() => new();
 
@@ -40,14 +74,20 @@ namespace CryptoPuzzles.ViewModels
             x.IsDeleted == y.IsDeleted &&
             x.DeletedAt == y.DeletedAt;
 
+        protected override bool HasAdditionalFilters() => !ShowDeleted || !string.IsNullOrWhiteSpace(LoginFilter) || !string.IsNullOrWhiteSpace(NameFilter);
 
         protected override bool FilterPredicate(AUserStatistic item)
         {
-            if (string.IsNullOrWhiteSpace(FilterText)) return true;
-            var f = FilterText.ToLower();
-            return item.UserLogin?.ToLower().Contains(f, StringComparison.OrdinalIgnoreCase) == true ||
-                   item.Username?.ToLower().Contains(f, StringComparison.OrdinalIgnoreCase) == true ||
-                   item.Email?.ToLower().Contains(f, StringComparison.OrdinalIgnoreCase) == true;
+            if (!ShowDeleted && item.IsDeleted)
+                return false;
+
+            bool loginMatch = string.IsNullOrWhiteSpace(LoginFilter) ||
+                              (item.UserLogin?.Contains(LoginFilter, StringComparison.OrdinalIgnoreCase) == true);
+
+            bool nameMatch = string.IsNullOrWhiteSpace(NameFilter) ||
+                             (item.Username?.Contains(NameFilter, StringComparison.OrdinalIgnoreCase) == true);
+
+            return loginMatch && nameMatch;
         }
     }
 }

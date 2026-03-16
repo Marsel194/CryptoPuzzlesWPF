@@ -8,6 +8,6 @@
         WindowStartupLocation="CenterScreen">
 
     <Grid>
-        <ContentControl Content="{Binding CurrentView}"/>
+        <ContentControl Content="{Binding CurrentView}" Background="{DynamicResource MaterialDesignCardBackground}"/>
     </Grid>
 </Window>
