@@ -29,7 +29,7 @@
             </Button>
             <TextBlock Grid.Column="1" Text="Обучение"
                            FontSize="28" FontWeight="Bold"
-                           Foreground="{DynamicResource PrimaryHueMidBrush}"
+                           Foreground="{DynamicResource MaterialDesignBody}"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"/>
         </Grid>
@@ -39,11 +39,11 @@
 
                 <StackPanel Visibility="{Binding IsTheoryMode, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="{Binding TheoryTitle, FallbackValue='Загрузка...'}"
-                                   FontSize="22" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                   FontSize="36" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource MaterialDesignBody}"
                                    Margin="0,0,0,16"/>
                     <TextBlock Text="{Binding TheoryContent, FallbackValue='Загрузка...'}"
-                                   FontSize="16"
+                                   FontSize="30"
                                    Foreground="{DynamicResource MaterialDesignBody}"
                                    TextWrapping="Wrap"
                                    Background="{DynamicResource MaterialDesignPaper}"
@@ -64,7 +64,8 @@
                                 <TextBlock Text="Предыдущая" Margin="5,0,0,0"/>
                             </StackPanel>
                         </Button>
-                        <TextBlock Grid.Column="1" Text="{Binding TheoryProgress}" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Text="{Binding TheoryProgress}" VerticalAlignment="Center"
+                            Foreground="{DynamicResource MaterialDesignBody}"/>
                         <Button Grid.Column="2" Command="{Binding NextTheoryCommand}"
                                     Style="{StaticResource MaterialDesignFlatButton}"
                                     HorizontalAlignment="Right"
@@ -78,6 +79,7 @@
                     <Button Content="Начать тренировочные задания"
                             Command="{Binding StartTrainingPracticeCommand}"
                             Style="{StaticResource PrimaryButton}"
+                            Foreground="{DynamicResource MaterialDesignBody}"
                             HorizontalAlignment="Center"
                             Margin="0,32,0,16"
                             Padding="32,12"
@@ -88,11 +90,11 @@
 
                 <StackPanel Visibility="{Binding IsPuzzleMode, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="{Binding PuzzleTitle, FallbackValue='Загрузка...'}"
-                                   FontSize="22" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                   FontSize="34" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource MaterialDesignBody}"
                                    Margin="0,0,0,16"/>
                     <TextBlock Text="{Binding PuzzleContent, FallbackValue='Загрузка...'}"
-                                   FontSize="16"
+                                   FontSize="24"
                                    Foreground="{DynamicResource MaterialDesignBody}"
                                    TextWrapping="Wrap"
                                    Margin="0,0,0,24"/>
@@ -101,11 +103,13 @@
                       IsExpanded="False"
                       Margin="0,0,0,16"
                       Visibility="{Binding AreHintsVisible, Converter={StaticResource BoolToVis}}"
-                      Style="{StaticResource DistinctMaterialDesignExpander}">
+                      Style="{StaticResource DistinctMaterialDesignExpander}"
+                      Foreground="{DynamicResource MaterialDesignBody}">
                         <StackPanel>
                             <TextBlock Text="{Binding CurrentHint}"
                            TextWrapping="Wrap"
                            Margin="0,8,0,8"
+                           FontSize="24"
                            Foreground="{DynamicResource MaterialDesignBody}"
                            TextAlignment="Center"/>
                             <Button Command="{Binding NextHintCommand}"
@@ -119,6 +123,7 @@
                     <TextBox Text="{Binding UserAnswer, UpdateSourceTrigger=PropertyChanged}"
                                  materialDesign:HintAssist.Hint="Ваш ответ"
                                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                 Foreground="{DynamicResource MaterialDesignBody}"
                                  Margin="0,0,0,16"/>
 
                     <Grid>
@@ -127,10 +132,11 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding PuzzleProgress}" 
-                                       VerticalAlignment="Center"/>
+                            VerticalAlignment="Center" Foreground="{DynamicResource MaterialDesignBody}"/>
                         <Button Grid.Column="1" Command="{Binding CheckAnswerCommand}"
                                     Content="Проверить"
                                     Style="{StaticResource PrimaryButton}"
+                                    Foreground="{DynamicResource MaterialDesignBody}"
                                     Padding="24,0"/>
                     </Grid>
                 </StackPanel>
@@ -141,17 +147,18 @@
                                                Foreground="Gold" HorizontalAlignment="Center"/>
                     <TextBlock Text="Поздравляем!" 
                                    FontSize="28" FontWeight="Bold"
-                                   Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                   Foreground="{DynamicResource MaterialDesignBody}"
                                    HorizontalAlignment="Center"
                                    Margin="0,24,0,12"/>
                     <TextBlock Text="Вы успешно завершили обучение"
                                    FontSize="18"
-                                   Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                   Foreground="{DynamicResource MaterialDesignBody}"
                                    HorizontalAlignment="Center"
                                    Margin="0,0,0,32"/>
                     <Button Command="{Binding GoBackCommand}"
                                 Content="На главную"
                                 Style="{StaticResource PrimaryButton}"
+                                Foreground="{DynamicResource MaterialDesignBody}"
                                 Width="200"/>
                 </StackPanel>
             </StackPanel>

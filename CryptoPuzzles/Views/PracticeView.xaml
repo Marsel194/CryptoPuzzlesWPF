@@ -96,11 +96,11 @@
                     </Grid>
 
                     <TextBlock Text="{Binding CurrentPuzzle.Title, FallbackValue='Загрузка...'}"
-                       FontSize="22" FontWeight="SemiBold"
+                       FontSize="34" FontWeight="SemiBold"
                        Foreground="{DynamicResource MaterialDesignBody}"
                        Margin="0,0,0,16"/>
                     <TextBlock Text="{Binding CurrentPuzzle.Content, FallbackValue='Загрузка...'}"
-                       FontSize="16"
+                       FontSize="24"
                        Foreground="{DynamicResource MaterialDesignBody}"
                        TextWrapping="Wrap"
                        Background="{DynamicResource SecondaryHueMidBrush}"
@@ -110,12 +110,15 @@
                         IsExpanded="False"
                         Margin="0,0,0,16"
                         Visibility="{Binding AreHintsVisible, Converter={StaticResource BoolToVis}}"
-                        Style="{StaticResource DistinctMaterialDesignExpander}">
+                        Style="{StaticResource DistinctMaterialDesignExpander}"
+                        Foreground="{DynamicResource MaterialDesignBody}">
                                     <StackPanel>
                                         <TextBlock Text="{Binding CurrentHint}"
                                 TextWrapping="Wrap"
                                 TextAlignment="Center"
-                                Margin="0,8,0,8"/>
+                                Margin="0,8,0,8"
+                                FontSize="24"
+                                Foreground="{DynamicResource MaterialDesignBody}"/>
                     <Button Command="{Binding NextHintCommand}"
                             Content="Следующая подсказка"
                             HorizontalAlignment="Right"
@@ -127,19 +130,20 @@
                     <TextBox Text="{Binding UserAnswer, UpdateSourceTrigger=PropertyChanged}"
                              materialDesign:HintAssist.Hint="Ваш ответ"
                              Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                             Margin="0,0,0,16"/>
+                             Margin="0,0,0,16"
+                             Foreground="{DynamicResource MaterialDesignBody}"/>
 
                     <Button Command="{Binding CheckAnswerCommand}"
                             Content="Ответить"
                             Style="{StaticResource PrimaryButton}"
-                            Background="{DynamicResource SecondaryHueMidBrush}"
+                            Foreground="{DynamicResource MaterialDesignBody}"
                             Height="48"/>
                 </StackPanel>
 
                 <StackPanel Visibility="{Binding IsResult, Converter={StaticResource BoolToVis}}"
                             HorizontalAlignment="Center" Margin="0,24">
                     <materialDesign:PackIcon Kind="{Binding ResultIcon}" Width="64" Height="64"
-                                           Foreground="{Binding ResultColor}" HorizontalAlignment="Center"/>
+                                           Foreground="{Binding MaterialDesignBody}" HorizontalAlignment="Center"/>
                     <TextBlock Text="{Binding ResultMessage}"
                                FontSize="24" FontWeight="Bold"
                                Foreground="{Binding ResultColor}"
@@ -164,7 +168,7 @@
                         <Button Grid.Column="0" Command="{Binding NextPuzzleCommand}"
                                 Content="Следующий"
                                 Style="{StaticResource PrimaryButton}"
-                                Background="{DynamicResource SecondaryHueMidBrush}"
+                                Foreground="{DynamicResource MaterialDesignBody}"
                                 Margin="0,0,8,0"
                                 Visibility="{Binding HasNextPuzzle, Converter={StaticResource BoolToVis}}"/>
                         <Button Grid.Column="1" Command="{Binding FinishModuleCommand}"
@@ -199,7 +203,7 @@
                     <Button Command="{Binding GoBackCommand}"
                             Content="К выбору сложности"
                             Style="{StaticResource PrimaryButton}"
-                            Background="{DynamicResource SecondaryHueMidBrush}"
+                            Foreground="{DynamicResource MaterialDesignBody}"
                             Width="200"/>
                 </StackPanel>
             </StackPanel>
