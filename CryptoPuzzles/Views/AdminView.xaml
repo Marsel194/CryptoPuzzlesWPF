@@ -62,10 +62,10 @@
             </Grid>
         </Border>
 
-        <Grid Grid.Row="1" Margin="24">
-            <Grid Visibility="{Binding CurrentSection, Converter={StaticResource NullToVis}}">
+        <Grid Grid.Row="1" Margin="0">
+            <Grid Visibility="{Binding CurrentSection, Converter={StaticResource NullToVis}}" Margin="24">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                    <UniformGrid Columns="4" HorizontalAlignment="Center" Margin="0,0,0,0">
+                    <UniformGrid Columns="4" HorizontalAlignment="Center" Margin="0">
 
                         <Border Style="{StaticResource AdminCardStyle}" Width="260" Margin="8">
                             <StackPanel>
@@ -269,7 +269,8 @@
             </Grid>
 
             <ContentControl Content="{Binding CurrentSection}"
-                            Visibility="{Binding CurrentSection, Converter={StaticResource NullToVis}, ConverterParameter=invert}">
+                            Visibility="{Binding CurrentSection, Converter={StaticResource NullToVis}, ConverterParameter=invert}"
+                            Margin="24">
                 <ContentControl.Resources>
                     <DataTemplate DataType="{x:Type vm:AdminProfileViewModel}">
                         <v:AdminProfileView/>
