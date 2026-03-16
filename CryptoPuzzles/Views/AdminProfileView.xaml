@@ -43,8 +43,7 @@
 
                         <!-- Кнопка Изменить -->
                         <Button Grid.Column="1"
-                                Command="{Binding EditCommand}"
-                                Style="{StaticResource MaterialDesignFlatButton}">
+                                Command="{Binding EditCommand}">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
                                     <Setter Property="Visibility" Value="Visible"/>
@@ -56,8 +55,10 @@
                                 </Style>
                             </Button.Style>
                             <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="Pencil" Width="20" Height="20"/>
-                                <TextBlock Text="Изменить" Margin="5,0,0,0"/>
+                                <materialDesign:PackIcon Kind="Pencil" Width="20" Height="20"
+                                                         Foreground="{DynamicResource MaterialDesignBody}"/>
+                                <TextBlock Text="Изменить" Margin="5,0,0,0"
+                                           Foreground="{DynamicResource MaterialDesignBody}"/>
                             </StackPanel>
                         </Button>
                     </Grid>
@@ -120,9 +121,9 @@
                                  FontSize="16"
                                  Margin="0,0,0,16"
                                  materialDesign:HintAssist.Hint="Имя"
-                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}">
+                                 Foreground="{DynamicResource MaterialDesignBody}">
                             <TextBox.Style>
-                                <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
+                                <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                     <Setter Property="Visibility" Value="Collapsed"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsEditMode}" Value="True">
@@ -162,9 +163,9 @@
                                  FontSize="16"
                                  Margin="0,0,0,16"
                                  materialDesign:HintAssist.Hint="Фамилия"
-                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}">
+                                 Foreground="{DynamicResource MaterialDesignBody}">
                             <TextBox.Style>
-                                <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
+                                <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                     <Setter Property="Visibility" Value="Collapsed"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsEditMode}" Value="True">
@@ -204,9 +205,9 @@
                                  FontSize="16"
                                  Margin="0,0,0,16"
                                  materialDesign:HintAssist.Hint="Отчество"
-                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}">
+                                 Foreground="{DynamicResource MaterialDesignBody}">
                             <TextBox.Style>
-                                <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
+                                <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                     <Setter Property="Visibility" Value="Collapsed"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsEditMode}" Value="True">
@@ -237,16 +238,17 @@
                                     Background="{DynamicResource MaterialDesignCardBackground}"
                                     CornerRadius="22" Margin="0,0,12,0">
                                 <materialDesign:PackIcon Kind="Lock" Width="22" Height="22" 
-                                                       Foreground="{DynamicResource MaterialDesignBody}"
-                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                         Foreground="{DynamicResource MaterialDesignBody}"
+                                                         HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <PasswordBox x:Name="txtNewPassword"
-                               Grid.Column="1"
-                               materialDesign:HintAssist.Hint="Новый пароль (оставьте пустым, если не меняете)"
-                               helpers:PasswordHelper.Attach="True"
-                               helpers:PasswordHelper.Password="{Binding NewPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                               MaxLength="64"
-                               Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"/>
+                                         Grid.Column="1"
+                                         materialDesign:HintAssist.Hint="Новый пароль (оставьте пустым, если не меняете)"
+                                         helpers:PasswordHelper.Attach="True"
+                                         helpers:PasswordHelper.Password="{Binding NewPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         MaxLength="64"
+                                         Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"
+                                         Foreground="{DynamicResource MaterialDesignBody}"/>
                         </Grid>
 
                         <!-- Подтверждение пароля (Row 5) -->
@@ -269,16 +271,17 @@
                                     Background="{DynamicResource MaterialDesignCardBackground}"
                                     CornerRadius="22" Margin="0,0,12,0">
                                 <materialDesign:PackIcon Kind="LockCheck" Width="22" Height="22" 
-                                                       Foreground="{DynamicResource MaterialDesignBody}"
-                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                         Foreground="{DynamicResource MaterialDesignBody}"
+                                                         HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <PasswordBox x:Name="txtConfirmPassword"
-                               Grid.Column="1"
-                               materialDesign:HintAssist.Hint="Подтверждение пароля"
-                               helpers:PasswordHelper.Attach="True"
-                               helpers:PasswordHelper.Password="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                               MaxLength="64"
-                               Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"/>
+                                         Grid.Column="1"
+                                         materialDesign:HintAssist.Hint="Подтверждение пароля"
+                                         helpers:PasswordHelper.Attach="True"
+                                         helpers:PasswordHelper.Password="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         MaxLength="64"
+                                         Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"
+                                         Foreground="{DynamicResource MaterialDesignBody}"/>
                         </Grid>
                     </Grid>
 
@@ -296,7 +299,7 @@
                             </Style>
                         </StackPanel.Style>
                         <Button Command="{Binding SaveCommand}"
-                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                Style="{StaticResource PrimaryButton}"
                                 Content="Сохранить"
                                 Margin="0,0,16,0"
                                 Foreground="{DynamicResource MaterialDesignBody}"/>

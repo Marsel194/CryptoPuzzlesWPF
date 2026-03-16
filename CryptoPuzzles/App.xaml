@@ -17,7 +17,7 @@
 
             <!-- Кастомный конвертер с поддержкой параметра -->
             <converts:BooleanToVisibilityConverterWithParameter x:Key="BoolToVis"/>
-
+            
             <DataTemplate DataType="{x:Type vm:LoginViewModel}">
                 <v:LoginView/>
             </DataTemplate>
