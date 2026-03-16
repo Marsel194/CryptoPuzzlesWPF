@@ -1,4 +1,5 @@
-﻿using CryptoPuzzles.Shared;
+﻿using CryptoPuzzles.Services.ApiService.Base;
+using CryptoPuzzles.Shared;
 using System.Net.Http;
 
 namespace CryptoPuzzles.Services.ApiService

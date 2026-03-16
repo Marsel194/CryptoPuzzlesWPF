@@ -170,7 +170,6 @@ namespace CryptoPuzzles.ViewModels.Base
         {
             try
             {
-                // Создание новых элементов
                 foreach (var tempItem in _addedItems.ToList())
                 {
                     var dto = MapToCreateDto(tempItem);
@@ -183,7 +182,6 @@ namespace CryptoPuzzles.ViewModels.Base
                     }
                 }
 
-                // Обновление изменённых элементов
                 foreach (var item in Items.Except(_addedItems))
                 {
                     var id = GetId(item);
@@ -197,7 +195,6 @@ namespace CryptoPuzzles.ViewModels.Base
                     }
                 }
 
-                // Перезагружаем данные, чтобы получить актуальное состояние с сервера
                 await LoadDataAsync();
                 OnPropertyChanged(nameof(HasChanges));
             }
@@ -209,7 +206,6 @@ namespace CryptoPuzzles.ViewModels.Base
 
         protected virtual bool IsEqual(T x, T y)
         {
-            // По умолчанию сравниваем через Equals, но для корректной работы с INotifyPropertyChanged лучше переопределять
             return x?.Equals(y) ?? false;
         }
 

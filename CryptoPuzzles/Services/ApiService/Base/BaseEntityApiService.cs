@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 
-namespace CryptoPuzzles.Services.ApiService
+namespace CryptoPuzzles.Services.ApiService.Base
 {
     public abstract class BaseEntityApiService<T, TCreate, TUpdate> : BaseApiService, IEntityApiService<T, TCreate, TUpdate>
     {

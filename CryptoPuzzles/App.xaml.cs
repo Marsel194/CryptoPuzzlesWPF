@@ -19,7 +19,7 @@ namespace CryptoPuzzles
             var httpClient = new HttpClient
             {
                 BaseAddress = new Uri("http://localhost:5206"),
-                Timeout = TimeSpan.FromSeconds(20)
+                Timeout = TimeSpan.FromSeconds(12)
             };
 
             services.AddSingleton<NavigationService>();

@@ -1,6 +1,4 @@
-﻿using CryptoPuzzles.Shared;
-
-namespace CryptoPuzzles.Services.ApiService
+﻿namespace CryptoPuzzles.Services.ApiService
 {
     public class AdminStatsService
     {
