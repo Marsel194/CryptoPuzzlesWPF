@@ -27,7 +27,9 @@ namespace CryptoPuzzles.ViewModels
                 TotalScore: item.TotalScore,
                 IsCompleted: item.IsCompleted,
                 CompletedAt: item.CompletedAt,
-                CurrentTutorialIndex: null
+                CurrentTutorialIndex: null,
+                item.IsDeleted,
+                item.DeletedAt
             );
         }
 
@@ -53,7 +55,9 @@ namespace CryptoPuzzles.ViewModels
                    x.CompletedAt == y.CompletedAt &&
                    x.UserId == y.UserId &&
                    x.UserLogin == y.UserLogin &&
-                   x.SessionStart == y.SessionStart;
+                   x.SessionStart == y.SessionStart &&
+                   x.IsDeleted == y.IsDeleted &&
+                   x.DeletedAt == y.DeletedAt;
         }
 
         protected override bool FilterPredicate(AGameSession item)

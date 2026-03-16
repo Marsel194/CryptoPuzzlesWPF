@@ -21,7 +21,7 @@ namespace CryptoPuzzles.ViewModels
 
         protected override ADifficultyUpdate MapToUpdateDto(ADifficulty item)
         {
-            return new ADifficultyUpdate(item.Id, item.DifficultyName);
+            return new ADifficultyUpdate(item.Id, item.DifficultyName, item.IsDeleted, item.DeletedAt);
         }
 
         protected override int GetId(ADifficulty item) => item.Id;
@@ -67,7 +67,10 @@ namespace CryptoPuzzles.ViewModels
 
         protected override bool IsEqual(ADifficulty x, ADifficulty y)
         {
-            return x.Id == y.Id && x.DifficultyName == y.DifficultyName;
+            return x.Id == y.Id &&
+                x.DifficultyName == y.DifficultyName &&
+                x.IsDeleted == y.IsDeleted &&
+                x.DeletedAt == y.DeletedAt;
         }
 
         protected override bool FilterPredicate(ADifficulty item)

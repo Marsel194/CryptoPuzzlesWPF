@@ -6,40 +6,17 @@
     <controls:EntityListControl 
         Title="Прогресс по сессиям"
         BackCommand="{Binding BackCommand}"
-        AddCommand="{Binding AddCommand}"
         ClearFilterCommand="{Binding ClearFilterCommand}"
         ExportToExcelCommand="{Binding ExportToExcelCommand}"
-        SaveCommand="{Binding SaveCommand}"
         FilterText="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
-        AddPanelTitle="Новая запись прогресса"
-        IsAddPanelVisible="True"
-        IsSaveButtonVisible="True"
+        IsAddPanelVisible="False"
+        IsSaveButtonVisible="False"
         Foreground="{StaticResource MaterialDesignBody}">
-
-        <!-- Панель добавления -->
-        <controls:EntityListControl.AddPanelContent>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBox Grid.Column="0" Text="{Binding NewItem.SessionId}" 
-                         materialDesign:HintAssist.Hint="ID сессии" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
-                <TextBox Grid.Column="1" Text="{Binding NewItem.PuzzleId}" 
-                         materialDesign:HintAssist.Hint="ID головоломки" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
-                <TextBox Grid.Column="2" Text="{Binding NewItem.PuzzleOrder}" 
-                         materialDesign:HintAssist.Hint="Порядок" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
-                <Button Grid.Column="3" Command="{Binding AddCommand}" Content="Добавить" 
-                        Style="{StaticResource PrimaryButton}" Margin="4,0" Foreground="{StaticResource MaterialDesignBody}"/>
-            </Grid>
-        </controls:EntityListControl.AddPanelContent>
 
         <!-- Основное содержимое (DataGrid) -->
         <controls:EntityListControl.MainContent>
             <DataGrid ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
-                      AutoGenerateColumns="False" IsReadOnly="False" CanUserAddRows="False"
+                      AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
                       materialDesign:DataGridAssist.CellPadding="13 8 8 8"
                       materialDesign:DataGridAssist.ColumnHeaderPadding="8"
                       Foreground="{StaticResource MaterialDesignBody}">
@@ -57,6 +34,8 @@
                     <DataGridTextColumn Header="Начало" Binding="{Binding StartedAt, StringFormat='dd.MM.yyyy HH:mm'}" Width="Auto" MinWidth="130" Foreground="{StaticResource MaterialDesignBody}"/>
                     <DataGridTextColumn Header="Решено" Binding="{Binding SolvedAt, StringFormat='dd.MM.yyyy HH:mm'}" Width="Auto" MinWidth="130" Foreground="{StaticResource MaterialDesignBody}"/>
                     <DataGridTextColumn Header="Время решения" Binding="{Binding TimeToSolve, StringFormat='hh\\:mm\\:ss'}" Width="Auto" MinWidth="100" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridCheckBoxColumn Header="Удален" IsReadOnly ="True" Binding="{Binding IsDeleted, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="150"/>
+                    <DataGridTextColumn Header="Дата удаления" Binding="{Binding DeletedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
                 </DataGrid.Columns>
             </DataGrid>
         </controls:EntityListControl.MainContent>

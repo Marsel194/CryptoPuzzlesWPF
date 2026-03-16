@@ -20,10 +20,5 @@ namespace CryptoPuzzles.Server.Controllers
         {
             return new Difficulty { DifficultyName = dto.DifficultyName };
         }
-
-        protected override void UpdateEntity(Difficulty entity, ADifficultyUpdate dto)
-        {
-            entity.DifficultyName = dto.DifficultyName;
-        }
     }
 }

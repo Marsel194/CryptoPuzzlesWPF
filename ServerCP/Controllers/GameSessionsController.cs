@@ -20,7 +20,6 @@ namespace CryptoPuzzles.Server.Controllers
             var sessions = await _context.GameSessions
                 .Include(s => s.User)
                 .Include(s => s.Progresses)
-                .Where(s => !s.IsDeleted)
                 .OrderByDescending(s => s.SessionStart)
                 .Select(s => new AGameSession(
                     s.Id,
@@ -48,7 +47,7 @@ namespace CryptoPuzzles.Server.Controllers
             var session = await _context.GameSessions
                 .Include(s => s.User)
                 .Include(s => s.Progresses)
-                .Where(s => s.Id == id && !s.IsDeleted)
+                .Where(s => s.Id == id)
                 .Select(s => new AGameSession(
                     s.Id,
                     s.UserId,
@@ -76,7 +75,7 @@ namespace CryptoPuzzles.Server.Controllers
             var sessions = await _context.GameSessions
                 .Include(s => s.User)
                 .Include(s => s.Progresses)
-                .Where(s => s.UserId == userId && !s.IsDeleted)
+                .Where(s => s.UserId == userId)
                 .OrderByDescending(s => s.SessionStart)
                 .Select(s => new AGameSession(
                     s.Id,
@@ -140,10 +139,7 @@ namespace CryptoPuzzles.Server.Controllers
         {
             if (id != dto.Id) return BadRequest();
 
-            var session = await _context.GameSessions
-                .Where(s => s.Id == id && !s.IsDeleted)
-                .FirstOrDefaultAsync();
-
+            var session = await _context.GameSessions.FirstOrDefaultAsync(s => s.Id == id);
             if (session == null) return NotFound();
 
             if (dto.TotalScore.HasValue)
@@ -160,18 +156,12 @@ namespace CryptoPuzzles.Server.Controllers
             else if (dto.CurrentTutorialIndex == null)
                 session.CurrentTutorialIndex = null;
 
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
+            if (dto.IsDeleted.HasValue)
+            {
+                session.IsDeleted = dto.IsDeleted.Value;
+                session.DeletedAt = dto.IsDeleted.Value ? DateTime.UtcNow : null;
+            }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var session = await _context.GameSessions.FindAsync(id);
-            if (session == null || session.IsDeleted) return NotFound();
-
-            session.IsDeleted = true;
-            session.DeletedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
             return NoContent();
         }

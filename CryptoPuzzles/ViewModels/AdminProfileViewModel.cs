@@ -210,7 +210,9 @@ namespace CryptoPuzzles.ViewModels
                     FirstName: this.FirstName,
                     LastName: this.LastName,
                     MiddleName: string.IsNullOrWhiteSpace(this.MiddleName) ? null : this.MiddleName,
-                    Password: changePassword ? this.NewPassword : null
+                    Password: changePassword ? this.NewPassword : null,
+                    IsDeleted: null,
+                    DeletedAt: null
                 );
 
                 await _adminApiService.UpdateAsync(_adminId, updateDto);

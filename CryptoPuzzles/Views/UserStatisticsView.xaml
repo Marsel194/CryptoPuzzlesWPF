@@ -31,6 +31,8 @@
                     <DataGridTextColumn Header="Подсказок" Binding="{Binding TotalHintsUsed}" Width="Auto" MinWidth="80" Foreground="{StaticResource MaterialDesignBody}"/>
                     <DataGridTextColumn Header="Ср. балл" Binding="{Binding AvgScorePerSession}" Width="Auto" MinWidth="70" Foreground="{StaticResource MaterialDesignBody}"/>
                     <DataGridTextColumn Header="Последняя активность" Binding="{Binding LastActive, StringFormat='dd.MM.yyyy HH:mm'}" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
+                    <DataGridCheckBoxColumn Header="Удален" Binding="{Binding IsDeleted, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="150"/>
+                    <DataGridTextColumn Header="Дата удаления" Binding="{Binding DeletedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
                     <DataGridTextColumn Header="Дата регистрации" Binding="{Binding RegisteredAt, StringFormat='dd.MM.yyyy HH:mm'}" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
                 </DataGrid.Columns>
             </DataGrid>

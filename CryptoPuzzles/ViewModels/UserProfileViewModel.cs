@@ -221,7 +221,18 @@ namespace CryptoPuzzles.ViewModels
                 IsLoading = true;
 
                 foreach (var session in allSessions)
-                    await _gameSessionApi.DeleteAsync(session.Id);
+                {
+                    var update = new AGameSessionUpdate(
+                        Id: session.Id,
+                        TotalScore: null,
+                        IsCompleted: null,
+                        CompletedAt: null,
+                        CurrentTutorialIndex: null,
+                        IsDeleted: true,
+                        DeletedAt: DateTime.UtcNow
+                    );
+                    await _gameSessionApi.UpdateAsync(session.Id, update);
+                }
 
                 HasActiveSession = false;
                 await LoadUserDataAsync();
@@ -293,6 +304,8 @@ namespace CryptoPuzzles.ViewModels
                     Login: this.Login,
                     Username: this.Username,
                     Email: this.Email,
+                    IsDeleted: null,
+                    DeletedAt: null,
                     Password: changePassword ? this.NewPassword : null
                 );
 

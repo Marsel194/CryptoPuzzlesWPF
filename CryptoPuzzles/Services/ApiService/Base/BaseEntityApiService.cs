@@ -37,15 +37,5 @@ namespace CryptoPuzzles.Services.ApiService
                 throw new Exception($"Ошибка при обновлении: {response.StatusCode} - {errorContent}");
             }
         }
-
-        public async Task DeleteAsync(int id)
-        {
-            var response = await _httpClient.DeleteAsync($"{_endpoint}/{id}");
-            if (!response.IsSuccessStatusCode)
-            {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Ошибка при удалении: {response.StatusCode} - {errorContent}");
-            }
-        }
     }
 }

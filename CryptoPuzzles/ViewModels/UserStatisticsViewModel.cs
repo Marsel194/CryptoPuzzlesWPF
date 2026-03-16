@@ -36,7 +36,10 @@ namespace CryptoPuzzles.ViewModels
             x.TotalScore == y.TotalScore &&
             x.TotalHintsUsed == y.TotalHintsUsed &&
             x.AvgScorePerSession == y.AvgScorePerSession &&
-            x.LastActive == y.LastActive;
+            x.LastActive == y.LastActive &&
+            x.IsDeleted == y.IsDeleted &&
+            x.DeletedAt == y.DeletedAt;
+
 
         protected override bool FilterPredicate(AUserStatistic item)
         {

@@ -26,7 +26,6 @@ namespace CryptoPuzzles.ViewModels.Base
         private string _filterText = string.Empty;
 
         protected List<T> _addedItems = [];
-        protected List<T> _removedItems = [];
         protected Dictionary<int, T> _originalItems = [];
 
         protected EntityViewModelBase(IEntityApiService<T, TCreate, TUpdate> apiService)
@@ -38,7 +37,6 @@ namespace CryptoPuzzles.ViewModels.Base
 
             AddCommand = new AsyncRelayCommand(async _ => await AddAsync());
             SaveCommand = new AsyncRelayCommand(async _ => await SaveAsync(), _ => HasChanges);
-            DeleteCommand = new AsyncRelayCommand(async id => await DeleteAsync(id as int?), id => id is int i && i > 0);
             BackCommand = new AsyncRelayCommand(async _ =>
             {
                 if (HasChanges)
@@ -84,7 +82,7 @@ namespace CryptoPuzzles.ViewModels.Base
         {
             get
             {
-                if (_addedItems.Count != 0 || _removedItems.Count != 0)
+                if (_addedItems.Count != 0)
                     return true;
 
                 foreach (var item in Items.Where(x => !_addedItems.Contains(x)))
@@ -112,7 +110,6 @@ namespace CryptoPuzzles.ViewModels.Base
 
         public ICommand AddCommand { get; }
         public ICommand SaveCommand { get; }
-        public ICommand DeleteCommand { get; }
         public ICommand BackCommand { get; }
         public ICommand ClearFilterCommand { get; }
         public ICommand ExportToExcelCommand { get; }
@@ -137,7 +134,6 @@ namespace CryptoPuzzles.ViewModels.Base
                 Items = new ObservableCollection<T>(list);
                 _originalItems = list.ToDictionary(GetId, CloneItem);
                 _addedItems.Clear();
-                _removedItems.Clear();
                 NewItem = CreateNewItem();
                 OnPropertyChanged(nameof(HasChanges));
 
@@ -170,34 +166,10 @@ namespace CryptoPuzzles.ViewModels.Base
             await Task.CompletedTask;
         }
 
-        protected virtual async Task DeleteAsync(int? id)
-        {
-            if (!id.HasValue) return;
-            var item = Items.FirstOrDefault(x => GetId(x) == id.Value);
-            if (item == null) return;
-
-            if (id.Value < 0)
-            {
-                Items.Remove(item);
-                _addedItems.Remove(item);
-            }
-            else
-            {
-                Items.Remove(item);
-                _removedItems.Add(item);
-            }
-            OnPropertyChanged(nameof(HasChanges));
-            RefreshView();
-            await Task.CompletedTask;
-        }
-
         protected virtual async Task SaveAsync()
         {
             try
             {
-                foreach (var item in _removedItems)
-                    await _apiService.DeleteAsync(GetId(item));
-
                 foreach (var tempItem in _addedItems.ToList())
                 {
                     var dto = MapToCreateDto(tempItem);
@@ -251,6 +223,8 @@ namespace CryptoPuzzles.ViewModels.Base
                 if (ItemsView != null)
                 {
                     ItemsView.SortDescriptions.Clear();
+                    ItemsView.SortDescriptions.Add(new SortDescription("IsDeleted", ListSortDirection.Ascending));
+                    ItemsView.SortDescriptions.Add(new SortDescription("Id", ListSortDirection.Ascending));
                     ApplyFilter();
                 }
             }

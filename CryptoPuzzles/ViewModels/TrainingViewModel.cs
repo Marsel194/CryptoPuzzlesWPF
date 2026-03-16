@@ -340,7 +340,9 @@ namespace CryptoPuzzles.ViewModels
                                     TotalScore: null,
                                     IsCompleted: true,
                                     CompletedAt: DateTime.UtcNow,
-                                    CurrentTutorialIndex: null
+                                    CurrentTutorialIndex: null,
+                                    IsDeleted: null,
+                                    DeletedAt: null
                                 ));
                             }
                         }
@@ -440,7 +442,9 @@ namespace CryptoPuzzles.ViewModels
                     TotalScore: newScore,
                     IsCompleted: completed,
                     CompletedAt: completed == true ? DateTime.UtcNow : null,
-                    CurrentTutorialIndex: tutorialIndex
+                    CurrentTutorialIndex: tutorialIndex,
+                    IsDeleted: null,
+                    DeletedAt: null
                 );
                 await _sessionApi.UpdateAsync(_currentSessionId.Value, update);
             }
@@ -581,7 +585,9 @@ namespace CryptoPuzzles.ViewModels
                         HintsUsed: _currentHintIndex + 1,
                         ScoreEarned: puzzle.MaxScore,
                         Solved: true,
-                        SolvedAt: DateTime.UtcNow
+                        SolvedAt: DateTime.UtcNow,
+                        IsDeleted: null,
+                        DeletedAt: null
                     );
                     await _sessionProgressApi.UpdateAsync(progress.Id, update);
                     progress.Solved = true;
@@ -630,7 +636,9 @@ namespace CryptoPuzzles.ViewModels
                     HintsUsed: hintsUsed,
                     ScoreEarned: scoreEarned,
                     Solved: solved,
-                    SolvedAt: solved ? DateTime.UtcNow : null
+                    SolvedAt: solved ? DateTime.UtcNow : null,
+                    IsDeleted: null,
+                    DeletedAt: null
                 );
                 await _sessionProgressApi.UpdateAsync(progress.Id, update);
                 progress.HintsUsed = hintsUsed;

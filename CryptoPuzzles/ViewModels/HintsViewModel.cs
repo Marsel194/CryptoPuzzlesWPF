@@ -36,7 +36,7 @@ namespace CryptoPuzzles.ViewModels
 
         protected override AHintUpdate MapToUpdateDto(AHint item)
         {
-            return new AHintUpdate(item.Id, item.PuzzleId, item.HintText, item.HintOrder);
+            return new AHintUpdate(item.Id, item.PuzzleId, item.HintText, item.HintOrder, item.IsDeleted, item.DeletedAt);
         }
 
         protected override int GetId(AHint item) => item.Id;
@@ -96,7 +96,9 @@ namespace CryptoPuzzles.ViewModels
             return x.Id == y.Id &&
                    x.PuzzleId == y.PuzzleId &&
                    x.HintText == y.HintText &&
-                   x.HintOrder == y.HintOrder;
+                   x.HintOrder == y.HintOrder &&
+                   x.IsDeleted == y.IsDeleted &&
+                   x.DeletedAt == y.DeletedAt;
         }
 
         protected override bool FilterPredicate(AHint item)

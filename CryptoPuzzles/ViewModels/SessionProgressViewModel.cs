@@ -26,7 +26,7 @@ namespace CryptoPuzzles.ViewModels
             new(item.SessionId, item.PuzzleId, item.PuzzleOrder, item.HintsUsed, item.ScoreEarned);
 
         protected override ASessionProgressUpdate MapToUpdateDto(ASessionProgress item) =>
-            new(item.Id, item.HintsUsed, item.ScoreEarned, item.Solved, item.SolvedAt);
+            new(item.Id, item.HintsUsed, item.ScoreEarned, item.Solved, item.SolvedAt, item.IsDeleted, item.DeletedAt);
 
         protected override int GetId(ASessionProgress item) => item.Id;
 
@@ -58,7 +58,9 @@ namespace CryptoPuzzles.ViewModels
             x.Solved == y.Solved &&
             x.HintsUsed == y.HintsUsed &&
             x.ScoreEarned == y.ScoreEarned &&
-            x.SolvedAt == y.SolvedAt;
+            x.SolvedAt == y.SolvedAt &&
+            x.IsDeleted == y.IsDeleted &&
+            x.DeletedAt == y.DeletedAt;
 
         protected override bool FilterPredicate(ASessionProgress item)
         {

@@ -40,17 +40,8 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="Auto" MinWidth="50" Foreground="{StaticResource MaterialDesignBody}"/>
                     <DataGridTextColumn Header="Название" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridTemplateColumn Header="Действия" Width="Auto" MinWidth="100">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
-                                        CommandParameter="{Binding Id}" Content="Удалить" 
-                                        Style="{StaticResource MaterialDesignFlatButton}" 
-                                        Foreground="{DynamicResource MaterialDesignValidationErrorBrush}" 
-                                        MinWidth="70" Padding="4,0"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
+                    <DataGridCheckBoxColumn Header="Удален" Binding="{Binding IsDeleted, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="150"/>
+                    <DataGridTextColumn Header="Дата удаления" Binding="{Binding DeletedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
                 </DataGrid.Columns>
             </DataGrid>
         </controls:EntityListControl.MainContent>

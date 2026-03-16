@@ -28,7 +28,7 @@ namespace CryptoPuzzles.ViewModels
 
         protected override AAdminUpdate MapToUpdateDto(AAdmin item) =>
             new(item.Id, item.Login, item.FirstName, item.LastName, item.MiddleName,
-                string.IsNullOrWhiteSpace(NewPassword) ? null : NewPassword);
+                string.IsNullOrWhiteSpace(NewPassword) ? null : NewPassword, item.IsDeleted, item.DeletedAt);
 
         protected override int GetId(AAdmin item) => item.Id;
 
@@ -65,28 +65,23 @@ namespace CryptoPuzzles.ViewModels
             await Task.CompletedTask;
         }
 
-        protected override async Task DeleteAsync(int? id)
-        {
-            if (!id.HasValue) return;
-
-            if (id.Value == _authService.CurrentAdminId)
-            {
-                await DialogService.ShowError("Вы не можете удалить самого себя");
-                return;
-            }
-
-            var confirm = await DialogService.ShowConfirmation(
-                "Подтверждение удаления",
-                "Вы уверены, что хотите удалить этого администратора?"
-            );
-
-            if (!confirm) return;
-
-            await base.DeleteAsync(id);
-        }
-
         protected override async Task SaveAsync()
         {
+            var currentAdmin = Items.FirstOrDefault(x => x.Id == _authService.CurrentAdminId);
+            if (currentAdmin != null)
+            {
+                var original = _originalItems.GetValueOrDefault(currentAdmin.Id);
+                if (original != null)
+                {
+                    bool isBeingDeleted = !original.IsDeleted && currentAdmin.IsDeleted;
+                    if (isBeingDeleted)
+                    {
+                        await DialogService.ShowError("Вы не можете удалить самого себя");
+                        return;
+                    }
+                }
+            }
+
             foreach (var item in Items.Except(_addedItems).Where(x => x.Id == _authService.CurrentAdminId))
             {
                 if (item.Login != _authService.CurrentAdmin?.Login ||
@@ -144,7 +139,9 @@ namespace CryptoPuzzles.ViewModels
                    x.Login == y.Login &&
                    x.FirstName == y.FirstName &&
                    x.LastName == y.LastName &&
-                   x.MiddleName == y.MiddleName;
+                   x.MiddleName == y.MiddleName &&
+                   x.IsDeleted == y.IsDeleted &&
+                   x.DeletedAt == y.DeletedAt;
         }
 
         protected override bool FilterPredicate(AAdmin item)

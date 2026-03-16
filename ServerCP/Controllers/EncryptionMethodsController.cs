@@ -20,10 +20,5 @@ namespace CryptoPuzzles.Server.Controllers
         {
             return new EncryptionMethod { Name = dto.Name };
         }
-
-        protected override void UpdateEntity(EncryptionMethod entity, AEncryptionMethodUpdate dto)
-        {
-            entity.Name = dto.Name;
-        }
     }
 }

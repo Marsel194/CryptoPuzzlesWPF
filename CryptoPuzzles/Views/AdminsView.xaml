@@ -47,28 +47,19 @@
         <!-- Основное содержимое (DataGrid) -->
         <controls:EntityListControl.MainContent>
             <DataGrid ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
-                      AutoGenerateColumns="False" IsReadOnly="False" CanUserAddRows="False"
-                      materialDesign:DataGridAssist.CellPadding="13 8 8 8"
-                      materialDesign:DataGridAssist.ColumnHeaderPadding="8"
-                      Foreground="{StaticResource MaterialDesignBody}">
+          AutoGenerateColumns="False" IsReadOnly="False" CanUserAddRows="False"
+          materialDesign:DataGridAssist.CellPadding="13 8 8 8"
+          materialDesign:DataGridAssist.ColumnHeaderPadding="8"
+          Foreground="{StaticResource MaterialDesignBody}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="Auto" MinWidth="50" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridTextColumn Header="Логин" Binding="{Binding Login, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="120" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridTextColumn Header="Имя" Binding="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="120" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridTextColumn Header="Фамилия" Binding="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="120" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridTextColumn Header="Отчество" Binding="{Binding MiddleName, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="120" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridTextColumn Header="Дата создания" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
-                    <DataGridTemplateColumn Header="Действия" Width="Auto" MinWidth="100">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
-                                        CommandParameter="{Binding Id}" Content="Удалить" 
-                                        Style="{StaticResource MaterialDesignFlatButton}" 
-                                        Foreground="{DynamicResource MaterialDesignValidationErrorBrush}" 
-                                        MinWidth="70" Padding="4,0"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="Auto" MinWidth="50"/>
+                    <DataGridTextColumn Header="Логин" Binding="{Binding Login, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="120"/>
+                    <DataGridTextColumn Header="Имя" Binding="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="120"/>
+                    <DataGridTextColumn Header="Фамилия" Binding="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="120"/>
+                    <DataGridTextColumn Header="Отчество" Binding="{Binding MiddleName, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="120"/>
+                    <DataGridTextColumn Header="Дата создания" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150"/>
+                    <DataGridCheckBoxColumn Header="Удален" Binding="{Binding IsDeleted, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="80"/>
+                    <DataGridTextColumn Header="Дата удаления" Binding="{Binding DeletedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150"/>
                 </DataGrid.Columns>
             </DataGrid>
         </controls:EntityListControl.MainContent>

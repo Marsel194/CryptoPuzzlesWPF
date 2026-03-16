@@ -311,19 +311,20 @@ namespace CryptoPuzzles.ViewModels
         private async Task UpdateSessionAsync(int? newScore = null, bool? completed = null)
         {
             if (!_currentSessionId.HasValue) return;
-
             try
             {
                 var update = new AGameSessionUpdate(
-                    _currentSessionId.Value,
-                    newScore,
-                    completed,
-                    completed == true ? DateTime.UtcNow : null,
-                    CurrentTutorialIndex: null
+                    Id: _currentSessionId.Value,
+                    TotalScore: newScore,
+                    IsCompleted: completed,
+                    CompletedAt: completed == true ? DateTime.UtcNow : null,
+                    CurrentTutorialIndex: null,
+                    IsDeleted: null,
+                    DeletedAt: null
                 );
                 await _sessionApi.UpdateAsync(_currentSessionId.Value, update);
             }
-            catch (Exception) { }
+            catch { }
         }
 
         private async Task UpdateProgressForCurrentPuzzleAsync(bool solved, int hintsUsed, int scoreEarned)
@@ -333,16 +334,17 @@ namespace CryptoPuzzles.ViewModels
             if (_progressByPuzzleId.TryGetValue(CurrentPuzzle.Id, out var progress))
             {
                 var update = new ASessionProgressUpdate(
-                    progress.Id,
-                    hintsUsed,
-                    scoreEarned,
-                    solved,
-                    solved ? DateTime.UtcNow : null
+                    Id: progress.Id,
+                    HintsUsed: hintsUsed,
+                    ScoreEarned: scoreEarned,
+                    Solved: solved,
+                    SolvedAt: solved ? DateTime.UtcNow : null,
+                    IsDeleted: null,
+                    DeletedAt: null
                 );
                 await _sessionProgressApi.UpdateAsync(progress.Id, update);
             }
         }
-
         private async Task GoBackAsync()
         {
             _hintTimer.Stop();

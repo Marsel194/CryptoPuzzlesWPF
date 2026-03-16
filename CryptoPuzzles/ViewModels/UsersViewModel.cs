@@ -29,7 +29,7 @@ namespace CryptoPuzzles.ViewModels
 
         protected override AUserUpdate MapToUpdateDto(AUser item)
         {
-            return new AUserUpdate(item.Id, item.Login, item.Username, item.Email,
+            return new AUserUpdate(item.Id, item.Login, item.Username, item.Email, item.IsDeleted, item.DeletedAt,
                 string.IsNullOrWhiteSpace(NewPassword) ? null : NewPassword);
         }
 
@@ -100,7 +100,9 @@ namespace CryptoPuzzles.ViewModels
             return x.Id == y.Id &&
                    x.Login == y.Login &&
                    x.Username == y.Username &&
-                   x.Email == y.Email;
+                   x.Email == y.Email &&
+                   x.IsDeleted == y.IsDeleted &&
+                   x.DeletedAt == y.DeletedAt;
         }
 
         protected override bool FilterPredicate(AUser item)

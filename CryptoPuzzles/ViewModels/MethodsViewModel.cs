@@ -21,7 +21,7 @@ namespace CryptoPuzzles.ViewModels
 
         protected override AEncryptionMethodUpdate MapToUpdateDto(AEncryptionMethod item)
         {
-            return new AEncryptionMethodUpdate(item.Id, item.Name);
+            return new AEncryptionMethodUpdate(item.Id, item.Name, item.IsDeleted, item.DeletedAt);
         }
 
         protected override int GetId(AEncryptionMethod item) => item.Id;
@@ -65,7 +65,10 @@ namespace CryptoPuzzles.ViewModels
 
         protected override bool IsEqual(AEncryptionMethod x, AEncryptionMethod y)
         {
-            return x.Id == y.Id && x.Name == y.Name;
+            return x.Id == y.Id &&
+                x.Name == y.Name &&
+                x.IsDeleted == y.IsDeleted &&
+                x.DeletedAt == y.DeletedAt;
         }
 
         protected override bool FilterPredicate(AEncryptionMethod item)

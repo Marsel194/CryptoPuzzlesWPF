@@ -6,6 +6,5 @@
         Task<T?> GetByIdAsync(int id);
         Task<T> CreateAsync(TCreate dto);
         Task UpdateAsync(int id, TUpdate dto);
-        Task DeleteAsync(int id);
     }
 }

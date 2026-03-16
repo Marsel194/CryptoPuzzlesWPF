@@ -36,7 +36,7 @@ namespace CryptoPuzzles.ViewModels
 
         protected override ATutorialUpdate MapToUpdateDto(ATutorial item)
         {
-            return new ATutorialUpdate(item.Id, item.MethodId, item.TheoryTitle, item.TheoryContent, item.SortOrder);
+            return new ATutorialUpdate(item.Id, item.MethodId, item.TheoryTitle, item.TheoryContent, item.SortOrder, item.IsDeleted, item.DeletedAt);
         }
 
         protected override int GetId(ATutorial item) => item.Id;
@@ -96,7 +96,9 @@ namespace CryptoPuzzles.ViewModels
                    x.MethodId == y.MethodId &&
                    x.TheoryTitle == y.TheoryTitle &&
                    x.TheoryContent == y.TheoryContent &&
-                   x.SortOrder == y.SortOrder;
+                   x.SortOrder == y.SortOrder &&
+                   x.IsDeleted == y.IsDeleted &&
+                   x.DeletedAt == y.DeletedAt;
         }
 
         protected override bool FilterPredicate(ATutorial item)

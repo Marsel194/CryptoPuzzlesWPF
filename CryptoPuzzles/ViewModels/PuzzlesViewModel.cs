@@ -96,7 +96,9 @@ namespace CryptoPuzzles.ViewModels
                 DifficultyId: item.DifficultyId,
                 MethodId: item.MethodId,
                 IsTraining: item.IsTraining,
-                TutorialOrder: item.TutorialOrder
+                TutorialOrder: item.TutorialOrder,
+                item.IsDeleted,
+                item.DeletedAt
             );
         }
 
@@ -199,7 +201,10 @@ namespace CryptoPuzzles.ViewModels
                    x.DifficultyId == y.DifficultyId &&
                    x.MethodId == y.MethodId &&
                    x.IsTraining == y.IsTraining &&
-                   x.TutorialOrder == y.TutorialOrder;
+                   x.TutorialOrder == y.TutorialOrder &&
+                   x.IsDeleted == y.IsDeleted &&
+                   x.DeletedAt == y.DeletedAt;
+
         }
 
         protected override bool FilterPredicate(APuzzle item)
