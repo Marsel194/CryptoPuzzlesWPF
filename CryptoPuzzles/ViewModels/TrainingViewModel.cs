@@ -75,8 +75,34 @@ namespace CryptoPuzzles.ViewModels
             CheckAnswerCommand = new AsyncRelayCommand(async _ => await CheckAnswerAsync(), _ => !string.IsNullOrWhiteSpace(UserAnswer));
             GoBackCommand = new AsyncRelayCommand(async _ => await GoBackAsync());
             StartTrainingPracticeCommand = new AsyncRelayCommand(async _ => await StartTrainingPracticeAsync(), _ => Puzzles.Any());
+            GoToTheory = new AsyncRelayCommand(async _ => await StartTheory());
 
             LoadDataAsync().SafeFireAndForget();
+        }
+
+        private async Task StartTheory()
+        {
+            IsPuzzleMode = false;
+            IsTheoryMode = true;
+
+            int targetIndex;
+
+            if (CurrentTutorialIndex >= 0 && CurrentTutorialIndex < Tutorials.Count)
+                targetIndex = CurrentTutorialIndex;
+
+            else if (Tutorials.Count > 0)
+                targetIndex = 0;
+            else
+                return;
+
+            CurrentTutorialIndex = targetIndex;
+
+            if (_currentSessionId.HasValue)
+                await UpdateSessionAsync(tutorialIndex: targetIndex);
+
+            _hintTimer.Stop();
+            AreHintsVisible = false;
+            UserAnswer = string.Empty;
         }
 
         public ObservableCollection<ATutorial> Tutorials
@@ -242,6 +268,7 @@ namespace CryptoPuzzles.ViewModels
         public ICommand CheckAnswerCommand { get; }
         public ICommand GoBackCommand { get; }
         public ICommand StartTrainingPracticeCommand { get; }
+        public ICommand GoToTheory { get; }
 
         private void ShowHintsAfterDelay()
         {
