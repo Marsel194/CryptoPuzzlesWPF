@@ -206,7 +206,7 @@ namespace CryptoPuzzles.ViewModels
         {
             try
             {
-                var allSessions = await _gameSessionApi.GetAllAsync(userId: _userId);
+                var allSessions = await _gameSessionApi.GetByUserIdAsync(_userId);
                 if (allSessions == null || allSessions.Count == 0)
                 {
                     HasActiveSession = false;
@@ -229,7 +229,7 @@ namespace CryptoPuzzles.ViewModels
                         CompletedAt: null,
                         CurrentTutorialIndex: null,
                         IsDeleted: true,
-                        DeletedAt: DateTime.UtcNow
+                        DeletedAt: null
                     );
                     await _gameSessionApi.UpdateAsync(session.Id, update);
                 }

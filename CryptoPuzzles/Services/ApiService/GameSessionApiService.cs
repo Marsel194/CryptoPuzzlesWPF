@@ -18,5 +18,11 @@ namespace CryptoPuzzles.Services.ApiService
             if (parameters.Any()) query += "?" + string.Join("&", parameters);
             return await SendAsync<List<AGameSession>>(() => _httpClient.GetAsync(query));
         }
+
+        public async Task<List<AGameSession>> GetByUserIdAsync(int userId)
+        {
+            return await SendAsync<List<AGameSession>>(() =>
+                _httpClient.GetAsync($"{_endpoint}/user/{userId}"));
+        }
     }
 }

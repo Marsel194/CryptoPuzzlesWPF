@@ -24,7 +24,11 @@ namespace CryptoPuzzles.Services.Api.Base
 
                 if (response.IsSuccessStatusCode)
                 {
-                    if (typeof(T) == typeof(string)) return (T)(object)content;
+                    if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                        return default!;
+
+                    if (typeof(T) == typeof(string))
+                        return (T)(object)content;
 
                     return JsonSerializer.Deserialize<T>(content, _jsonOptions)
                            ?? throw new Exception("Сервер вернул пустой ответ");
