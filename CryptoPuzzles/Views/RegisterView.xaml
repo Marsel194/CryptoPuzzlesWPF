@@ -8,8 +8,8 @@
     <UserControl.Resources>
         <converters:InverseBooleanConverter x:Key="InverseBool"/>
         <converters:BusyToTextConverter x:Key="BusyToTextConverter"/>
-        <converters:NullToVisibilityConverter x:Key="NullToVisibility"/>
         <converters:BooleanToVisibilityConverterWithParameter x:Key="BooleanToVisibilityConverter"/>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibility"/>
     </UserControl.Resources>
 
     <Grid x:Name="RootGrid" 
@@ -70,6 +70,7 @@
                                              Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}"
                                              Grid.Column="1"
                                              materialDesign:HintAssist.Hint="Придумайте логин"
+                                             materialDesign:HintAssist.Foreground="{DynamicResource MaterialDesignBody}"
                                              MaxLength="40"
                                              Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                              Foreground="{DynamicResource MaterialDesignBody}">
@@ -97,6 +98,7 @@
                                     <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
                                              Grid.Column="1"
                                              materialDesign:HintAssist.Hint="Ваше имя"
+                                             materialDesign:HintAssist.Foreground="{DynamicResource MaterialDesignBody}"
                                              MaxLength="40"
                                              Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                              Foreground="{DynamicResource MaterialDesignBody}">
@@ -129,6 +131,7 @@
                                              Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
                                              Grid.Column="1" Grid.Row="0"
                                              materialDesign:HintAssist.Hint="Электронная почта"
+                                             materialDesign:HintAssist.Foreground="{DynamicResource MaterialDesignBody}"
                                              MaxLength="100"
                                              Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                              Foreground="{DynamicResource MaterialDesignBody}">
@@ -180,6 +183,7 @@
                                         <PasswordBox x:Name="txtPassword"
                                                      Grid.Column="0"
                                                      materialDesign:HintAssist.Hint="Придумайте пароль (мин. 8 символов)"
+                                                     materialDesign:HintAssist.Foreground="{DynamicResource MaterialDesignBody}"
                                                      helpers:PasswordHelper.Attach="True"
                                                      helpers:PasswordHelper.Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                      MaxLength="64"
@@ -210,6 +214,7 @@
                                                  Grid.Column="0"
                                                  Text="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                  materialDesign:HintAssist.Hint="Придумайте пароль (мин. 8 символов)"
+                                                 materialDesign:HintAssist.Foreground="{DynamicResource MaterialDesignBody}"
                                                  MaxLength="64"
                                                  Foreground="{DynamicResource MaterialDesignBody}">
                                             <TextBox.Style>
@@ -291,6 +296,7 @@
                                         <PasswordBox x:Name="txtConfirmPassword"
                                                      Grid.Column="0"
                                                      materialDesign:HintAssist.Hint="Повторите пароль"
+                                                     materialDesign:HintAssist.Foreground="{DynamicResource MaterialDesignBody}"
                                                      helpers:PasswordHelper.Attach="True"
                                                      helpers:PasswordHelper.Password="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                      MaxLength="64"
@@ -321,6 +327,7 @@
                                                  Grid.Column="0"
                                                  Text="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                  materialDesign:HintAssist.Hint="Повторите пароль"
+                                                 materialDesign:HintAssist.Foreground="{DynamicResource MaterialDesignBody}"
                                                  MaxLength="64"
                                                  Foreground="{DynamicResource MaterialDesignBody}">
                                             <TextBox.Style>

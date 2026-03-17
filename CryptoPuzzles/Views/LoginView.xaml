@@ -67,6 +67,7 @@
                                        Grid.Column="1"
                                        Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}"
                                        materialDesign:HintAssist.Hint="Логин"
+                                       materialDesign:HintAssist.Foreground="{DynamicResource MaterialDesignBody}"
                                        MaxLength="40"
                                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                        Foreground="{DynamicResource MaterialDesignBody}">
@@ -102,6 +103,7 @@
                                     <PasswordBox x:Name="txtPassword"
                                                  Grid.Column="0"
                                                  materialDesign:HintAssist.Hint="Пароль"
+                                                 materialDesign:HintAssist.Foreground="{DynamicResource MaterialDesignBody}"
                                                  helpers:PasswordHelper.Attach="True"
                                                  helpers:PasswordHelper.Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                  MaxLength="64"
@@ -129,6 +131,7 @@
                                              Grid.Column="0"
                                              Text="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                              materialDesign:HintAssist.Hint="Пароль"
+                                             materialDesign:HintAssist.Foreground="{DynamicResource MaterialDesignBody}"
                                              MaxLength="64"
                                              VerticalContentAlignment="Center"
                                              Foreground="{DynamicResource MaterialDesignBody}">
