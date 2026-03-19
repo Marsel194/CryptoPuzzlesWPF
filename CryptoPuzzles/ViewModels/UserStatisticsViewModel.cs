@@ -5,7 +5,7 @@ using CryptoPuzzles.ViewModels.Base;
 
 namespace CryptoPuzzles.ViewModels
 {
-    public class UserStatisticsViewModel : EntityViewModelBase<AUserStatistic, object, object>
+    public class UserStatisticsViewModel(UserStatisticsApiService apiService) : EntityViewModelBase<AUserStatistic, object, object>(apiService)
     {
         private bool _showDeleted = true;
         private string _loginFilter = string.Empty;
@@ -22,8 +22,6 @@ namespace CryptoPuzzles.ViewModels
         private decimal? _maxAvgScorePerSession;
         private DateTime? _minLastActive;
         private DateTime? _maxLastActive;
-
-        public UserStatisticsViewModel(UserStatisticsApiService apiService) : base(apiService) { }
 
         public bool ShowDeleted
         {
