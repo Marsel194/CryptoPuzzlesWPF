@@ -57,7 +57,7 @@ namespace CryptoPuzzles.ViewModels
             set
             {
                 if (SetProperty(ref _newPassword, value))
-                    _saveCommand.RaiseCanExecuteChanged();
+                    AsyncRelayCommand.RaiseCanExecuteChanged();
             }
         }
 

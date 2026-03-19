@@ -255,7 +255,7 @@ namespace CryptoPuzzles.ViewModels
             set
             {
                 if (SetProperty(ref _userAnswer, value))
-                    ((AsyncRelayCommand)CheckAnswerCommand).RaiseCanExecuteChanged();
+                    AsyncRelayCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -289,8 +289,8 @@ namespace CryptoPuzzles.ViewModels
         {
             OnPropertyChanged(nameof(CanGoPrevious));
             OnPropertyChanged(nameof(CanGoNext));
-            ((AsyncRelayCommand)PreviousTheoryCommand).RaiseCanExecuteChanged();
-            ((AsyncRelayCommand)NextTheoryCommand).RaiseCanExecuteChanged();
+            AsyncRelayCommand.RaiseCanExecuteChanged();
+            AsyncRelayCommand.RaiseCanExecuteChanged();
             UpdateButtonVisibility();
         }
 
@@ -526,7 +526,7 @@ namespace CryptoPuzzles.ViewModels
                     RestoreHintIndexForCurrentPuzzle();
 
                     ResetHintTimer();
-                    ((AsyncRelayCommand)NextHintCommand).RaiseCanExecuteChanged();
+                    AsyncRelayCommand.RaiseCanExecuteChanged();
                 });
             }
             catch (Exception)
@@ -588,7 +588,7 @@ namespace CryptoPuzzles.ViewModels
                 _totalHintsUsed++;
                 await UpdateProgressForCurrentPuzzleAsync(false, CurrentHintIndex + 1, 0);
 
-                ((AsyncRelayCommand)NextHintCommand).RaiseCanExecuteChanged();
+                AsyncRelayCommand.RaiseCanExecuteChanged();
             }
             await Task.CompletedTask;
         }

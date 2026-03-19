@@ -373,6 +373,10 @@
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
             </Style>
+
+            <SolidColorBrush x:Key="MaterialDesignSuccessBrush" Color="#4CAF50"/>
+            <SolidColorBrush x:Key="MaterialDesignWarningBrush" Color="#FF9800"/>
+            <SolidColorBrush x:Key="MaterialDesignErrorBrush" Color="#F44336"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

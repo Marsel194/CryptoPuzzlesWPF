@@ -1,5 +1,8 @@
-﻿using Microsoft.Win32;
-using System.Windows;
+﻿using System.Windows;
+using MaterialDesignThemes.Wpf;
+using CryptoPuzzles.ViewModels;
+using CryptoPuzzles.Views;
+using Microsoft.Win32;
 
 namespace CryptoPuzzles.Services
 {
@@ -7,25 +10,28 @@ namespace CryptoPuzzles.Services
     {
         public static Task ShowMessage(string message)
         {
-            MessageBox.Show(message, "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+            NotificationService.ShowInfo(message);
             return Task.CompletedTask;
         }
 
         public static Task ShowWarning(string message)
         {
-            MessageBox.Show(message, "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
+            NotificationService.ShowWarning(message);
             return Task.CompletedTask;
         }
 
         public static Task ShowError(string message)
         {
-            MessageBox.Show(message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            NotificationService.ShowError(message);
             return Task.CompletedTask;
         }
 
-        public static async Task<bool> ShowConfirmation(string message, string confirm = "Подтверждение")
+        public static async Task<bool> ShowConfirmation(string message, string title = "Подтверждение")
         {
-            return MessageBox.Show(message, confirm, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
+            var viewModel = new ConfirmationDialogViewModel(message, title);
+            var view = new ConfirmationDialog { DataContext = viewModel };
+            var result = await DialogHost.Show(view, "RootDialogHost");
+            return result is bool b && b;
         }
 
         public static T ShowDialog<T>(object viewModel) where T : Window, new()

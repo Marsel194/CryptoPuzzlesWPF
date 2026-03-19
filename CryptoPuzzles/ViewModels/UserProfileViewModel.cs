@@ -60,7 +60,7 @@ namespace CryptoPuzzles.ViewModels
             set
             {
                 if (SetProperty(ref _newPassword, value))
-                    _saveCommand.RaiseCanExecuteChanged();
+                    AsyncRelayCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -70,7 +70,7 @@ namespace CryptoPuzzles.ViewModels
             set
             {
                 if (SetProperty(ref _confirmPassword, value))
-                    _saveCommand.RaiseCanExecuteChanged();
+                    AsyncRelayCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -190,7 +190,7 @@ namespace CryptoPuzzles.ViewModels
                 }
 
                 var activeSessions = await _gameSessionApi.GetAllAsync(userId: _userId, isCompleted: false);
-                HasActiveSession = activeSessions != null && activeSessions.Any();
+                HasActiveSession = activeSessions != null && activeSessions.Count != 0;
             }
             catch (Exception ex)
             {

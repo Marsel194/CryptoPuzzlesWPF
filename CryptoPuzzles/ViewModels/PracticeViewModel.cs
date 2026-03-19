@@ -158,7 +158,7 @@ namespace CryptoPuzzles.ViewModels
             set
             {
                 if (SetProperty(ref _userAnswer, value))
-                    ((AsyncRelayCommand)CheckAnswerCommand).RaiseCanExecuteChanged();
+                    AsyncRelayCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -327,7 +327,7 @@ namespace CryptoPuzzles.ViewModels
                     HasHints = _hints.Any();
                     RestoreHintIndexForCurrentPuzzle();
                     ResetHintTimer();
-                    ((AsyncRelayCommand)NextHintCommand).RaiseCanExecuteChanged();
+                    AsyncRelayCommand.RaiseCanExecuteChanged();
                 });
             }
             catch
@@ -396,7 +396,7 @@ namespace CryptoPuzzles.ViewModels
                 _totalHintsUsed++;
                 await UpdateProgressForCurrentPuzzleAsync(solved: false, hintsUsed: _currentHintIndex + 1, scoreEarned: 0);
                 UpdateCurrentHint();
-                ((AsyncRelayCommand)NextHintCommand).RaiseCanExecuteChanged();
+                AsyncRelayCommand.RaiseCanExecuteChanged();
             }
         }
 

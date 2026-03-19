@@ -2,17 +2,11 @@
 
 namespace CryptoPuzzles.ViewModels.Base
 {
-    public class AsyncRelayCommand : ICommand
+    public class AsyncRelayCommand(Func<object?, Task> execute, Func<object?, bool>? canExecute = null) : ICommand
     {
-        private readonly Func<object?, Task> _execute;
-        private readonly Func<object?, bool>? _canExecute;
+        private readonly Func<object?, Task> _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+        private readonly Func<object?, bool>? _canExecute = canExecute;
         private bool _isExecuting;
-
-        public AsyncRelayCommand(Func<object?, Task> execute, Func<object?, bool>? canExecute = null)
-        {
-            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute;
-        }
 
         public AsyncRelayCommand(Func<Task> execute)
             : this(_ => execute()) { }
@@ -49,23 +43,17 @@ namespace CryptoPuzzles.ViewModels.Base
             }
         }
 
-        public void RaiseCanExecuteChanged()
+        public static void RaiseCanExecuteChanged()
         {
             CommandManager.InvalidateRequerySuggested();
         }
     }
 
-    public class AsyncRelayCommand<T> : ICommand
+    public class AsyncRelayCommand<T>(Func<T?, Task> execute, Func<T?, bool>? canExecute = null) : ICommand
     {
-        private readonly Func<T?, Task> _execute;
-        private readonly Func<T?, bool>? _canExecute;
+        private readonly Func<T?, Task> _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+        private readonly Func<T?, bool>? _canExecute = canExecute;
         private bool _isExecuting;
-
-        public AsyncRelayCommand(Func<T?, Task> execute, Func<T?, bool>? canExecute = null)
-        {
-            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute;
-        }
 
         public event EventHandler? CanExecuteChanged
         {
@@ -105,7 +93,7 @@ namespace CryptoPuzzles.ViewModels.Base
             }
         }
 
-        public void RaiseCanExecuteChanged()
+        public static void RaiseCanExecuteChanged()
         {
             CommandManager.InvalidateRequerySuggested();
         }
