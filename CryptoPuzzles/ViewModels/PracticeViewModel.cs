@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -40,7 +38,7 @@ namespace CryptoPuzzles.ViewModels
         private int _totalHintsUsed;
         private DateTime _puzzleStartTime;
         private string _elapsedTime = "00:00";
-        private Dictionary<int, ASessionProgress> _progressByPuzzleId = new();
+        private readonly Dictionary<int, ASessionProgress> _progressByPuzzleId = [];
 
         private bool _isSelectingDifficulty = true;
         private bool _isSolvingPuzzle;
@@ -334,8 +332,7 @@ namespace CryptoPuzzles.ViewModels
             {
                 await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    if (_hints != null)
-                        _hints.Clear();
+                    _hints?.Clear();
                     HasHints = false;
                     AreHintsVisible = false;
                 });

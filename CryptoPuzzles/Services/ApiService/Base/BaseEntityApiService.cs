@@ -1,17 +1,11 @@
-﻿using CryptoPuzzles.Services.Api.Base;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Net.Http.Json;
 
 namespace CryptoPuzzles.Services.ApiService.Base
 {
-    public abstract class BaseEntityApiService<T, TCreate, TUpdate> : BaseApiService, IEntityApiService<T, TCreate, TUpdate>
+    public abstract class BaseEntityApiService<T, TCreate, TUpdate>(HttpClient httpClient, string endpoint) : BaseApiService(httpClient), IEntityApiService<T, TCreate, TUpdate>
     {
-        protected readonly string _endpoint;
-
-        protected BaseEntityApiService(HttpClient httpClient, string endpoint) : base(httpClient)
-        {
-            _endpoint = endpoint;
-        }
+        protected readonly string _endpoint = endpoint;
 
         public async Task<List<T>> GetAllAsync()
         {

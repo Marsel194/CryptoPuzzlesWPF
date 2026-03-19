@@ -47,7 +47,7 @@ namespace CryptoPuzzles.ViewModels
         private int _totalHintsUsed;
 
         private ObservableCollection<ASessionProgress> _sessionProgress = [];
-        private Dictionary<int, ASessionProgress> _progressByPuzzleId = [];
+        private readonly Dictionary<int, ASessionProgress> _progressByPuzzleId = [];
 
         public TrainingViewModel(
             TutorialApiService tutorialApi,
@@ -324,7 +324,7 @@ namespace CryptoPuzzles.ViewModels
                     if (existingSession != null)
                     {
                         var progressList = await _sessionProgressApi.GetBySessionIdAsync(existingSession.Id);
-                        if (progressList != null && progressList.Any())
+                        if (progressList != null && progressList.Count != 0)
                         {
                             var solvedPuzzleIds = progressList.Where(p => p.Solved).Select(p => p.PuzzleId).ToHashSet();
                             int firstUnsolvedIndex = -1;

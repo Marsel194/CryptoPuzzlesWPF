@@ -2,18 +2,13 @@
 using System.Net.Http;
 using System.Text.Json;
 
-namespace CryptoPuzzles.Services.Api.Base
+namespace CryptoPuzzles.Services.ApiService.Base
 {
-    public abstract class BaseApiService
+    public abstract class BaseApiService(HttpClient httpClient)
     {
-        protected readonly HttpClient _httpClient;
+        protected readonly HttpClient _httpClient = httpClient;
 
         protected readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
-
-        protected BaseApiService(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
 
         protected async Task<T> SendAsync<T>(Func<Task<HttpResponseMessage>> action)
         {
