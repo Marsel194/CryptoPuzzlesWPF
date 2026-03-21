@@ -1,4 +1,4 @@
-﻿using CryptoPuzzles.Services.ApiService.Base;
+﻿using CryptoPuzzles.Client.Services.ApiService.Base;
 using CryptoPuzzles.Shared;
 using System.Net.Http;
 

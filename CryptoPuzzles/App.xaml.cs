@@ -1,12 +1,12 @@
-﻿using CryptoPuzzles.Services;
-using CryptoPuzzles.Services.ApiService;
-using CryptoPuzzles.ViewModels;
-using CryptoPuzzles.Views;
+﻿using CryptoPuzzles.Client.Services;
+using CryptoPuzzles.Client.Services.ApiService;
+using CryptoPuzzles.Client.ViewModels;
+using CryptoPuzzles.Client.Views;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http;
 using System.Windows;
 
-namespace CryptoPuzzles
+namespace CryptoPuzzles.Client
 {
     public partial class App : Application
     {

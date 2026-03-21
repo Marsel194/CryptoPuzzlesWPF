@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Data;
 
-namespace CryptoPuzzles.Converters
+namespace CryptoPuzzles.Client.Converters
 {
     public class NullToVisibilityConverter : IValueConverter
     {

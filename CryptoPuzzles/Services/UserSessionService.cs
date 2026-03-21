@@ -1,4 +1,4 @@
-﻿namespace CryptoPuzzles.Services
+﻿namespace CryptoPuzzles.Client.Services
 {
     public class UserSessionService
     {

@@ -1,6 +1,6 @@
 ﻿using CryptoPuzzles.Shared;
 
-namespace CryptoPuzzles.Services
+namespace CryptoPuzzles.Client.Services
 {
     public interface IAuthService
     {

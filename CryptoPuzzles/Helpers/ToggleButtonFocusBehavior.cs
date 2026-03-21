@@ -3,7 +3,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Microsoft.Xaml.Behaviors;
 
-namespace CryptoPuzzles.Helpers
+namespace CryptoPuzzles.Client.Helpers
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     public class ToggleButtonFocusBehavior : Behavior<ToggleButton>

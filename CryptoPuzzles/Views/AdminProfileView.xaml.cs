@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-namespace CryptoPuzzles.Views
+namespace CryptoPuzzles.Client.Views
 {
     public partial class AdminProfileView : UserControl
     {

@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CryptoPuzzles.Views
+namespace CryptoPuzzles.Client.Views
 {
     /// <summary>
     /// Логика взаимодействия для ConfirmationDialog.xaml

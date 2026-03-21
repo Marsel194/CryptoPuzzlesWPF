@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace CryptoPuzzles.Controls
+namespace CryptoPuzzles.Client.Controls
 {
     public partial class EntityListControl : UserControl
     {

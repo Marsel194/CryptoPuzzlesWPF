@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="CryptoPuzzles.Views.AdminsView"
+﻿<UserControl x:Class="CryptoPuzzles.Client.Views.AdminsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:controls="clr-namespace:CryptoPuzzles.Controls"
+             xmlns:controls="clr-namespace:CryptoPuzzles.Client.Controls"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:helpers="clr-namespace:CryptoPuzzles.Helpers">
+             xmlns:helpers="clr-namespace:CryptoPuzzles.Client.Helpers">
     <controls:EntityListControl 
         Title="Администраторы"
         BackCommand="{Binding BackCommand}"

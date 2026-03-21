@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Controls;
 
-namespace CryptoPuzzles.Views
+namespace CryptoPuzzles.Client.Views
 {
     public partial class UserStatisticsView : UserControl
     {

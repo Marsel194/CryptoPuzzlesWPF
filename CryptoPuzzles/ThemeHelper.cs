@@ -2,7 +2,7 @@
 using System.Windows.Media;
 using MaterialDesignThemes.Wpf;
 
-namespace CryptoPuzzles
+namespace CryptoPuzzles.Client
 {
     internal class ThemeHelper
     {

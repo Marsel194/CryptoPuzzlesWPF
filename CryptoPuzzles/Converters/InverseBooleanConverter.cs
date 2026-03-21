@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows.Data;
 
-namespace CryptoPuzzles.Converters
+namespace CryptoPuzzles.Client.Converters
 {
     public class InverseBooleanConverter : IValueConverter
     {

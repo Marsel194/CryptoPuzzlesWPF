@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Text.Json;
 
-namespace CryptoPuzzles.Services.ApiService.Base
+namespace CryptoPuzzles.Client.Services.ApiService.Base
 {
     public abstract class BaseApiService(HttpClient httpClient)
     {

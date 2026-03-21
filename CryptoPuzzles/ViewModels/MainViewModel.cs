@@ -1,9 +1,9 @@
-﻿using CryptoPuzzles.ViewModels.Base;
-using System.Windows.Input;
-using CryptoPuzzles.Services;
+﻿using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
+using CryptoPuzzles.Client.Services;
+using CryptoPuzzles.Client.ViewModels.Base;
 
-namespace CryptoPuzzles.ViewModels
+namespace CryptoPuzzles.Client.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {

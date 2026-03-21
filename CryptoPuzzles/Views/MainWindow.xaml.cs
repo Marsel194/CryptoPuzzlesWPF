@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace CryptoPuzzles.Views
+namespace CryptoPuzzles.Client.Views
 {
     public partial class MainWindow : Window
     {

@@ -1,4 +1,4 @@
-﻿namespace CryptoPuzzles.Helpers
+﻿namespace CryptoPuzzles.Client.Helpers
 {
     public static class TaskExtensions
     {

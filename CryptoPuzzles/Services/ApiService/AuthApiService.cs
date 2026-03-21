@@ -1,9 +1,9 @@
-﻿using CryptoPuzzles.Services.ApiService.Base;
+﻿using CryptoPuzzles.Client.Services.ApiService.Base;
 using CryptoPuzzles.Shared;
 using System.Net.Http;
 using System.Net.Http.Json;
 
-namespace CryptoPuzzles.Services.ApiService
+namespace CryptoPuzzles.Client.Services.ApiService
 {
     public class AuthApiService(HttpClient httpClient) : BaseApiService(httpClient)
     {

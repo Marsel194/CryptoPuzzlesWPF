@@ -1,14 +1,14 @@
-﻿using CryptoPuzzles.Helpers;
-using CryptoPuzzles.Services;
-using CryptoPuzzles.Services.ApiService;
+﻿using CryptoPuzzles.Client.Helpers;
+using CryptoPuzzles.Client.Services;
+using CryptoPuzzles.Client.Services.ApiService;
+using CryptoPuzzles.Client.ViewModels.Base;
 using CryptoPuzzles.Shared;
-using CryptoPuzzles.ViewModels.Base;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 
-namespace CryptoPuzzles.ViewModels
+namespace CryptoPuzzles.Client.ViewModels
 {
     public class TrainingViewModel : ViewModelBase
     {

@@ -1,4 +1,4 @@
-﻿namespace CryptoPuzzles.ViewModels.Base
+﻿namespace CryptoPuzzles.Client.ViewModels.Base
 {
     public interface IEntityViewModel
     {

@@ -6,7 +6,7 @@
   <Project Path="../CryptoPuzzles.Shared/CryptoPuzzles.Shared.csproj" Id="27d8a2b5-9860-4318-b4f3-ef5b473d88db" />
   <Project Path="../HashGenerator/CryptoPuzzles.HashGenerator.csproj" Id="b849da95-c7d4-4c0a-87f2-a374be9cb756" />
   <Project Path="../ServerCP/CryptoPuzzles.Server.csproj" Id="993a9465-3586-4a69-9d7f-f8ec0f498b52" />
-  <Project Path="CryptoPuzzles.csproj">
+  <Project Path="CryptoPuzzles.Client.csproj">
     <Platform Solution="Release|x86" Project="x86" />
   </Project>
 </Solution>

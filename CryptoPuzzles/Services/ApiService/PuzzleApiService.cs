@@ -1,8 +1,8 @@
-﻿using CryptoPuzzles.Services.ApiService.Base;
+﻿using CryptoPuzzles.Client.Services.ApiService.Base;
 using CryptoPuzzles.Shared;
 using System.Net.Http;
 
-namespace CryptoPuzzles.Services.ApiService
+namespace CryptoPuzzles.Client.Services.ApiService
 {
     public class PuzzleApiService : BaseEntityApiService<APuzzle, APuzzleCreate, APuzzleUpdate>
     {

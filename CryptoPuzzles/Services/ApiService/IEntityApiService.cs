@@ -1,4 +1,4 @@
-﻿namespace CryptoPuzzles.Services.ApiService
+﻿namespace CryptoPuzzles.Client.Services.ApiService
 {
     public interface IEntityApiService<T, TCreate, TUpdate>
     {

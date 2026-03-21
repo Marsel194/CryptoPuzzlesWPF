@@ -1,8 +1,8 @@
-﻿using CryptoPuzzles.Services;
+﻿using CryptoPuzzles.Client.Services;
+using CryptoPuzzles.Client.ViewModels.Base;
 using CryptoPuzzles.Shared;
-using CryptoPuzzles.ViewModels.Base;
 
-namespace CryptoPuzzles.ViewModels
+namespace CryptoPuzzles.Client.ViewModels
 {
     public class SessionProgressViewModel : EntityViewModelBase<ASessionProgress, ASessionProgressCreate, ASessionProgressUpdate>
     {

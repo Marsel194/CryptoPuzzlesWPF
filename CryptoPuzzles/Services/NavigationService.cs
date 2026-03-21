@@ -1,7 +1,7 @@
-﻿using CryptoPuzzles.ViewModels.Base;
+﻿using CryptoPuzzles.Client.ViewModels.Base;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CryptoPuzzles.Services
+namespace CryptoPuzzles.Client.Services
 {
     public class NavigationService
     {

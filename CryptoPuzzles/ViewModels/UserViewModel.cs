@@ -1,12 +1,13 @@
-﻿using CryptoPuzzles.Services;
-using CryptoPuzzles.Services.ApiService;
+﻿using CryptoPuzzles.Client;
+using CryptoPuzzles.Client.Services;
+using CryptoPuzzles.Client.Services.ApiService;
+using CryptoPuzzles.Client.ViewModels.Base;
 using CryptoPuzzles.Shared;
-using CryptoPuzzles.ViewModels.Base;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
 using System.Windows.Input;
 
-namespace CryptoPuzzles.ViewModels
+namespace CryptoPuzzles.Client.ViewModels
 {
     public class UserViewModel : ViewModelBase
     {

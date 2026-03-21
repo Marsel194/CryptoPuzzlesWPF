@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace CryptoPuzzles.ViewModels.Base
+namespace CryptoPuzzles.Client.ViewModels.Base
 {
     public abstract class ViewModelBase : INotifyPropertyChanged
     {

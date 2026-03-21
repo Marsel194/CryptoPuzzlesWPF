@@ -1,6 +1,6 @@
-﻿using CryptoPuzzles.ViewModels.Base;
+﻿using CryptoPuzzles.Client.ViewModels.Base;
 
-namespace CryptoPuzzles.ViewModels
+namespace CryptoPuzzles.Client.ViewModels
 {
     public class StatisticsViewModel : ViewModelBase
     {

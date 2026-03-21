@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using MaterialDesignThemes.Wpf;
 
-namespace CryptoPuzzles.Services
+namespace CryptoPuzzles.Client.Services
 {
     public static class NotificationService
     {

@@ -1,10 +1,10 @@
 ﻿using System.Windows;
 using MaterialDesignThemes.Wpf;
-using CryptoPuzzles.ViewModels;
-using CryptoPuzzles.Views;
+using CryptoPuzzles.Client.ViewModels;
+using CryptoPuzzles.Client.Views;
 using Microsoft.Win32;
 
-namespace CryptoPuzzles.Services
+namespace CryptoPuzzles.Client.Services
 {
     public static class DialogService
     {

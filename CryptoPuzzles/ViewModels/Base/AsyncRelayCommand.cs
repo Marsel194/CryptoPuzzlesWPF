@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace CryptoPuzzles.ViewModels.Base
+namespace CryptoPuzzles.Client.ViewModels.Base
 {
     public class AsyncRelayCommand(Func<object?, Task> execute, Func<object?, bool>? canExecute = null) : ICommand
     {

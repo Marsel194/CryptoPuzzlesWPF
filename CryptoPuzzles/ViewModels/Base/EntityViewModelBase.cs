@@ -1,6 +1,4 @@
 ﻿using ClosedXML.Excel;
-using CryptoPuzzles.Services;
-using CryptoPuzzles.Services.ApiService;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
@@ -11,8 +9,10 @@ using System.Text.Json;
 using System.Windows.Data;
 using System.Windows.Input;
 using CryptoPuzzles.Shared;
+using CryptoPuzzles.Client.Services;
+using CryptoPuzzles.Client.Services.ApiService;
 
-namespace CryptoPuzzles.ViewModels.Base
+namespace CryptoPuzzles.Client.ViewModels.Base
 {
     public abstract class EntityViewModelBase<T, TCreate, TUpdate> : ViewModelBase, IEntityViewModel where T : class
     {
