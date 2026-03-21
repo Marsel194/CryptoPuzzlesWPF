@@ -6,7 +6,8 @@ namespace CryptoPuzzles.Client.Services.ApiService
 {
     public class UserStatisticsApiService : BaseEntityApiService<AUserStatistic, object, object>
     {
-        public UserStatisticsApiService(HttpClient httpClient) : base(httpClient, "api/userstatistics") { }
+        public UserStatisticsApiService(HttpClient httpClient, UserSessionService userSessionService)
+            : base(httpClient, userSessionService, "api/userstatistics") { }
 
         public async Task<AUserStatistic?> GetByUserIdAsync(int userId)
         {

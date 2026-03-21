@@ -6,6 +6,7 @@ namespace CryptoPuzzles.Client.Services.ApiService
 {
     public class HintApiService : BaseEntityApiService<AHint, AHintCreate, AHintUpdate>
     {
-        public HintApiService(HttpClient httpClient) : base(httpClient, "api/hints") { }
+        public HintApiService(HttpClient httpClient, UserSessionService userSessionService)
+            : base(httpClient, userSessionService, "api/hints") { }
     }
 }

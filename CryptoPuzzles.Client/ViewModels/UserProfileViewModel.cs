@@ -1,8 +1,9 @@
-﻿using CryptoPuzzles.Client.Services;
+﻿// UserProfileViewModel.cs
+using CryptoPuzzles.Client.Services;
 using CryptoPuzzles.Client.Services.ApiService;
 using CryptoPuzzles.Client.ViewModels.Base;
 using CryptoPuzzles.Shared;
-using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Input;
 
 namespace CryptoPuzzles.Client.ViewModels
@@ -158,6 +159,7 @@ namespace CryptoPuzzles.Client.ViewModels
 
         public async Task LoadUserDataAsync()
         {
+            if (IsLoading) return;
             try
             {
                 IsLoading = true;
@@ -181,16 +183,22 @@ namespace CryptoPuzzles.Client.ViewModels
                     var practicePuzzles = allPuzzles.Where(p => !p.IsTraining).ToList();
 
                     TrainingProgress = trainingPuzzles.Count > 0
-                        ? (int)((double)stats.TotalPuzzlesSolved / trainingPuzzles.Count * 100)
+                        ? (int)((double)stats.SolvedTrainingPuzzles / trainingPuzzles.Count * 100)
                         : 0;
 
                     PracticeProgress = practicePuzzles.Count > 0
-                        ? (int)((double)stats.TotalPuzzlesSolved / practicePuzzles.Count * 100)
+                        ? (int)((double)stats.SolvedPracticePuzzles / practicePuzzles.Count * 100)
                         : 0;
                 }
 
                 var activeSessions = await _gameSessionApi.GetAllAsync(userId: _userId, isCompleted: false);
                 HasActiveSession = activeSessions != null && activeSessions.Count != 0;
+            }
+            catch (Exception ex) when (ex.Message.Contains("401"))
+            {
+                _userSession.ClearUser();
+                var navigation = App.Services.GetRequiredService<NavigationService>();
+                await navigation.NavigateToAsync<LoginViewModel>();
             }
             catch (Exception ex)
             {
@@ -234,9 +242,17 @@ namespace CryptoPuzzles.Client.ViewModels
                     await _gameSessionApi.UpdateAsync(session.Id, update);
                 }
 
+                await _statisticsApi.RefreshStatisticsAsync(_userId);
+
                 HasActiveSession = false;
                 await LoadUserDataAsync();
                 await DialogService.ShowMessage("Весь прогресс успешно удалён.");
+            }
+            catch (Exception ex) when (ex.Message.Contains("401"))
+            {
+                _userSession.ClearUser();
+                var navigation = App.Services.GetRequiredService<NavigationService>();
+                await navigation.NavigateToAsync<LoginViewModel>();
             }
             catch (Exception ex)
             {
@@ -320,6 +336,12 @@ namespace CryptoPuzzles.Client.ViewModels
                 IsEditMode = false;
 
                 await DialogService.ShowMessage("Данные успешно сохранены.");
+            }
+            catch (Exception ex) when (ex.Message.Contains("401"))
+            {
+                _userSession.ClearUser();
+                var navigation = App.Services.GetRequiredService<NavigationService>();
+                await navigation.NavigateToAsync<LoginViewModel>();
             }
             catch (Exception ex)
             {

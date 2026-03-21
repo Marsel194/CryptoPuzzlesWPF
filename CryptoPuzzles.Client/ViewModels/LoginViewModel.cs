@@ -2,6 +2,7 @@
 using CryptoPuzzles.Client.Services.ApiService;
 using CryptoPuzzles.Client.ViewModels.Base;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -94,30 +95,47 @@ namespace CryptoPuzzles.Client.ViewModels
             try
             {
                 IsBusy = true;
+                Debug.WriteLine($"Login attempt with: {Login}");
+
                 var response = await _apiService.LoginAsync(Login, Password);
                 if (response == null)
+                {
+                    Debug.WriteLine("Login response is NULL");
                     return;
+                }
+
+                Debug.WriteLine($"Login success - UserId: {response.Id}, IsAdmin: {response.IsAdmin}, Token exists: {!string.IsNullOrEmpty(response.Token)}");
+                Debug.WriteLine($"Token value: {(response.Token?.Length > 0 ? response.Token.Substring(0, Math.Min(30, response.Token.Length)) + "..." : "EMPTY")}");
 
                 _userSessionService.SetUser(
                     userId: response.Id,
                     login: response.Login,
                     username: response.Username,
-                    isAdmin: response.IsAdmin
+                    isAdmin: response.IsAdmin,
+                    token: response.Token
                 );
+
+                Debug.WriteLine("User set in session service, attempting navigation...");
 
                 if (response.IsAdmin)
                 {
                     var admin = await _adminApiService.GetByIdAsync(response.Id);
-                    if (admin == null) return;
+                    if (admin == null)
+                    {
+                        Debug.WriteLine("Admin not found");
+                        return;
+                    }
 
                     _authService.SetCurrentAdmin(admin);
-                    await _navigationService.NavigateToAsync<AdminViewModel>(); 
+                    await _navigationService.NavigateToAsync<AdminViewModel>();
                 }
                 else
                     await _navigationService.NavigateToAsync<UserViewModel>();
             }
             catch (Exception ex)
             {
+                Debug.WriteLine($"Login error: {ex.Message}");
+                Debug.WriteLine($"Stack trace: {ex.StackTrace}");
                 await DialogService.ShowError($"Ошибка входа: {ex.Message}");
             }
             finally

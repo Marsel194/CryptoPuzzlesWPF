@@ -227,22 +227,55 @@ namespace CryptoPuzzles.Server.Data
             {
                 entity.ToTable("user_statistics");
                 entity.HasKey(us => us.UserId);
-                entity.Property(us => us.UserId).HasColumnName("user_id");
-                entity.Property(us => us.TotalSessions).HasColumnName("total_sessions");
-                entity.Property(us => us.TotalPuzzlesSolved).HasColumnName("total_puzzles_solved");
-                entity.Property(us => us.TotalScore).HasColumnName("total_score");
-                entity.Property(us => us.TotalHintsUsed).HasColumnName("total_hints_used");
-                entity.Property(us => us.AvgScorePerSession).HasColumnName("avg_score_per_session").HasPrecision(5, 2);
-                entity.Property(us => us.LastActive).HasColumnName("last_active");
+
+                entity.Property(us => us.UserId)
+                    .HasColumnName("user_id")
+                    .ValueGeneratedNever();
+
+                entity.Property(us => us.TotalSessions)
+                    .HasColumnName("total_sessions");
+
+                entity.Property(us => us.TotalPuzzlesSolved)
+                    .HasColumnName("total_puzzles_solved");
+
+                entity.Property(us => us.SolvedTrainingPuzzles)
+                    .HasColumnName("solved_training_puzzles");
+
+                entity.Property(us => us.SolvedPracticePuzzles)
+                    .HasColumnName("solved_practice_puzzles");
+
+                entity.Property(us => us.TotalScore)
+                    .HasColumnName("total_score");
+
+                entity.Property(us => us.TotalHintsUsed)
+                    .HasColumnName("total_hints_used");
+
+                entity.Property(us => us.AvgScorePerSession)
+                    .HasColumnName("avg_score_per_session")
+                    .HasPrecision(5, 2);
+
+                entity.Property(us => us.LastActive)
+                    .HasColumnName("last_active");
 
                 entity.HasOne(us => us.User)
-                      .WithOne(u => u.Statistic)
-                      .HasForeignKey<UserStatistic>(us => us.UserId)
-                      .OnDelete(DeleteBehavior.Cascade);
+                    .WithOne(u => u.Statistic)
+                    .HasForeignKey<UserStatistic>(us => us.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
-                entity.HasIndex(us => us.TotalScore).HasDatabaseName("idx_user_stats_score");
-                entity.HasIndex(us => us.TotalPuzzlesSolved).HasDatabaseName("idx_user_stats_solved");
-                entity.HasIndex(us => us.LastActive).HasDatabaseName("idx_user_stats_active");
+                entity.HasIndex(us => us.TotalScore)
+                    .HasDatabaseName("idx_user_stats_score");
+
+                entity.HasIndex(us => us.TotalPuzzlesSolved)
+                    .HasDatabaseName("idx_user_stats_solved");
+
+                entity.HasIndex(us => us.SolvedTrainingPuzzles)
+                    .HasDatabaseName("idx_user_stats_training");
+
+                entity.HasIndex(us => us.SolvedPracticePuzzles)
+                    .HasDatabaseName("idx_user_stats_practice");
+
+                entity.HasIndex(us => us.LastActive)
+                    .HasDatabaseName("idx_user_stats_active");
             });
 
             modelBuilder.Entity<Tutorial>(entity =>

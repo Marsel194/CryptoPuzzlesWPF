@@ -184,21 +184,21 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" Command="{Binding NextPuzzleCommand}"
-                                Content="Следующий"
+                        <Button Grid.Column="1" Command="{Binding NextRandomQuestionCommand}"
+                                Content="Следующий вопрос"
                                 Style="{StaticResource PrimaryButton}"
                                 Foreground="White"
-                                Margin="0,0,8,0"
-                                Visibility="{Binding HasNextPuzzle, Converter={StaticResource BoolToVis}}"/>
-                        <Button Grid.Column="1" Command="{Binding FinishModuleCommand}"
+                                Margin="0,0,8,0"/>
+                        <Button Grid.Column="0" Command="{Binding FinishModuleCommand}"
                                 Content="Завершить"
                                 Style="{StaticResource MaterialDesignFlatButton}"
                                 Foreground="{DynamicResource MaterialDesignBody}"
                                 BorderBrush="{DynamicResource SecondaryHueMidBrush}"
                                 BorderThickness="1"
-                                materialDesign:ButtonAssist.CornerRadius="26"/>
+                                materialDesign:ButtonAssist.CornerRadius="26"
+                                Margin="8,0,0,0"/>
                     </Grid>
                 </StackPanel>
 

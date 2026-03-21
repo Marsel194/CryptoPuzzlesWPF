@@ -1,10 +1,11 @@
-﻿using CryptoPuzzles.Client;
+﻿// UserViewModel.cs
+using CryptoPuzzles.Client;
 using CryptoPuzzles.Client.Services;
 using CryptoPuzzles.Client.Services.ApiService;
 using CryptoPuzzles.Client.ViewModels.Base;
 using CryptoPuzzles.Shared;
 using Microsoft.Extensions.DependencyInjection;
-using System.Diagnostics;
+using System.Windows;
 using System.Windows.Input;
 
 namespace CryptoPuzzles.Client.ViewModels
@@ -99,102 +100,134 @@ namespace CryptoPuzzles.Client.ViewModels
             StartPracticeCommand = new AsyncRelayCommand(StartPracticeAsync);
             GoBackCommand = new AsyncRelayCommand(GoBackAsync);
             RefreshStatsCommand = new AsyncRelayCommand(LoadUserStatsAsync);
+        }
 
-            _ = LoadUserDataAsync();
+        public async Task InitializeAsync()
+        {
+            await LoadUserDataAsync();
         }
 
         private async Task LoadUserDataAsync()
         {
-            try
+            if (IsLoading) return;
+            await ExecuteOnUIAsync(async () =>
             {
-                IsLoading = true;
-
-                if (!_userSessionService.IsAuthenticated)
+                try
                 {
-                    await _navigationService.NavigateToAsync<LoginViewModel>();
-                    return;
+                    IsLoading = true;
+
+                    if (!_userSessionService.IsAuthenticated)
+                    {
+                        await _navigationService.NavigateToAsync<LoginViewModel>();
+                        return;
+                    }
+
+                    var userTask = _userApiService.GetByIdAsync(CurrentUserId);
+                    var statsTask = LoadUserStatsAsync();
+
+                    CurrentUser = await userTask;
+                    if (CurrentUser != null)
+                        Username = CurrentUser.Username;
+
+                    await statsTask;
                 }
-
-                var userTask = _userApiService.GetByIdAsync(CurrentUserId);
-                var statsTask = LoadUserStatsAsync();
-
-                CurrentUser = await userTask;
-                if (CurrentUser != null)
-                    Username = CurrentUser.Username;
-
-                await statsTask;
-            }
-            catch (Exception ex)
-            {
-                await DialogService.ShowError($"Ошибка загрузки данных: {ex.Message}");
-
-                if (ex.Message.Contains("авторизован") || ex.Message.Contains("Unauthorized"))
-                    await LogoutAsync();
-            }
-            finally
-            {
-                IsLoading = false;
-            }
+                catch (Exception ex) when (ex.Message.Contains("401"))
+                {
+                    _userSessionService.ClearUser();
+                    await _navigationService.NavigateToAsync<LoginViewModel>();
+                }
+                catch (Exception ex)
+                {
+                    await DialogService.ShowError($"Ошибка загрузки данных: {ex.Message}");
+                }
+                finally
+                {
+                    IsLoading = false;
+                }
+            });
         }
 
         private async Task LoadUserStatsAsync(object? parameter = null)
         {
-            try
+            await ExecuteOnUIAsync(async () =>
             {
-                var userStats = await _userStatisticsApiService.GetByUserIdAsync(CurrentUserId);
-                if (userStats != null)
-                    Score = userStats.TotalScore;
+                try
+                {
+                    var userStats = await _userStatisticsApiService.GetByUserIdAsync(CurrentUserId);
+                    if (userStats != null)
+                        Score = userStats.TotalScore;
 
-                var solvedProgress = await _sessionProgressApiService.GetAllAsync(
-                    userId: CurrentUserId,
-                    solved: true
-                );
+                    var solvedProgress = await _sessionProgressApiService.GetAllAsync(
+                        userId: CurrentUserId,
+                        solved: true
+                    );
 
-                SolvedCount = solvedProgress
-                    .GroupBy(p => p.PuzzleId)
-                    .Count();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+                    SolvedCount = solvedProgress
+                        .GroupBy(p => p.PuzzleId)
+                        .Count();
+                }
+                catch (Exception ex) when (ex.Message.Contains("401"))
+                {
+                    _userSessionService.ClearUser();
+                    await _navigationService.NavigateToAsync<LoginViewModel>();
+                }
+                catch (Exception ex)
+                {
+                    await DialogService.ShowError($"Ошибка загрузки статистики: {ex.Message}");
+                }
+            });
         }
 
         private async Task LogoutAsync(object? parameter = null)
         {
-            try
+            await ExecuteOnUIAsync(async () =>
             {
-                IsLoading = true;
-                _userSessionService.ClearUser();
-                await _navigationService.NavigateToAsync<LoginViewModel>();
-            }
-            finally
-            {
-                IsLoading = false;
-            }
+                try
+                {
+                    IsLoading = true;
+                    _userSessionService.ClearUser();
+                    await _navigationService.NavigateToAsync<LoginViewModel>();
+                }
+                finally
+                {
+                    IsLoading = false;
+                }
+            });
         }
 
         private async Task OpenProfileAsync(object? parameter = null)
         {
-            try
+            await ExecuteOnUIAsync(async () =>
             {
-                CurrentUser ??= await _userApiService.GetByIdAsync(CurrentUserId);
+                try
+                {
+                    CurrentUser ??= await _userApiService.GetByIdAsync(CurrentUserId);
+                    if (CurrentUser == null) return;
 
-                if (CurrentUser == null) return;
+                    var profileVM = ActivatorUtilities.CreateInstance<UserProfileViewModel>(
+                        _serviceProvider,
+                        CurrentUserId,
+                        (Action)(async () =>
+                        {
+                            CurrentSection = null;
+                            await LoadUserStatsAsync();
+                            await LoadUserDataAsync();
+                        })
+                    );
 
-                var profileVM = ActivatorUtilities.CreateInstance<UserProfileViewModel>(
-                    _serviceProvider,
-                    CurrentUserId,
-                    (Action)(() => CurrentSection = null)
-                );
-
-                CurrentSection = profileVM;
-                await profileVM.LoadUserDataAsync();
-            }
-            catch (Exception ex)
-            {
-                await DialogService.ShowError($"Ошибка открытия профиля: {ex.Message}");
-            }
+                    CurrentSection = profileVM;
+                    await profileVM.LoadUserDataAsync();
+                }
+                catch (Exception ex) when (ex.Message.Contains("401"))
+                {
+                    _userSessionService.ClearUser();
+                    await _navigationService.NavigateToAsync<LoginViewModel>();
+                }
+                catch (Exception ex)
+                {
+                    await DialogService.ShowError($"Ошибка открытия профиля: {ex.Message}");
+                }
+            });
         }
 
         private Task GoBackAsync(object? parameter = null)
@@ -205,43 +238,71 @@ namespace CryptoPuzzles.Client.ViewModels
 
         private async Task StartTrainingAsync(object? parameter = null)
         {
-            try
+            await ExecuteOnUIAsync(async () =>
             {
-                var trainingVM = ActivatorUtilities.CreateInstance<TrainingViewModel>(
-                    _serviceProvider,
-                    CurrentUserId,
-                    (Action)(async () =>
-                    {
-                        CurrentSection = null;
-                        await LoadUserStatsAsync();
-                    })
-                );
-                CurrentSection = trainingVM;
-            }
-            catch (Exception ex)
-            {
-                await DialogService.ShowError($"Ошибка запуска тренировки: {ex.Message}");
-            }
+                try
+                {
+                    var trainingVM = ActivatorUtilities.CreateInstance<TrainingViewModel>(
+                        _serviceProvider,
+                        CurrentUserId,
+                        (Action)(async () =>
+                        {
+                            CurrentSection = null;
+                            await LoadUserStatsAsync();
+                        })
+                    );
+                    CurrentSection = trainingVM;
+                }
+                catch (Exception ex) when (ex.Message.Contains("401"))
+                {
+                    _userSessionService.ClearUser();
+                    await _navigationService.NavigateToAsync<LoginViewModel>();
+                }
+                catch (Exception ex)
+                {
+                    await DialogService.ShowError($"Ошибка запуска тренировки: {ex.Message}");
+                }
+            });
         }
 
         private async Task StartPracticeAsync(object? parameter = null)
         {
-            try
+            await ExecuteOnUIAsync(async () =>
             {
-                var practiceVM = ActivatorUtilities.CreateInstance<PracticeViewModel>(
-                    _serviceProvider,
-                    CurrentUserId,
-                    (Action)(async () =>
-                    {
-                        CurrentSection = null;
-                        await LoadUserStatsAsync();
-                    })
-                );
-                CurrentSection = practiceVM;
+                try
+                {
+                    var practiceVM = ActivatorUtilities.CreateInstance<PracticeViewModel>(
+                        _serviceProvider,
+                        CurrentUserId,
+                        (Action)(async () =>
+                        {
+                            CurrentSection = null;
+                            await LoadUserStatsAsync();
+                        })
+                    );
+                    CurrentSection = practiceVM;
+                }
+                catch (Exception ex) when (ex.Message.Contains("401"))
+                {
+                    _userSessionService.ClearUser();
+                    await _navigationService.NavigateToAsync<LoginViewModel>();
+                }
+                catch (Exception ex)
+                {
+                    await DialogService.ShowError($"Ошибка запуска практики: {ex.Message}");
+                }
+            });
+        }
+
+        private async Task ExecuteOnUIAsync(Func<Task> action)
+        {
+            if (Application.Current.Dispatcher.CheckAccess())
+            {
+                await action();
             }
-            catch (Exception ex)
+            else
             {
-                await DialogService.ShowError($"Ошибка запуска практики: {ex.Message}");
+                await Application.Current.Dispatcher.InvokeAsync(async () => await action());
             }
         }
     }

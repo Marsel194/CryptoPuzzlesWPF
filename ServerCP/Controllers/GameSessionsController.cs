@@ -14,6 +14,39 @@ namespace CryptoPuzzles.Server.Controllers
 
         public GameSessionsController(AppDbContext context) => _context = context;
 
+        private AGameSession MapToDto(GameSession session)
+        {
+            return new AGameSession(
+                session.Id,
+                session.UserId,
+                session.User?.Login ?? string.Empty,
+                session.User?.Username ?? string.Empty,
+                session.SessionType,
+                session.TotalScore,
+                session.SessionStart,
+                session.CompletedAt,
+                session.IsCompleted,
+                session.Progresses?.Count ?? 0,
+                session.Progresses?.Count(p => p.Solved) ?? 0,
+                session.CurrentTutorialIndex,
+                session.IsDeleted,
+                session.DeletedAt
+            );
+        }
+
+        private GameSession MapToEntity(AGameSessionCreate dto)
+        {
+            return new GameSession
+            {
+                UserId = dto.UserId,
+                SessionType = dto.SessionType,
+                TotalScore = dto.TotalScore,
+                SessionStart = DateTime.UtcNow,
+                IsCompleted = false,
+                CurrentTutorialIndex = null
+            };
+        }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AGameSession>>> GetAll()
         {
@@ -21,24 +54,8 @@ namespace CryptoPuzzles.Server.Controllers
                 .Include(s => s.User)
                 .Include(s => s.Progresses)
                 .OrderByDescending(s => s.SessionStart)
-                .Select(s => new AGameSession(
-                    s.Id,
-                    s.UserId,
-                    s.User.Login,
-                    s.User.Username,
-                    s.SessionType,
-                    s.TotalScore,
-                    s.SessionStart,
-                    s.CompletedAt,
-                    s.IsCompleted,
-                    s.Progresses.Count,
-                    s.Progresses.Count(p => p.Solved),
-                    s.CurrentTutorialIndex,
-                    s.IsDeleted,
-                    s.DeletedAt
-                ))
                 .ToListAsync();
-            return Ok(sessions);
+            return Ok(sessions.Select(MapToDto));
         }
 
         [HttpGet("{id}")]
@@ -47,26 +64,9 @@ namespace CryptoPuzzles.Server.Controllers
             var session = await _context.GameSessions
                 .Include(s => s.User)
                 .Include(s => s.Progresses)
-                .Where(s => s.Id == id)
-                .Select(s => new AGameSession(
-                    s.Id,
-                    s.UserId,
-                    s.User.Login,
-                    s.User.Username,
-                    s.SessionType,
-                    s.TotalScore,
-                    s.SessionStart,
-                    s.CompletedAt,
-                    s.IsCompleted,
-                    s.Progresses.Count,
-                    s.Progresses.Count(p => p.Solved),
-                    s.CurrentTutorialIndex,
-                    s.IsDeleted,
-                    s.DeletedAt
-                ))
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(s => s.Id == id);
             if (session == null) return NotFound();
-            return Ok(session);
+            return Ok(MapToDto(session));
         }
 
         [HttpGet("user/{userId}")]
@@ -77,61 +77,18 @@ namespace CryptoPuzzles.Server.Controllers
                 .Include(s => s.Progresses)
                 .Where(s => s.UserId == userId)
                 .OrderByDescending(s => s.SessionStart)
-                .Select(s => new AGameSession(
-                    s.Id,
-                    s.UserId,
-                    s.User.Login,
-                    s.User.Username,
-                    s.SessionType,
-                    s.TotalScore,
-                    s.SessionStart,
-                    s.CompletedAt,
-                    s.IsCompleted,
-                    s.Progresses.Count,
-                    s.Progresses.Count(p => p.Solved),
-                    s.CurrentTutorialIndex,
-                    s.IsDeleted,
-                    s.DeletedAt
-                ))
                 .ToListAsync();
-            return Ok(sessions);
+            return Ok(sessions.Select(MapToDto));
         }
 
         [HttpPost]
         public async Task<ActionResult<AGameSession>> Create([FromBody] AGameSessionCreate dto)
         {
-            var session = new GameSession
-            {
-                UserId = dto.UserId,
-                SessionType = dto.SessionType,
-                TotalScore = dto.TotalScore,
-                SessionStart = DateTime.UtcNow,
-                IsCompleted = false,
-                CurrentTutorialIndex = null
-            };
-
+            var session = MapToEntity(dto);
             _context.GameSessions.Add(session);
             await _context.SaveChangesAsync();
             await _context.Entry(session).Reference(s => s.User).LoadAsync();
-
-            var result = new AGameSession(
-                session.Id,
-                session.UserId,
-                session.User.Login,
-                session.User.Username,
-                session.SessionType,
-                session.TotalScore,
-                session.SessionStart,
-                session.CompletedAt,
-                session.IsCompleted,
-                0,
-                0,
-                session.CurrentTutorialIndex,
-                session.IsDeleted,
-                session.DeletedAt
-            );
-
-            return CreatedAtAction(nameof(Get), new { id = session.Id }, result);
+            return CreatedAtAction(nameof(Get), new { id = session.Id }, MapToDto(session));
         }
 
         [HttpPut("{id}")]
@@ -139,7 +96,7 @@ namespace CryptoPuzzles.Server.Controllers
         {
             if (id != dto.Id) return BadRequest();
 
-            var session = await _context.GameSessions.FirstOrDefaultAsync(s => s.Id == id);
+            var session = await _context.GameSessions.FindAsync(id);
             if (session == null) return NotFound();
 
             if (dto.TotalScore.HasValue)
@@ -149,12 +106,15 @@ namespace CryptoPuzzles.Server.Controllers
                 session.IsCompleted = dto.IsCompleted.Value;
 
             if (dto.CompletedAt.HasValue)
-                session.CompletedAt = dto.CompletedAt;
+            {
+                var completedAt = dto.CompletedAt.Value;
+                if (completedAt.Kind != DateTimeKind.Utc)
+                    completedAt = DateTime.SpecifyKind(completedAt, DateTimeKind.Utc);
+                session.CompletedAt = completedAt;
+            }
 
             if (dto.CurrentTutorialIndex.HasValue)
                 session.CurrentTutorialIndex = dto.CurrentTutorialIndex.Value;
-            else if (dto.CurrentTutorialIndex == null)
-                session.CurrentTutorialIndex = null;
 
             if (dto.IsDeleted.HasValue)
             {

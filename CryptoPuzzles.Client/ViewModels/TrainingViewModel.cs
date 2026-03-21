@@ -1,8 +1,11 @@
-﻿using CryptoPuzzles.Client.Helpers;
+﻿// TrainingViewModel.cs (исправленный, добавлено свойство IsLoading)
+
+using CryptoPuzzles.Client.Helpers;
 using CryptoPuzzles.Client.Services;
 using CryptoPuzzles.Client.Services.ApiService;
 using CryptoPuzzles.Client.ViewModels.Base;
 using CryptoPuzzles.Shared;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
@@ -17,6 +20,7 @@ namespace CryptoPuzzles.Client.ViewModels
         private readonly HintApiService _hintApi;
         private readonly GameSessionApiService _sessionApi;
         private readonly SessionProgressApiService _sessionProgressApi;
+        private readonly UserSessionService _userSession;
         private readonly Action _goBack;
         private readonly int _userId;
         private readonly DispatcherTimer _hintTimer;
@@ -41,6 +45,7 @@ namespace CryptoPuzzles.Client.ViewModels
         private bool _hasHints;
         private bool _areHintsVisible;
         private string _userAnswer = string.Empty;
+        private bool _isLoading;
 
         private int? _currentSessionId;
         private int _totalScore;
@@ -49,12 +54,19 @@ namespace CryptoPuzzles.Client.ViewModels
         private ObservableCollection<ASessionProgress> _sessionProgress = [];
         private readonly Dictionary<int, ASessionProgress> _progressByPuzzleId = [];
 
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set => SetProperty(ref _isLoading, value);
+        }
+
         public TrainingViewModel(
             TutorialApiService tutorialApi,
             PuzzleApiService puzzleApi,
             HintApiService hintApi,
             GameSessionApiService sessionApi,
             SessionProgressApiService sessionProgressApi,
+            UserSessionService userSession,
             int userId,
             Action goBack)
         {
@@ -63,6 +75,7 @@ namespace CryptoPuzzles.Client.ViewModels
             _hintApi = hintApi;
             _sessionApi = sessionApi;
             _sessionProgressApi = sessionProgressApi;
+            _userSession = userSession;
             _userId = userId;
             _goBack = goBack;
 
@@ -301,8 +314,11 @@ namespace CryptoPuzzles.Client.ViewModels
 
         private async Task LoadDataAsync()
         {
+            if (IsLoading) return;
             try
             {
+                IsLoading = true;
+
                 var tutorials = await _tutorialApi.GetAllAsync();
                 tutorials = tutorials.Where(t => !t.IsDeleted).OrderBy(t => t.SortOrder).ToList();
 
@@ -397,10 +413,20 @@ namespace CryptoPuzzles.Client.ViewModels
                     UpdateNavigationCommands();
                 });
             }
+            catch (Exception ex) when (ex.Message.Contains("401"))
+            {
+                _userSession.ClearUser();
+                var navigation = App.Services.GetRequiredService<NavigationService>();
+                await navigation.NavigateToAsync<LoginViewModel>();
+            }
             catch (Exception ex)
             {
                 await Application.Current.Dispatcher.InvokeAsync(() =>
                     DialogService.ShowError($"Ошибка загрузки обучения: {ex.Message}"));
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
 
@@ -441,6 +467,7 @@ namespace CryptoPuzzles.Client.ViewModels
                     IsPuzzleMode = false;
                     CurrentTutorialIndex = 0;
                     await UpdateSessionAsync(tutorialIndex: 0);
+                    UpdateTheoryDisplay();
                 }
                 else if (Puzzles.Any())
                 {

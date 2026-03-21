@@ -209,9 +209,14 @@ namespace CryptoPuzzles.Shared
     public class AUserStatistic : ObservableObject
     {
         private int _userId; private string _userLogin = string.Empty; private string _username = string.Empty; private string _email = string.Empty;
-        private int _totalSessions; private int _totalPuzzlesSolved; private int _totalScore; private int _totalHintsUsed;
+        private int _totalSessions; private int _totalPuzzlesSolved; private int _totalScore; private int _totalHintsUsed; private int _solvedTrainingPuzzles;
+        private int _solvedPracticePuzzles;
         private decimal _avgScorePerSession; private DateTime? _lastActive; private DateTime? _registeredAt; private bool _isDeleted; private DateTime? _deletedAt;
         public int UserId { get => _userId; set => SetProperty(ref _userId, value); }
+        [ExportName("Решено тренировочных пазлов")]
+        public int SolvedTrainingPuzzles{get => _solvedTrainingPuzzles; set => SetProperty(ref _solvedTrainingPuzzles, value); }
+
+        [ExportName("Решено практических пазлов")] public int SolvedPracticePuzzles { get => _solvedPracticePuzzles; set => SetProperty(ref _solvedPracticePuzzles, value); }
         [ExportName("Логин пользователя")] public string UserLogin { get => _userLogin; set => SetProperty(ref _userLogin, value); }
         [ExportName("Имя пользователя")] public string Username { get => _username; set => SetProperty(ref _username, value); }
         [ExportName("Почта")] public string Email { get => _email; set => SetProperty(ref _email, value); }
@@ -226,8 +231,10 @@ namespace CryptoPuzzles.Shared
         public DateTime? DeletedAt { get => _deletedAt; set => SetProperty(ref _deletedAt, value); }
         [ExportName("Процент успеха")] public double SuccessRate => TotalPuzzlesSolved > 0 ? (double)TotalPuzzlesSolved / (TotalPuzzlesSolved + TotalHintsUsed) * 100 : 0;
         [ExportName("Последняя активность")] public string LastActiveFormatted => LastActive?.ToString("dd.MM.yyyy HH:mm") ?? "—";
-        public AUserStatistic(int userId, string userLogin, string username, string email, int totalSessions, int totalPuzzlesSolved, int totalScore, int totalHintsUsed, decimal avgScorePerSession, DateTime? lastActive, DateTime? registeredAt = null)
-        { _userId = userId; _userLogin = userLogin; _username = username; _email = email; _totalSessions = totalSessions; _totalPuzzlesSolved = totalPuzzlesSolved; _totalScore = totalScore; _totalHintsUsed = totalHintsUsed; _avgScorePerSession = avgScorePerSession; _lastActive = lastActive; _registeredAt = registeredAt; }
+        public AUserStatistic(int userId, string userLogin, string username, string email, int totalSessions, int totalPuzzlesSolved, int solvedTrainingPuzzles,
+        int solvedPracticePuzzles, int totalScore, int totalHintsUsed, decimal avgScorePerSession, DateTime? lastActive, DateTime? registeredAt = null)
+        { _userId = userId; _userLogin = userLogin; _username = username; _email = email; _solvedTrainingPuzzles = solvedTrainingPuzzles;
+            _solvedPracticePuzzles = solvedPracticePuzzles; _totalSessions = totalSessions; _totalPuzzlesSolved = totalPuzzlesSolved; _totalScore = totalScore; _totalHintsUsed = totalHintsUsed; _avgScorePerSession = avgScorePerSession; _lastActive = lastActive; _registeredAt = registeredAt; }
         public AUserStatistic() { }
     }
 
@@ -254,7 +261,7 @@ namespace CryptoPuzzles.Shared
 
     // Общие record для ответов/запросов
     public record UAErrorResponse(string Message, string? Details);
-    public record UALoginResponse(int Id, string Login, string Email, string Username, bool IsAdmin);
+    public record UALoginResponse(int Id, string Login, string Email, string Username, bool IsAdmin, string Token);
     public record UALoginRequest(string Login, string Password);
     public record UARegisterRequest(string Login, string Username, string Email, string Password);
     public record UARegisterResponse(int Id, string Login, string Username, string Email);

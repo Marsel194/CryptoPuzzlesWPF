@@ -6,6 +6,7 @@ namespace CryptoPuzzles.Client.Services.ApiService
 {
     public class EncryptionMethodApiService : BaseEntityApiService<AEncryptionMethod, AEncryptionMethodCreate, AEncryptionMethodUpdate>
     {
-        public EncryptionMethodApiService(HttpClient httpClient) : base(httpClient, "api/encryptionmethods") { }
+        public EncryptionMethodApiService(HttpClient httpClient, UserSessionService userSessionService)
+            : base(httpClient, userSessionService, "api/encryptionmethods") { }
     }
 }

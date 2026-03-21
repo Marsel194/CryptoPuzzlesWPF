@@ -6,7 +6,8 @@ namespace CryptoPuzzles.Client.Services.ApiService
 {
     public class GameSessionApiService : BaseEntityApiService<AGameSession, AGameSessionCreate, AGameSessionUpdate>
     {
-        public GameSessionApiService(HttpClient httpClient) : base(httpClient, "api/gamesessions") { }
+        public GameSessionApiService(HttpClient httpClient, UserSessionService userSessionService)
+            : base(httpClient, userSessionService, "api/gamesessions") { }
 
         public async Task<List<AGameSession>> GetAllAsync(int? userId = null, string? sessionType = null, bool? isCompleted = null)
         {

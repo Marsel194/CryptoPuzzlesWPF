@@ -5,8 +5,11 @@ using System.Net.Http.Json;
 
 namespace CryptoPuzzles.Client.Services.ApiService
 {
-    public class AuthApiService(HttpClient httpClient) : BaseApiService(httpClient)
+    public class AuthApiService : BaseApiService
     {
+        public AuthApiService(HttpClient httpClient, UserSessionService userSessionService)
+            : base(httpClient, userSessionService) { }
+
         public async Task<UALoginResponse> LoginAsync(string login, string password)
         {
             var request = new UALoginRequest(login, password);

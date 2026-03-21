@@ -1,27 +1,32 @@
-﻿using System.Collections.ObjectModel;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Threading;
+﻿// PracticeViewModel.cs
 using CryptoPuzzles.Client.Helpers;
 using CryptoPuzzles.Client.Services;
 using CryptoPuzzles.Client.Services.ApiService;
 using CryptoPuzzles.Client.ViewModels.Base;
 using CryptoPuzzles.Shared;
+using Microsoft.Extensions.DependencyInjection;
+using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace CryptoPuzzles.Client.ViewModels
 {
-    public class PracticeViewModel : ViewModelBase
+    public class PracticeViewModel : ViewModelBase, IDisposable
     {
         private readonly PuzzleApiService _puzzleApi;
         private readonly HintApiService _hintApi;
         private readonly GameSessionApiService _sessionApi;
         private readonly SessionProgressApiService _progressApi;
         private readonly DifficultyApiService _difficultyApi;
+        private readonly UserSessionService _userSession;
         private readonly Action _goBack;
         private readonly int _userId;
         private readonly DispatcherTimer _timer;
         private readonly DispatcherTimer _hintTimer;
         private readonly HashSet<int> _seenPuzzleIds;
+        private bool _isSelectingInProgress;
+        private static readonly Random _random = new();
 
         private ObservableCollection<ADifficulty>? _difficulties;
         private ADifficulty? _selectedDifficulty;
@@ -30,6 +35,7 @@ namespace CryptoPuzzles.Client.ViewModels
         private APuzzle? _currentPuzzle;
         private ObservableCollection<AHint>? _hints;
         private int _currentHintIndex = -1;
+        private int _hintsUsed = 0;
         private string _currentHint = string.Empty;
         private bool _hasHints;
         private bool _areHintsVisible;
@@ -40,6 +46,7 @@ namespace CryptoPuzzles.Client.ViewModels
         private DateTime _puzzleStartTime;
         private string _elapsedTime = "00:00";
         private readonly Dictionary<int, ASessionProgress> _progressByPuzzleId = [];
+        private HashSet<int> _solvedPuzzleIds = [];
 
         private bool _isSelectingDifficulty = true;
         private bool _isSolvingPuzzle;
@@ -56,6 +63,7 @@ namespace CryptoPuzzles.Client.ViewModels
             GameSessionApiService sessionApi,
             SessionProgressApiService progressApi,
             DifficultyApiService difficultyApi,
+            UserSessionService userSession,
             int userId,
             Action goBack)
         {
@@ -64,22 +72,22 @@ namespace CryptoPuzzles.Client.ViewModels
             _sessionApi = sessionApi;
             _progressApi = progressApi;
             _difficultyApi = difficultyApi;
+            _userSession = userSession;
             _userId = userId;
             _goBack = goBack;
 
             _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-            _timer.Tick += (s, e) => UpdateElapsedTime();
+            _timer.Tick += Timer_Tick;
 
             _hintTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(5) };
-            _hintTimer.Tick += (s, e) => ShowHintsAfterDelay();
+            _hintTimer.Tick += HintTimer_Tick;
 
-            _seenPuzzleIds = new HashSet<int>();
+            _seenPuzzleIds = [];
 
-            SelectDifficultyCommand = new AsyncRelayCommand(async _ => await SelectDifficultyAsync(_ as ADifficulty));
+            SelectDifficultyCommand = new AsyncRelayCommand(async _ => await SelectDifficultyAsync(_ as ADifficulty), _ => !_isSelectingInProgress);
             NextHintCommand = new AsyncRelayCommand(async _ => await NextHintAsync(), _ => HasNextHint);
             CheckAnswerCommand = new AsyncRelayCommand(async _ => await CheckAnswerAsync(), _ => !string.IsNullOrWhiteSpace(UserAnswer));
             GoBackCommand = new AsyncRelayCommand(async _ => await GoBackAsync());
-            NextPuzzleCommand = new AsyncRelayCommand(async _ => await NextPuzzleAsync(), _ => HasNextPuzzle);
             FinishModuleCommand = new AsyncRelayCommand(async _ => await FinishModuleAsync());
             NextRandomQuestionCommand = new AsyncRelayCommand(async _ => await LoadRandomPuzzleAsync());
 
@@ -182,8 +190,6 @@ namespace CryptoPuzzles.Client.ViewModels
             set => SetProperty(ref _earnedScore, value);
         }
 
-        public bool HasNextPuzzle => _puzzles != null && _currentPuzzleIndex < _puzzles.Count - 1;
-
         public string CompletionMessage
         {
             get => _completionMessage;
@@ -194,7 +200,6 @@ namespace CryptoPuzzles.Client.ViewModels
         public ICommand NextHintCommand { get; }
         public ICommand CheckAnswerCommand { get; }
         public ICommand GoBackCommand { get; }
-        public ICommand NextPuzzleCommand { get; }
         public ICommand FinishModuleCommand { get; }
         public ICommand NextRandomQuestionCommand { get; }
 
@@ -208,22 +213,87 @@ namespace CryptoPuzzles.Client.ViewModels
                     Difficulties = new ObservableCollection<ADifficulty>(difficulties.Where(d => !d.IsDeleted));
                 });
             }
+            catch (Exception ex) when (ex.Message.Contains("401"))
+            {
+                _userSession.ClearUser();
+                var navigation = App.Services.GetRequiredService<NavigationService>();
+                await navigation.NavigateToAsync<LoginViewModel>();
+            }
             catch (Exception ex)
             {
                 await DialogService.ShowError($"Ошибка загрузки сложностей: {ex.Message}");
             }
         }
 
+        private async Task LoadSolvedPuzzlesAsync()
+        {
+            try
+            {
+                var solvedProgress = await _progressApi.GetAllAsync(userId: _userId, solved: true);
+                _solvedPuzzleIds = new HashSet<int>(solvedProgress.Select(p => p.PuzzleId));
+            }
+            catch (Exception ex)
+            {
+                await DialogService.ShowError($"Ошибка загрузки решённых головоломок: {ex.Message}");
+                _solvedPuzzleIds = [];
+            }
+        }
+
         private async Task SelectDifficultyAsync(ADifficulty? difficulty)
         {
-            if (difficulty == null) return;
+            if (_isSelectingInProgress) return;
 
-            SelectedDifficulty = difficulty;
-            IsSelectingDifficulty = false;
-            IsSolvingPuzzle = true;
+            _isSelectingInProgress = true;
+            AsyncRelayCommand.RaiseCanExecuteChanged();
 
-            await LoadPuzzlesForDifficultyAsync(difficulty.Id);
-            await CreateNewSessionAsync();
+            try
+            {
+                if (difficulty == null) return;
+
+                SelectedDifficulty = difficulty;
+                IsSelectingDifficulty = false;
+                IsSolvingPuzzle = true;
+
+                await LoadSolvedPuzzlesAsync();
+                await LoadPuzzlesForDifficultyAsync(difficulty.Id);
+
+                if (_puzzles == null || _puzzles.Count == 0)
+                {
+                    await DialogService.ShowError("Нет заданий для выбранной сложности.");
+                    GoBackToDifficultySelection();
+                    return;
+                }
+
+                var unsolvedPuzzles = _puzzles.Where(p => !_solvedPuzzleIds.Contains(p.Id)).ToList();
+                if (unsolvedPuzzles.Count == 0)
+                {
+                    var result = await DialogService.ShowConfirmation("Вы уже решили все головоломки этой сложности. Хотите пройти модуль заново?");
+                    if (result)
+                    {
+                        unsolvedPuzzles = _puzzles.ToList();
+                        _puzzles = new ObservableCollection<APuzzle>(unsolvedPuzzles);
+                    }
+                    else
+                    {
+                        GoBackToDifficultySelection();
+                        return;
+                    }
+                }
+                else
+                {
+                    _puzzles = new ObservableCollection<APuzzle>(unsolvedPuzzles);
+                }
+
+                _currentPuzzleIndex = -1;
+                _seenPuzzleIds.Clear();
+
+                await CreateNewSessionAsync();
+            }
+            finally
+            {
+                _isSelectingInProgress = false;
+                AsyncRelayCommand.RaiseCanExecuteChanged();
+            }
         }
 
         private async Task LoadPuzzlesForDifficultyAsync(int difficultyId)
@@ -239,9 +309,6 @@ namespace CryptoPuzzles.Client.ViewModels
                 await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
                     _puzzles = new ObservableCollection<APuzzle>(puzzles);
-                    _currentPuzzleIndex = -1;
-                    _seenPuzzleIds.Clear();
-                    MoveToNextPuzzle();
                 });
             }
             catch (Exception ex)
@@ -261,6 +328,10 @@ namespace CryptoPuzzles.Client.ViewModels
                     TotalScore: 0
                 );
                 var session = await _sessionApi.CreateAsync(sessionCreate);
+
+                if (session == null || session.Id == 0)
+                    throw new Exception("Не удалось создать сессию: сервер вернул некорректный ответ.");
+
                 _currentSessionId = session.Id;
                 _totalScore = 0;
                 _totalHintsUsed = 0;
@@ -278,14 +349,35 @@ namespace CryptoPuzzles.Client.ViewModels
                             HintsUsed: 0,
                             ScoreEarned: 0
                         );
-                        var progress = await _progressApi.CreateAsync(progressCreate);
-                        _progressByPuzzleId[puzzle.Id] = progress;
+
+                        ASessionProgress? progress = null;
+                        int retryCount = 0;
+                        while (progress == null && retryCount < 3)
+                        {
+                            try
+                            {
+                                progress = await _progressApi.CreateAsync(progressCreate);
+                            }
+                            catch
+                            {
+                                retryCount++;
+                                if (retryCount >= 3) throw;
+                                await Task.Delay(200);
+                            }
+                        }
+
+                        if (progress != null)
+                            _progressByPuzzleId[puzzle.Id] = progress;
+                        else
+                            throw new Exception($"Не удалось создать прогресс для пазла {puzzle.Id}");
                     }
                 }
+
+                MoveToNextPuzzle();
             }
             catch (Exception ex)
             {
-                await DialogService.ShowError($"Не удалось создать сессию: {ex.Message}");
+                await DialogService.ShowError($"Не удалось начать практику: {ex.Message}");
                 GoBackToDifficultySelection();
             }
         }
@@ -338,7 +430,7 @@ namespace CryptoPuzzles.Client.ViewModels
                 {
                     _hints = new ObservableCollection<AHint>(hints);
                     HasHints = _hints.Any();
-                    RestoreHintIndexForCurrentPuzzle();
+                    RestoreHintStateForCurrentPuzzle();
                     ResetHintTimer();
                     AsyncRelayCommand.RaiseCanExecuteChanged();
                 });
@@ -350,24 +442,36 @@ namespace CryptoPuzzles.Client.ViewModels
                     _hints?.Clear();
                     HasHints = false;
                     AreHintsVisible = false;
+                    _currentHintIndex = -1;
+                    _hintsUsed = 0;
+                    CurrentHint = string.Empty;
                 });
             }
         }
 
-        private void RestoreHintIndexForCurrentPuzzle()
+        private void RestoreHintStateForCurrentPuzzle()
         {
             if (CurrentPuzzle == null || _hints == null) return;
 
             if (_progressByPuzzleId.TryGetValue(CurrentPuzzle.Id, out var progress) && progress.HintsUsed > 0)
             {
-                int lastUsedIndex = progress.HintsUsed - 1;
+                _hintsUsed = progress.HintsUsed;
+                int lastUsedIndex = _hintsUsed - 1;
                 _currentHintIndex = lastUsedIndex < _hints.Count ? lastUsedIndex : _hints.Count - 1;
+                AreHintsVisible = true;
                 UpdateCurrentHint();
+                _hintTimer.Stop();
             }
             else
             {
-                _currentHintIndex = _hints.Any() ? 0 : -1;
-                UpdateCurrentHint();
+                _hintsUsed = 0;
+                _currentHintIndex = -1;
+                AreHintsVisible = false;
+                CurrentHint = string.Empty;
+                if (HasHints)
+                {
+                    _hintTimer.Start();
+                }
             }
         }
 
@@ -382,16 +486,23 @@ namespace CryptoPuzzles.Client.ViewModels
         private void ResetHintTimer()
         {
             _hintTimer.Stop();
-            AreHintsVisible = false;
-            if (HasHints)
+            if (HasHints && _hintsUsed == 0 && _currentHintIndex == -1)
                 _hintTimer.Start();
         }
 
         private void ShowHintsAfterDelay()
         {
             _hintTimer.Stop();
-            if (HasHints)
+            if (!HasHints) return;
+            if (_hintsUsed == 0 && _currentHintIndex == -1 && _hints != null && _hints.Count > 0)
+            {
+                _currentHintIndex = 0;
+                _hintsUsed = 1;
+                UpdateCurrentHint();
                 AreHintsVisible = true;
+                _ = UpdateProgressForCurrentPuzzleAsync(solved: false, hintsUsed: _hintsUsed, scoreEarned: 0);
+                AsyncRelayCommand.RaiseCanExecuteChanged();
+            }
         }
 
         private void UpdateElapsedTime()
@@ -405,9 +516,9 @@ namespace CryptoPuzzles.Client.ViewModels
             if (HasNextHint && _hints != null && CurrentPuzzle != null)
             {
                 _currentHintIndex++;
-                _totalHintsUsed++;
-                await UpdateProgressForCurrentPuzzleAsync(solved: false, hintsUsed: _currentHintIndex + 1, scoreEarned: 0);
+                _hintsUsed++;
                 UpdateCurrentHint();
+                await UpdateProgressForCurrentPuzzleAsync(solved: false, hintsUsed: _hintsUsed, scoreEarned: 0);
                 AsyncRelayCommand.RaiseCanExecuteChanged();
             }
         }
@@ -428,7 +539,7 @@ namespace CryptoPuzzles.Client.ViewModels
                 EarnedScore = score;
                 _totalScore += score;
 
-                await UpdateProgressForCurrentPuzzleAsync(solved: true, hintsUsed: _currentHintIndex + 1, scoreEarned: score);
+                await UpdateProgressForCurrentPuzzleAsync(solved: true, hintsUsed: _hintsUsed, scoreEarned: score);
 
                 if (_currentSessionId.HasValue)
                 {
@@ -452,7 +563,7 @@ namespace CryptoPuzzles.Client.ViewModels
             {
                 await DialogService.ShowError("Неправильный ответ. Попробуйте ещё раз.");
                 _timer.Start();
-                if (HasHints && !AreHintsVisible)
+                if (HasHints && !AreHintsVisible && _hintsUsed == 0)
                     _hintTimer.Start();
             }
         }
@@ -462,8 +573,7 @@ namespace CryptoPuzzles.Client.ViewModels
             if (CurrentPuzzle == null) return 0;
 
             int baseScore = CurrentPuzzle.MaxScore;
-            int hintsUsed = _currentHintIndex + 1;
-            double multiplier = Math.Max(0, 1.0 - (hintsUsed * 0.2));
+            double multiplier = Math.Max(0, 1.0 - (_hintsUsed * 0.2));
             return (int)(baseScore * multiplier);
         }
 
@@ -490,20 +600,16 @@ namespace CryptoPuzzles.Client.ViewModels
             }
         }
 
-        private async Task NextPuzzleAsync()
-        {
-            IsResult = false;
-            IsSolvingPuzzle = true;
-            MoveToNextPuzzle();
-            await Task.CompletedTask;
-        }
-
         private async Task FinishModuleAsync()
         {
             IsResult = false;
             IsSolvingPuzzle = false;
             IsModuleCompleted = true;
+            CompletionMessage = $"Вы завершили модуль. Набрано очков: {_totalScore}";
             await UpdateSessionCompletedAsync();
+
+            var statsApi = App.Services.GetRequiredService<UserStatisticsApiService>();
+            await statsApi.RefreshStatisticsAsync(_userId);
         }
 
         private async Task UpdateSessionCompletedAsync()
@@ -540,6 +646,11 @@ namespace CryptoPuzzles.Client.ViewModels
 
             _timer.Stop();
             _hintTimer.Stop();
+            if (_puzzles == null) return;
+            _currentPuzzleIndex = _puzzles.IndexOf(randomPuzzle);
+
+            IsResult = false;
+            IsSolvingPuzzle = true;
 
             SetCurrentPuzzle(randomPuzzle);
             await Task.CompletedTask;
@@ -550,25 +661,21 @@ namespace CryptoPuzzles.Client.ViewModels
             if (_puzzles == null || _puzzles.Count == 0)
                 return null;
 
-            var allIds = _puzzles.Select(p => p.Id).ToList();
-            var unseenIds = allIds.Except(_seenPuzzleIds).ToList();
+            var unsolvedIds = _puzzles
+                .Where(p => !_progressByPuzzleId.TryGetValue(p.Id, out var prog) || !prog.Solved)
+                .Select(p => p.Id)
+                .ToList();
 
-            if (unseenIds.Count > 0)
+            if (unsolvedIds.Count == 0)
+                return null;
+
+            int index;
+            lock (_random)
             {
-                int index = new Random().Next(unseenIds.Count);
-                int puzzleId = unseenIds[index];
-                return _puzzles.First(p => p.Id == puzzleId);
+                index = _random.Next(unsolvedIds.Count);
             }
-
-            var unsolvedIds = allIds.Where(id => _progressByPuzzleId.TryGetValue(id, out var prog) && !prog.Solved).ToList();
-            if (unsolvedIds.Count > 0)
-            {
-                int index = new Random().Next(unsolvedIds.Count);
-                int puzzleId = unsolvedIds[index];
-                return _puzzles.First(p => p.Id == puzzleId);
-            }
-
-            return null;
+            int puzzleId = unsolvedIds[index];
+            return _puzzles.First(p => p.Id == puzzleId);
         }
 
         private async Task GoBackAsync()
@@ -592,11 +699,13 @@ namespace CryptoPuzzles.Client.ViewModels
             _puzzles = null;
             _hints = null;
             _currentHintIndex = -1;
+            _hintsUsed = 0;
             CurrentHint = string.Empty;
             UserAnswer = string.Empty;
             ElapsedTime = "00:00";
             _progressByPuzzleId.Clear();
             _seenPuzzleIds.Clear();
+            _solvedPuzzleIds.Clear();
         }
 
         private void GoBackToDifficultySelection()
@@ -606,5 +715,17 @@ namespace CryptoPuzzles.Client.ViewModels
             IsResult = false;
             IsModuleCompleted = false;
         }
+
+        public void Dispose()
+        {
+            _timer.Stop();
+            _hintTimer.Stop();
+            _timer.Tick -= Timer_Tick;
+            _hintTimer.Tick -= HintTimer_Tick;
+        }
+
+        private void Timer_Tick(object? sender, EventArgs e) => UpdateElapsedTime();
+
+        private void HintTimer_Tick(object? sender, EventArgs e) => ShowHintsAfterDelay();
     }
 }

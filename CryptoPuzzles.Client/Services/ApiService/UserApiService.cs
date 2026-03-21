@@ -6,6 +6,7 @@ namespace CryptoPuzzles.Client.Services.ApiService
 {
     public class UserApiService : BaseEntityApiService<AUser, AUserCreate, AUserUpdate>
     {
-        public UserApiService(HttpClient httpClient) : base(httpClient, "api/users") { }
+        public UserApiService(HttpClient httpClient, UserSessionService userSessionService)
+            : base(httpClient, userSessionService, "api/users") { }
     }
 }

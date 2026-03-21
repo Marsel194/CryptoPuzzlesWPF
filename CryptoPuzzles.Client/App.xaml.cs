@@ -5,6 +5,7 @@ using CryptoPuzzles.Client.Views;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace CryptoPuzzles.Client
 {
@@ -14,6 +15,10 @@ namespace CryptoPuzzles.Client
 
         public App()
         {
+            AppDomain.CurrentDomain.UnhandledException += OnAppDomainUnhandledException;
+            TaskScheduler.UnobservedTaskException += OnTaskSchedulerUnobservedTaskException;
+            Dispatcher.CurrentDispatcher.UnhandledException += OnDispatcherUnhandledException;
+
             var services = new ServiceCollection();
 
             var httpClient = new HttpClient
@@ -25,6 +30,7 @@ namespace CryptoPuzzles.Client
             services.AddSingleton<NavigationService>();
             services.AddSingleton<AdminStatsService>();
             services.AddSingleton<UserSessionService>();
+            services.AddSingleton(httpClient);
 
             services.AddTransient<MainViewModel>();
             services.AddTransient<LoginViewModel>();
@@ -42,7 +48,6 @@ namespace CryptoPuzzles.Client
             services.AddTransient<DifficultiesViewModel>();
             services.AddTransient<SessionProgressViewModel>();
             services.AddTransient<UserStatisticsViewModel>();
-
             services.AddTransient<TrainingViewModel>();
             services.AddTransient<PracticeViewModel>();
 
@@ -55,12 +60,29 @@ namespace CryptoPuzzles.Client
             services.AddSingleton<TutorialApiService>();
             services.AddSingleton<SessionProgressApiService>();
             services.AddSingleton<UserStatisticsApiService>();
-
-            services.AddSingleton(httpClient);
             services.AddSingleton<AdminApiService>();
             services.AddSingleton<AuthApiService>();
             services.AddSingleton<IAuthService, AuthService>();
+
             Services = services.BuildServiceProvider();
+        }
+
+        private void OnAppDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            var ex = e.ExceptionObject as Exception;
+            MessageBox.Show($"Ошибка: {ex?.Message}\n{ex?.StackTrace}", "Критическая ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        private void OnTaskSchedulerUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
+        {
+            MessageBox.Show($"Ошибка в задаче: {e.Exception.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            e.SetObserved();
+        }
+
+        private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            MessageBox.Show($"Ошибка UI: {e.Exception.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            e.Handled = true;
         }
 
         protected override void OnStartup(StartupEventArgs e)
@@ -68,12 +90,19 @@ namespace CryptoPuzzles.Client
             base.OnStartup(e);
 
             var mainVM = Services.GetRequiredService<MainViewModel>();
-
             ThemeHelper.ApplyTheme();
 
             var mainWindow = new MainWindow
             {
                 DataContext = mainVM
+            };
+
+            mainWindow.Loaded += async (s, args) =>
+            {
+                if (mainWindow.DataContext is UserViewModel userVm)
+                {
+                    await userVm.InitializeAsync();
+                }
             };
 
             mainWindow.Show();

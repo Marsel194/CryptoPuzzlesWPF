@@ -6,6 +6,7 @@ namespace CryptoPuzzles.Client.Services.ApiService
 {
     public class AdminApiService : BaseEntityApiService<AAdmin, AAdminCreate, AAdminUpdate>
     {
-        public AdminApiService(HttpClient httpClient) : base(httpClient, "api/admins") { }
+        public AdminApiService(HttpClient httpClient, UserSessionService userSessionService)
+            : base(httpClient, userSessionService, "api/admins") { }
     }
 }

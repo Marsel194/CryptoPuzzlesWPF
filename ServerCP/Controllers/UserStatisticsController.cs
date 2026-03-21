@@ -35,6 +35,8 @@ namespace CryptoPuzzles.Server.Controllers
                     {
                         u.Statistic.TotalSessions,
                         u.Statistic.TotalPuzzlesSolved,
+                        u.Statistic.SolvedTrainingPuzzles,
+                        u.Statistic.SolvedPracticePuzzles,
                         u.Statistic.TotalScore,
                         u.Statistic.TotalHintsUsed,
                         u.Statistic.AvgScorePerSession,
@@ -50,6 +52,8 @@ namespace CryptoPuzzles.Server.Controllers
                 u.Email,
                 u.Statistic?.TotalSessions ?? 0,
                 u.Statistic?.TotalPuzzlesSolved ?? 0,
+                u.Statistic?.SolvedTrainingPuzzles ?? 0,
+                u.Statistic?.SolvedPracticePuzzles ?? 0,
                 u.Statistic?.TotalScore ?? 0,
                 u.Statistic?.TotalHintsUsed ?? 0,
                 u.Statistic?.AvgScorePerSession ?? 0,
@@ -92,18 +96,18 @@ namespace CryptoPuzzles.Server.Controllers
             if (user == null)
                 return NotFound("Пользователь не найден");
 
-            if (user.Statistic == null)
+            var stat = user.Statistic;
+            if (stat == null)
             {
                 return Ok(new AUserStatistic(
                     user.Id,
                     user.Login,
                     user.Username,
                     user.Email,
-                    0, 0, 0, 0, 0, null, user.CreatedAt
+                    0, 0, 0, 0, 0, 0, 0, null, user.CreatedAt
                 ));
             }
 
-            var stat = user.Statistic;
             var result = new AUserStatistic(
                 stat.UserId,
                 user.Login,
@@ -111,6 +115,8 @@ namespace CryptoPuzzles.Server.Controllers
                 user.Email,
                 stat.TotalSessions,
                 stat.TotalPuzzlesSolved,
+                stat.SolvedTrainingPuzzles,
+                stat.SolvedPracticePuzzles,
                 stat.TotalScore,
                 stat.TotalHintsUsed,
                 stat.AvgScorePerSession,
@@ -120,8 +126,8 @@ namespace CryptoPuzzles.Server.Controllers
 
             return Ok(result);
         }
-
-        [HttpGet("leaderboard")]
+        // На диплом
+        /*[HttpGet("leaderboard")]
         public async Task<ActionResult<IEnumerable<AUserStatistic>>> GetLeaderboard(
             [FromQuery] int top = 10,
             [FromQuery] string criteria = "totalScore")
@@ -174,7 +180,7 @@ namespace CryptoPuzzles.Server.Controllers
                 .ToList();
 
             return Ok(leaderboard);
-        }
+        } */
 
         [HttpGet("user/{userId}/progress")]
         public async Task<ActionResult<object>> GetUserProgressOverTime(int userId)
@@ -189,7 +195,7 @@ namespace CryptoPuzzles.Server.Controllers
                     Score = s.TotalScore,
                     PuzzlesSolved = s.Progresses.Count(p => p.Solved),
                     TotalPuzzles = s.Progresses.Count,
-                    Duration = s.Duration
+                    s.Duration
                 })
                 .ToListAsync();
 
@@ -238,15 +244,23 @@ namespace CryptoPuzzles.Server.Controllers
 
             var progress = await _context.SessionProgress
                 .Include(sp => sp.Session)
+                .Include(sp => sp.Puzzle)
                 .Where(sp => sp.Session.UserId == userId && !sp.IsDeleted && !sp.Session.IsDeleted)
                 .ToListAsync();
 
-            var solvedPuzzles = progress.Count(sp => sp.Solved);
-            var totalScore = progress.Sum(sp => sp.ScoreEarned);
-            var totalHints = progress.Sum(sp => sp.HintsUsed);
-            var totalSessions = sessions.Count;
-            var avgScore = totalSessions > 0 ? (decimal)totalScore / totalSessions : 0;
-            var lastActive = sessions.Max(s => (DateTime?)s.SessionStart);
+            int totalSessions = sessions.Count;
+            int totalScore = progress.Sum(sp => sp.ScoreEarned);
+            int totalHints = progress.Sum(sp => sp.HintsUsed);
+            decimal avgScore = totalSessions > 0 ? (decimal)totalScore / totalSessions : 0;
+
+            DateTime? lastActive = sessions.Max(s => (DateTime?)s.SessionStart);
+            if (lastActive.HasValue && lastActive.Value.Kind != DateTimeKind.Utc)
+                lastActive = DateTime.SpecifyKind(lastActive.Value, DateTimeKind.Utc);
+
+            var solvedProgress = progress.Where(sp => sp.Solved);
+            int solvedTraining = solvedProgress.Count(sp => sp.Puzzle.IsTraining);
+            int solvedPractice = solvedProgress.Count(sp => !sp.Puzzle.IsTraining);
+            int totalSolved = solvedTraining + solvedPractice;
 
             var stats = await _context.UserStatistics.FindAsync(userId);
             if (stats == null)
@@ -255,7 +269,9 @@ namespace CryptoPuzzles.Server.Controllers
                 {
                     UserId = userId,
                     TotalSessions = totalSessions,
-                    TotalPuzzlesSolved = solvedPuzzles,
+                    TotalPuzzlesSolved = totalSolved,
+                    SolvedTrainingPuzzles = solvedTraining,
+                    SolvedPracticePuzzles = solvedPractice,
                     TotalScore = totalScore,
                     TotalHintsUsed = totalHints,
                     AvgScorePerSession = avgScore,
@@ -266,7 +282,9 @@ namespace CryptoPuzzles.Server.Controllers
             else
             {
                 stats.TotalSessions = totalSessions;
-                stats.TotalPuzzlesSolved = solvedPuzzles;
+                stats.TotalPuzzlesSolved = totalSolved;
+                stats.SolvedTrainingPuzzles = solvedTraining;
+                stats.SolvedPracticePuzzles = solvedPractice;
                 stats.TotalScore = totalScore;
                 stats.TotalHintsUsed = totalHints;
                 stats.AvgScorePerSession = avgScore;

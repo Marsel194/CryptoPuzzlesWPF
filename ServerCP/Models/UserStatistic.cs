@@ -1,5 +1,4 @@
-﻿using CryptoPuzzles.Server.Controllers;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace CryptoPuzzles.Server.Models
 {
@@ -10,6 +9,9 @@ namespace CryptoPuzzles.Server.Models
         public int TotalSessions { get; set; } = 0;
 
         public int TotalPuzzlesSolved { get; set; } = 0;
+
+        public int SolvedTrainingPuzzles { get; set; } = 0;
+        public int SolvedPracticePuzzles { get; set; } = 0;
 
         public int TotalScore { get; set; } = 0;
 

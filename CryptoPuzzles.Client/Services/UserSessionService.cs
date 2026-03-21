@@ -1,24 +1,39 @@
-﻿namespace CryptoPuzzles.Client.Services
+﻿using System.Diagnostics;
+
+namespace CryptoPuzzles.Client.Services
 {
     public class UserSessionService
     {
-        public int? CurrentUserId { get; private set; }
-        public string? CurrentUserLogin { get; private set; }
-        public string? CurrentUserRole { get; private set; }
-        public bool IsAuthenticated => CurrentUserId.HasValue;
+        private int? _currentUserId;
+        private string? _currentUsername;
+        private bool _isAdmin;
+        private string? _token;
 
-        public void SetUser(int userId, string login, string role = "User", string username = "", bool isAdmin = false)
+        public int? CurrentUserId => _currentUserId;
+        public string? CurrentUsername => _currentUsername;
+        public bool IsAdmin => _isAdmin;
+        public string? Token => _token;
+        public bool IsAuthenticated => _currentUserId.HasValue && !string.IsNullOrEmpty(_token);
+
+        public void SetUser(int userId, string login, string username, bool isAdmin, string token)
         {
-            CurrentUserId = userId;
-            CurrentUserLogin = login;
-            CurrentUserRole = role;
+            Debug.WriteLine($"SetUser called - UserId: {userId}, IsAdmin: {isAdmin}, Token: {(string.IsNullOrEmpty(token) ? "NULL" : "PRESENT")}");
+
+            _currentUserId = userId;
+            _currentUsername = username;
+            _isAdmin = isAdmin;
+            _token = token;
+
+            Debug.WriteLine($"Token stored: {(_token != null ? "Yes" : "No")}");
         }
 
         public void ClearUser()
         {
-            CurrentUserId = null;
-            CurrentUserLogin = null;
-            CurrentUserRole = null;
+            Debug.WriteLine("ClearUser called");
+            _currentUserId = null;
+            _currentUsername = null;
+            _isAdmin = false;
+            _token = null;
         }
     }
 }
