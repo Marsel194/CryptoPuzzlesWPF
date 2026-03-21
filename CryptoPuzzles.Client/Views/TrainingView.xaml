@@ -88,7 +88,7 @@
                     <Button Content="Начать тренировочные задания"
                             Command="{Binding StartTrainingPracticeCommand}"
                             Style="{StaticResource PrimaryButton}"
-                            Foreground="{DynamicResource MaterialDesignBody}"
+                            Foreground="White"
                             HorizontalAlignment="Center"
                             Margin="0,32,0,16"
                             Padding="32,12"
@@ -159,7 +159,7 @@
                                 Command="{Binding CheckAnswerCommand}"
                                 Content="Проверить"
                                 Style="{StaticResource PrimaryButton}"
-                                Foreground="{DynamicResource MaterialDesignBody}"
+                                Foreground="White"
                                 Padding="24,0"/>
                     </Grid>
                 </StackPanel>
@@ -186,7 +186,7 @@
                     <Button Command="{Binding GoBackCommand}"
                             Content="На главную"
                             Style="{StaticResource PrimaryButton}"
-                            Foreground="{DynamicResource MaterialDesignBody}"
+                            Foreground="White"
                             Width="200"/>
                 </StackPanel>
             </StackPanel>

@@ -145,7 +145,7 @@
                     <Button Command="{Binding CheckAnswerCommand}"
                             Content="Ответить"
                             Style="{StaticResource PrimaryButton}"
-                            Foreground="{DynamicResource MaterialDesignBody}"
+                            Foreground="White"
                             Height="48"/>
                 </StackPanel>
 
@@ -177,7 +177,7 @@
                         <Button Grid.Column="0" Command="{Binding NextPuzzleCommand}"
                                 Content="Следующий"
                                 Style="{StaticResource PrimaryButton}"
-                                Foreground="{DynamicResource MaterialDesignBody}"
+                                Foreground="White"
                                 Margin="0,0,8,0"
                                 Visibility="{Binding HasNextPuzzle, Converter={StaticResource BoolToVis}}"/>
                         <Button Grid.Column="1" Command="{Binding FinishModuleCommand}"
@@ -212,7 +212,7 @@
                     <Button Command="{Binding GoBackCommand}"
                             Content="К выбору сложности"
                             Style="{StaticResource PrimaryButton}"
-                            Foreground="{DynamicResource MaterialDesignBody}"
+                            Foreground="White"
                             Width="200"/>
                 </StackPanel>
             </StackPanel>

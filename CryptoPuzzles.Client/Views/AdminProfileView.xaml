@@ -302,7 +302,7 @@
                                 Style="{StaticResource PrimaryButton}"
                                 Content="Сохранить"
                                 Margin="0,0,16,0"
-                                Foreground="{DynamicResource MaterialDesignBody}"/>
+                                Foreground="White"/>
                         <Button Command="{Binding CancelCommand}"
                                 Style="{StaticResource MaterialDesignFlatButton}"
                                 Content="Отмена"
