@@ -182,7 +182,7 @@
 
                     <Button x:Name="btnLogin" Style="{StaticResource PrimaryButton}"
                           Content="{Binding IsBusy, Converter={StaticResource BusyToTextConverter}, ConverterParameter='ВОЙТИ|Вход...'}"
-                          Foreground="{DynamicResource MaterialDesignBody}"
+                          Foreground="White"
                           Command="{Binding LoginCommand}"
                           Height="52" FontSize="16" FontWeight="Bold"
                           Margin="0,16,0,24"

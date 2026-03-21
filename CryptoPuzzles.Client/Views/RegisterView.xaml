@@ -388,7 +388,7 @@
                         <Button Content="{Binding IsBusy, Converter={StaticResource BusyToTextConverter}, ConverterParameter='ЗАРЕГИСТРИРОВАТЬСЯ|Регистрация...'}"
                                 Style="{StaticResource PrimaryButton}"
                                 Command="{Binding RegisterCommand}"
-                                Foreground="{DynamicResource MaterialDesignBody}"
+                                Foreground="White"
                                 Height="52" FontSize="16" FontWeight="Bold"
                                 Margin="0,16,0,24" Cursor="Hand"
                                 materialDesign:ButtonAssist.CornerRadius="26"
