@@ -332,7 +332,7 @@
             </Style>
 
             <!-- Стиль для кнопки перехода к теории (в стиле RoundedOutlinedButton) -->
-            <Style x:Key="TheoryNavigationButton" TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+            <Style x:Key="OutlinedButton" TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
                 <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}"/>
                 <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
                 <Setter Property="BorderThickness" Value="1.5"/>
@@ -363,15 +363,6 @@
                         </Setter>
                     </Trigger>
                 </Style.Triggers>
-            </Style>
-
-            <!-- Стиль для иконки в кнопке навигации -->
-            <Style x:Key="TheoryNavigationIcon" TargetType="materialDesign:PackIcon">
-                <Setter Property="Width" Value="20"/>
-                <Setter Property="Height" Value="20"/>
-                <Setter Property="Margin" Value="0,0,8,0"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
             </Style>
 
             <SolidColorBrush x:Key="MaterialDesignSuccessBrush" Color="#4CAF50"/>

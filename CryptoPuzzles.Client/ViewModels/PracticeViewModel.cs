@@ -21,6 +21,7 @@ namespace CryptoPuzzles.Client.ViewModels
         private readonly int _userId;
         private readonly DispatcherTimer _timer;
         private readonly DispatcherTimer _hintTimer;
+        private readonly HashSet<int> _seenPuzzleIds;
 
         private ObservableCollection<ADifficulty>? _difficulties;
         private ADifficulty? _selectedDifficulty;
@@ -72,12 +73,15 @@ namespace CryptoPuzzles.Client.ViewModels
             _hintTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(5) };
             _hintTimer.Tick += (s, e) => ShowHintsAfterDelay();
 
+            _seenPuzzleIds = new HashSet<int>();
+
             SelectDifficultyCommand = new AsyncRelayCommand(async _ => await SelectDifficultyAsync(_ as ADifficulty));
             NextHintCommand = new AsyncRelayCommand(async _ => await NextHintAsync(), _ => HasNextHint);
             CheckAnswerCommand = new AsyncRelayCommand(async _ => await CheckAnswerAsync(), _ => !string.IsNullOrWhiteSpace(UserAnswer));
             GoBackCommand = new AsyncRelayCommand(async _ => await GoBackAsync());
             NextPuzzleCommand = new AsyncRelayCommand(async _ => await NextPuzzleAsync(), _ => HasNextPuzzle);
             FinishModuleCommand = new AsyncRelayCommand(async _ => await FinishModuleAsync());
+            NextRandomQuestionCommand = new AsyncRelayCommand(async _ => await LoadRandomPuzzleAsync());
 
             LoadDifficultiesAsync().SafeFireAndForget();
         }
@@ -192,6 +196,7 @@ namespace CryptoPuzzles.Client.ViewModels
         public ICommand GoBackCommand { get; }
         public ICommand NextPuzzleCommand { get; }
         public ICommand FinishModuleCommand { get; }
+        public ICommand NextRandomQuestionCommand { get; }
 
         private async Task LoadDifficultiesAsync()
         {
@@ -235,6 +240,7 @@ namespace CryptoPuzzles.Client.ViewModels
                 {
                     _puzzles = new ObservableCollection<APuzzle>(puzzles);
                     _currentPuzzleIndex = -1;
+                    _seenPuzzleIds.Clear();
                     MoveToNextPuzzle();
                 });
             }
@@ -299,10 +305,19 @@ namespace CryptoPuzzles.Client.ViewModels
                 return;
             }
 
-            CurrentPuzzle = _puzzles[_currentPuzzleIndex];
+            var nextPuzzle = _puzzles[_currentPuzzleIndex];
+            SetCurrentPuzzle(nextPuzzle);
+        }
+
+        private void SetCurrentPuzzle(APuzzle puzzle)
+        {
+            CurrentPuzzle = puzzle;
             UserAnswer = string.Empty;
             _puzzleStartTime = DateTime.Now;
             _timer.Start();
+
+            if (!_seenPuzzleIds.Contains(puzzle.Id))
+                _seenPuzzleIds.Add(puzzle.Id);
 
             LoadHintsForCurrentPuzzleAsync().SafeFireAndForget();
         }
@@ -514,6 +529,48 @@ namespace CryptoPuzzles.Client.ViewModels
             CompletionMessage = $"Вы решили все задания сложности {SelectedDifficulty?.DifficultyName ?? "неизвестно"}!\nНабрано очков: {_totalScore}";
         }
 
+        private async Task LoadRandomPuzzleAsync()
+        {
+            var randomPuzzle = GetRandomPuzzle();
+            if (randomPuzzle == null)
+            {
+                CompleteModule();
+                return;
+            }
+
+            _timer.Stop();
+            _hintTimer.Stop();
+
+            SetCurrentPuzzle(randomPuzzle);
+            await Task.CompletedTask;
+        }
+
+        private APuzzle? GetRandomPuzzle()
+        {
+            if (_puzzles == null || _puzzles.Count == 0)
+                return null;
+
+            var allIds = _puzzles.Select(p => p.Id).ToList();
+            var unseenIds = allIds.Except(_seenPuzzleIds).ToList();
+
+            if (unseenIds.Count > 0)
+            {
+                int index = new Random().Next(unseenIds.Count);
+                int puzzleId = unseenIds[index];
+                return _puzzles.First(p => p.Id == puzzleId);
+            }
+
+            var unsolvedIds = allIds.Where(id => _progressByPuzzleId.TryGetValue(id, out var prog) && !prog.Solved).ToList();
+            if (unsolvedIds.Count > 0)
+            {
+                int index = new Random().Next(unsolvedIds.Count);
+                int puzzleId = unsolvedIds[index];
+                return _puzzles.First(p => p.Id == puzzleId);
+            }
+
+            return null;
+        }
+
         private async Task GoBackAsync()
         {
             _timer.Stop();
@@ -539,6 +596,7 @@ namespace CryptoPuzzles.Client.ViewModels
             UserAnswer = string.Empty;
             ElapsedTime = "00:00";
             _progressByPuzzleId.Clear();
+            _seenPuzzleIds.Clear();
         }
 
         private void GoBackToDifficultySelection()

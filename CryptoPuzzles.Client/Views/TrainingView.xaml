@@ -150,7 +150,7 @@
                         <Button Grid.Column="1" 
                                 Command="{Binding GoToTheory}"
                                 Content="Вернуться к теории"
-                                Style="{StaticResource TheoryNavigationButton}"
+                                Style="{StaticResource OutlinedButton}"
                                 Foreground="{DynamicResource MaterialDesignBody}"
                                 Padding="24,0"
                                 Margin="0,0,16,0"/>
