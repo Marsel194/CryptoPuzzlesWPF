@@ -8,11 +8,9 @@ namespace CryptoPuzzles.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GameSessionsController : ControllerBase
+    public class GameSessionsController(AppDbContext context) : ControllerBase
     {
-        private readonly AppDbContext _context;
-
-        public GameSessionsController(AppDbContext context) => _context = context;
+        private readonly AppDbContext _context = context;
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AGameSession>>> GetAll([FromQuery] bool includeDeleted = false)

@@ -8,10 +8,8 @@ namespace CryptoPuzzles.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TutorialsController : BaseController<Tutorial, ATutorial, ATutorialCreate, ATutorialUpdate>
+    public class TutorialsController(AppDbContext context) : BaseController<Tutorial, ATutorial, ATutorialCreate, ATutorialUpdate>(context)
     {
-        public TutorialsController(AppDbContext context) : base(context) { }
-
         protected override IQueryable<Tutorial> ApplyIncludes(IQueryable<Tutorial> query)
         {
             return query.Include(t => t.Method);

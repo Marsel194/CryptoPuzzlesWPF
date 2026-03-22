@@ -8,10 +8,8 @@ namespace CryptoPuzzles.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class HintsController : BaseController<Hint, AHint, AHintCreate, AHintUpdate>
+    public class HintsController(AppDbContext context) : BaseController<Hint, AHint, AHintCreate, AHintUpdate>(context)
     {
-        public HintsController(AppDbContext context) : base(context) { }
-
         protected override IQueryable<Hint> ApplyIncludes(IQueryable<Hint> query)
         {
             return query.Include(h => h.Puzzle);

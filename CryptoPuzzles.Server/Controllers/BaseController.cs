@@ -6,26 +6,17 @@ using System.Reflection;
 
 namespace CryptoPuzzles.Server.Controllers
 {
-    public abstract class BaseController<TEntity, TDto, TCreateDto, TUpdateDto> : ControllerBase
+    public abstract class BaseController<TEntity, TDto, TCreateDto, TUpdateDto>(AppDbContext context) : ControllerBase
         where TEntity : class, IEntityWithId, ISoftDelete, new()
         where TUpdateDto : class, IHasId
     {
-        protected readonly AppDbContext _context;
-        private readonly Dictionary<string, PropertyInfo> _entityProps;
-        private readonly Dictionary<string, PropertyInfo> _dtoProps;
-
-        protected BaseController(AppDbContext context)
-        {
-            _context = context;
-
-            _entityProps = typeof(TEntity).GetProperties()
+        protected readonly AppDbContext _context = context;
+        private readonly Dictionary<string, PropertyInfo> _entityProps = typeof(TEntity).GetProperties()
                 .Where(p => p.CanWrite)
                 .ToDictionary(p => p.Name, p => p);
-
-            _dtoProps = typeof(TUpdateDto).GetProperties()
+        private readonly Dictionary<string, PropertyInfo> _dtoProps = typeof(TUpdateDto).GetProperties()
                 .Where(p => p.Name != nameof(IHasId.Id))
                 .ToDictionary(p => p.Name, p => p);
-        }
 
         protected abstract TDto MapToDto(TEntity entity);
         protected abstract TEntity MapToEntity(TCreateDto dto);

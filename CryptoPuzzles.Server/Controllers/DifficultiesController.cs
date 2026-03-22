@@ -7,10 +7,8 @@ namespace CryptoPuzzles.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DifficultiesController : BaseController<Difficulty, ADifficulty, ADifficultyCreate, ADifficultyUpdate>
+    public class DifficultiesController(AppDbContext context) : BaseController<Difficulty, ADifficulty, ADifficultyCreate, ADifficultyUpdate>(context)
     {
-        public DifficultiesController(AppDbContext context) : base(context) { }
-
         protected override ADifficulty MapToDto(Difficulty entity)
         {
             return new ADifficulty(entity.Id, entity.DifficultyName);

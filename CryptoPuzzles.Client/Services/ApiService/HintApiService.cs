@@ -4,8 +4,7 @@ using System.Net.Http;
 
 namespace CryptoPuzzles.Client.Services.ApiService
 {
-    public class HintApiService : BaseEntityApiService<AHint, AHintCreate, AHintUpdate>
+    public class HintApiService(HttpClient httpClient) : BaseEntityApiService<AHint, AHintCreate, AHintUpdate>(httpClient, "api/hints")
     {
-        public HintApiService(HttpClient httpClient) : base(httpClient, "api/hints") { }
     }
 }

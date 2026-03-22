@@ -9,14 +9,9 @@ namespace CryptoPuzzles.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserStatisticsController : ControllerBase
+    public class UserStatisticsController(AppDbContext context) : ControllerBase
     {
-        private readonly AppDbContext _context;
-
-        public UserStatisticsController(AppDbContext context)
-        {
-            _context = context;
-        }
+        private readonly AppDbContext _context = context;
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AUserStatistic>>> GetAll(
@@ -189,7 +184,7 @@ namespace CryptoPuzzles.Server.Controllers
                     Score = s.TotalScore,
                     PuzzlesSolved = s.Progresses.Count(p => p.Solved),
                     TotalPuzzles = s.Progresses.Count,
-                    Duration = s.Duration
+                    s.Duration
                 })
                 .ToListAsync();
 

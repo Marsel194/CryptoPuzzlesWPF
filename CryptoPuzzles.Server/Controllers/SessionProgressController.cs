@@ -8,14 +8,9 @@ namespace CryptoPuzzles.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SessionProgressController : ControllerBase
+    public class SessionProgressController(AppDbContext context) : ControllerBase
     {
-        private readonly AppDbContext _context;
-
-        public SessionProgressController(AppDbContext context)
-        {
-            _context = context;
-        }
+        private readonly AppDbContext _context = context;
 
         [HttpGet("session/{sessionId}")]
         public async Task<ActionResult<IEnumerable<ASessionProgress>>> GetBySession(int sessionId, [FromQuery] bool includeDeleted = false)
@@ -29,7 +24,7 @@ namespace CryptoPuzzles.Server.Controllers
                         {
                             SessionProgress = sp,
                             UserLogin = u.Login,
-                            Username = u.Username,
+                            u.Username,
                             PuzzleTitle = p.Title
                         };
 
@@ -83,8 +78,9 @@ namespace CryptoPuzzles.Server.Controllers
                     SolvedPuzzles = g.Count(sp => sp.Solved),
                     TotalScore = g.Sum(sp => sp.ScoreEarned),
                     TotalHints = g.Sum(sp => sp.HintsUsed),
-                    AverageTimePerPuzzle = g.Where(sp => sp.SolvedAt != null)
-                        .Average(sp => ((DateTime)sp.SolvedAt! - sp.StartedAt).TotalSeconds),
+                    AverageTimePerPuzzle = g.Where(sp => sp.SolvedAt != null).Any()
+                        ? g.Where(sp => sp.SolvedAt != null).Average(sp => ((DateTime)sp.SolvedAt! - sp.StartedAt).TotalSeconds)
+                        : 0,
                     SuccessRate = g.Count() > 0
                         ? (double)g.Count(sp => sp.Solved) / g.Count() * 100
                         : 0
@@ -187,12 +183,13 @@ namespace CryptoPuzzles.Server.Controllers
 
             if (dto.Solved.HasValue && dto.Solved.Value && !progress.Solved)
             {
+                var solvedAt = dto.SolvedAt ?? DateTime.UtcNow;
                 progress.Solved = true;
-                progress.SolvedAt = dto.SolvedAt ?? DateTime.UtcNow;
+                progress.SolvedAt = solvedAt;
+                progress.TimeToSolve = solvedAt - progress.StartedAt;
 
                 var session = await _context.GameSessions.FindAsync(progress.SessionId);
-                if (session != null)
-                    session.TotalScore += progress.ScoreEarned;
+                session?.TotalScore += progress.ScoreEarned;
             }
 
             if (dto.IsDeleted.HasValue)
@@ -219,7 +216,7 @@ namespace CryptoPuzzles.Server.Controllers
                         {
                             SessionProgress = sp,
                             UserLogin = u.Login,
-                            Username = u.Username,
+                            u.Username,
                             PuzzleTitle = p.Title
                         };
 
@@ -269,7 +266,7 @@ namespace CryptoPuzzles.Server.Controllers
                         {
                             SessionProgress = sp,
                             UserLogin = u.Login,
-                            Username = u.Username,
+                            u.Username,
                             PuzzleTitle = p.Title
                         };
 

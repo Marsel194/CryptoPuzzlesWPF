@@ -9,14 +9,9 @@ namespace CryptoPuzzles.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LoginController : ControllerBase
+    public class LoginController(AppDbContext context) : ControllerBase
     {
-        private readonly AppDbContext _context;
-
-        public LoginController(AppDbContext context)
-        {
-            _context = context;
-        }
+        private readonly AppDbContext _context = context;
 
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] UALoginRequest request)

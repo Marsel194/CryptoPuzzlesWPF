@@ -8,10 +8,8 @@ namespace CryptoPuzzles.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AdminsController : BaseController<Admin, AAdmin, AAdminCreate, AAdminUpdate>
+    public class AdminsController(AppDbContext context) : BaseController<Admin, AAdmin, AAdminCreate, AAdminUpdate>(context)
     {
-        public AdminsController(AppDbContext context) : base(context) { }
-
         protected override AAdmin MapToDto(Admin entity)
         {
             return new AAdmin(
