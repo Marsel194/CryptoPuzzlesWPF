@@ -1,10 +1,10 @@
-﻿using CryptoPuzzles.Client;
+﻿// ===== UserViewModel.cs =====
+using CryptoPuzzles.Client;
 using CryptoPuzzles.Client.Services;
 using CryptoPuzzles.Client.Services.ApiService;
 using CryptoPuzzles.Client.ViewModels.Base;
 using CryptoPuzzles.Shared;
 using Microsoft.Extensions.DependencyInjection;
-using System.Diagnostics;
 using System.Windows.Input;
 
 namespace CryptoPuzzles.Client.ViewModels
@@ -179,13 +179,16 @@ namespace CryptoPuzzles.Client.ViewModels
             try
             {
                 CurrentUser ??= await _userApiService.GetByIdAsync(CurrentUserId);
-
                 if (CurrentUser == null) return;
 
                 var profileVM = ActivatorUtilities.CreateInstance<UserProfileViewModel>(
                     _serviceProvider,
                     CurrentUserId,
-                    (Action)(() => CurrentSection = null)
+                    (Action)(async () =>
+                    {
+                        await LoadUserStatsAsync();
+                        CurrentSection = null;
+                    })
                 );
 
                 CurrentSection = profileVM;
@@ -197,10 +200,10 @@ namespace CryptoPuzzles.Client.ViewModels
             }
         }
 
-        private Task GoBackAsync(object? parameter = null)
+        private async Task GoBackAsync(object? parameter = null)
         {
             CurrentSection = null;
-            return Task.CompletedTask;
+            await LoadUserStatsAsync();
         }
 
         private async Task StartTrainingAsync(object? parameter = null)

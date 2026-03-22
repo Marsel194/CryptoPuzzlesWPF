@@ -1,8 +1,8 @@
-﻿using CryptoPuzzles.Client.Services;
+﻿// ===== UserProfileViewModel.cs =====
+using CryptoPuzzles.Client.Services;
 using CryptoPuzzles.Client.Services.ApiService;
 using CryptoPuzzles.Client.ViewModels.Base;
 using CryptoPuzzles.Shared;
-using System.Diagnostics;
 using System.Windows.Input;
 
 namespace CryptoPuzzles.Client.ViewModels
@@ -121,14 +121,14 @@ namespace CryptoPuzzles.Client.ViewModels
             Action closeAction,
             int userId)
         {
-            _authService = authService ?? throw new ArgumentNullException(nameof(authService));
-            _userApi = userApi ?? throw new ArgumentNullException(nameof(userApi));
-            _gameSessionApi = gameSessionApi ?? throw new ArgumentNullException(nameof(gameSessionApi));
-            _progressApi = progressApi ?? throw new ArgumentNullException(nameof(progressApi));
-            _statisticsApi = statisticsApi ?? throw new ArgumentNullException(nameof(statisticsApi));
-            _puzzleApi = puzzleApi ?? throw new ArgumentNullException(nameof(puzzleApi));
-            _userSession = userSession ?? throw new ArgumentNullException(nameof(userSession));
-            _closeAction = closeAction ?? throw new ArgumentNullException(nameof(closeAction));
+            _authService = authService;
+            _userApi = userApi;
+            _gameSessionApi = gameSessionApi;
+            _progressApi = progressApi;
+            _statisticsApi = statisticsApi;
+            _puzzleApi = puzzleApi;
+            _userSession = userSession;
+            _closeAction = closeAction;
             _userId = userId;
 
             CloseCommand = new AsyncRelayCommand(CloseAsync);
@@ -143,7 +143,6 @@ namespace CryptoPuzzles.Client.ViewModels
         {
             if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Username))
                 return false;
-
             bool changePassword = !string.IsNullOrWhiteSpace(NewPassword);
             if (changePassword)
             {
@@ -152,7 +151,6 @@ namespace CryptoPuzzles.Client.ViewModels
                 if (NewPassword.Length < 6)
                     return false;
             }
-
             return true;
         }
 
@@ -168,7 +166,6 @@ namespace CryptoPuzzles.Client.ViewModels
                     Login = user.Login;
                     Email = user.Email;
                     Username = user.Username;
-
                     _originalEmail = user.Email;
                     _originalUsername = user.Username;
                 }
@@ -181,11 +178,10 @@ namespace CryptoPuzzles.Client.ViewModels
                     var practicePuzzles = allPuzzles.Where(p => !p.IsTraining).ToList();
 
                     TrainingProgress = trainingPuzzles.Count > 0
-                        ? (int)((double)stats.TotalPuzzlesSolved / trainingPuzzles.Count * 100)
+                        ? (int)((double)stats.SolvedTrainingPuzzles / trainingPuzzles.Count * 100)
                         : 0;
-
                     PracticeProgress = practicePuzzles.Count > 0
-                        ? (int)((double)stats.TotalPuzzlesSolved / practicePuzzles.Count * 100)
+                        ? (int)((double)stats.SolvedPracticePuzzles / practicePuzzles.Count * 100)
                         : 0;
                 }
 
@@ -234,9 +230,11 @@ namespace CryptoPuzzles.Client.ViewModels
                     await _gameSessionApi.UpdateAsync(session.Id, update);
                 }
 
-                HasActiveSession = false;
+                await _statisticsApi.RefreshStatisticsAsync(_userId);
+
                 await LoadUserDataAsync();
-                await DialogService.ShowMessage("Весь прогресс успешно удалён.");
+
+                _closeAction?.Invoke();
             }
             catch (Exception ex)
             {
@@ -258,10 +256,8 @@ namespace CryptoPuzzles.Client.ViewModels
         {
             _originalEmail = Email;
             _originalUsername = Username;
-
             NewPassword = string.Empty;
             ConfirmPassword = string.Empty;
-
             IsEditMode = true;
             return Task.CompletedTask;
         }
@@ -273,7 +269,6 @@ namespace CryptoPuzzles.Client.ViewModels
                 await DialogService.ShowError("Email не может быть пустым.");
                 return;
             }
-
             if (string.IsNullOrWhiteSpace(Username))
             {
                 await DialogService.ShowError("Имя не может быть пустым.");
@@ -301,12 +296,12 @@ namespace CryptoPuzzles.Client.ViewModels
 
                 var updateDto = new AUserUpdate(
                     Id: _userId,
-                    Login: this.Login,
-                    Username: this.Username,
-                    Email: this.Email,
+                    Login: Login,
+                    Username: Username,
+                    Email: Email,
                     IsDeleted: null,
                     DeletedAt: null,
-                    Password: changePassword ? this.NewPassword : null
+                    Password: changePassword ? NewPassword : null
                 );
 
                 await _userApi.UpdateAsync(_userId, updateDto);
@@ -335,12 +330,9 @@ namespace CryptoPuzzles.Client.ViewModels
         {
             Email = _originalEmail;
             Username = _originalUsername;
-
             NewPassword = string.Empty;
             ConfirmPassword = string.Empty;
-
             IsEditMode = false;
-
             await LoadUserDataAsync();
         }
     }

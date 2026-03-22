@@ -230,6 +230,8 @@ namespace CryptoPuzzles.Server.Data
                 entity.Property(us => us.UserId).HasColumnName("user_id");
                 entity.Property(us => us.TotalSessions).HasColumnName("total_sessions");
                 entity.Property(us => us.TotalPuzzlesSolved).HasColumnName("total_puzzles_solved");
+                entity.Property(us => us.SolvedTrainingPuzzles).HasColumnName("solved_training_puzzles");
+                entity.Property(us => us.SolvedPracticePuzzles).HasColumnName("solved_practice_puzzles");
                 entity.Property(us => us.TotalScore).HasColumnName("total_score");
                 entity.Property(us => us.TotalHintsUsed).HasColumnName("total_hints_used");
                 entity.Property(us => us.AvgScorePerSession).HasColumnName("avg_score_per_session").HasPrecision(5, 2);

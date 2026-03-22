@@ -209,14 +209,18 @@ namespace CryptoPuzzles.Shared
     public class AUserStatistic : ObservableObject
     {
         private int _userId; private string _userLogin = string.Empty; private string _username = string.Empty; private string _email = string.Empty;
-        private int _totalSessions; private int _totalPuzzlesSolved; private int _totalScore; private int _totalHintsUsed;
-        private decimal _avgScorePerSession; private DateTime? _lastActive; private DateTime? _registeredAt; private bool _isDeleted; private DateTime? _deletedAt;
+        private int _totalSessions; private int _totalPuzzlesSolved; private int _solvedTrainingPuzzles; private int _solvedPracticePuzzles;
+        private int _totalScore; private int _totalHintsUsed; private decimal _avgScorePerSession; private DateTime? _lastActive; private DateTime? _registeredAt;
+        private bool _isDeleted; private DateTime? _deletedAt;
+
         public int UserId { get => _userId; set => SetProperty(ref _userId, value); }
         [ExportName("Логин пользователя")] public string UserLogin { get => _userLogin; set => SetProperty(ref _userLogin, value); }
         [ExportName("Имя пользователя")] public string Username { get => _username; set => SetProperty(ref _username, value); }
         [ExportName("Почта")] public string Email { get => _email; set => SetProperty(ref _email, value); }
         [ExportName("Всего сессий")] public int TotalSessions { get => _totalSessions; set => SetProperty(ref _totalSessions, value); }
         [ExportName("Решено головоломок")] public int TotalPuzzlesSolved { get => _totalPuzzlesSolved; set => SetProperty(ref _totalPuzzlesSolved, value); }
+        [ExportName("Решено обучающих")] public int SolvedTrainingPuzzles { get => _solvedTrainingPuzzles; set => SetProperty(ref _solvedTrainingPuzzles, value); }
+        [ExportName("Решено практических")] public int SolvedPracticePuzzles { get => _solvedPracticePuzzles; set => SetProperty(ref _solvedPracticePuzzles, value); }
         [ExportName("Всего очков")] public int TotalScore { get => _totalScore; set => SetProperty(ref _totalScore, value); }
         [ExportName("Всего подсказок")] public int TotalHintsUsed { get => _totalHintsUsed; set => SetProperty(ref _totalHintsUsed, value); }
         [ExportName("Средний балл за сессию")] public decimal AvgScorePerSession { get => _avgScorePerSession; set => SetProperty(ref _avgScorePerSession, value); }
@@ -224,10 +228,16 @@ namespace CryptoPuzzles.Shared
         [ExportName("Дата регистрации")] public DateTime? RegisteredAt { get => _registeredAt; set => SetProperty(ref _registeredAt, value); }
         public bool IsDeleted { get => _isDeleted; set => SetProperty(ref _isDeleted, value); }
         public DateTime? DeletedAt { get => _deletedAt; set => SetProperty(ref _deletedAt, value); }
-        [ExportName("Процент успеха")] public double SuccessRate => TotalPuzzlesSolved > 0 ? (double)TotalPuzzlesSolved / (TotalPuzzlesSolved + TotalHintsUsed) * 100 : 0;
-        [ExportName("Последняя активность")] public string LastActiveFormatted => LastActive?.ToString("dd.MM.yyyy HH:mm") ?? "—";
-        public AUserStatistic(int userId, string userLogin, string username, string email, int totalSessions, int totalPuzzlesSolved, int totalScore, int totalHintsUsed, decimal avgScorePerSession, DateTime? lastActive, DateTime? registeredAt = null)
-        { _userId = userId; _userLogin = userLogin; _username = username; _email = email; _totalSessions = totalSessions; _totalPuzzlesSolved = totalPuzzlesSolved; _totalScore = totalScore; _totalHintsUsed = totalHintsUsed; _avgScorePerSession = avgScorePerSession; _lastActive = lastActive; _registeredAt = registeredAt; }
+
+        public AUserStatistic(int userId, string userLogin, string username, string email, int totalSessions, int totalPuzzlesSolved, int solvedTrainingPuzzles, int solvedPracticePuzzles, int totalScore, int totalHintsUsed, decimal avgScorePerSession, DateTime? lastActive, DateTime? registeredAt = null, bool isDeleted = false, DateTime? deletedAt = null)
+        {
+            _userId = userId; _userLogin = userLogin; _username = username; _email = email;
+            _totalSessions = totalSessions; _totalPuzzlesSolved = totalPuzzlesSolved;
+            _solvedTrainingPuzzles = solvedTrainingPuzzles; _solvedPracticePuzzles = solvedPracticePuzzles;
+            _totalScore = totalScore; _totalHintsUsed = totalHintsUsed;
+            _avgScorePerSession = avgScorePerSession; _lastActive = lastActive; _registeredAt = registeredAt;
+            _isDeleted = isDeleted; _deletedAt = deletedAt;
+        }
         public AUserStatistic() { }
     }
 
