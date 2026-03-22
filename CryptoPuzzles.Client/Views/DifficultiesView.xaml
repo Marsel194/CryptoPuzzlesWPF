@@ -35,7 +35,7 @@
                     <CheckBox Content="Показывать удалённые" IsChecked="{Binding ShowDeleted}" 
                               VerticalAlignment="Center" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                 </WrapPanel>
-                <DataGrid ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" 
+                <DataGrid ItemsSource="{Binding ItemsView}" SelectedItem="{Binding SelectedItem}" Margin="10"
                           AutoGenerateColumns="False" IsReadOnly="False" CanUserAddRows="False"
                           materialDesign:DataGridAssist.CellPadding="13 8 8 8"
                           materialDesign:DataGridAssist.ColumnHeaderPadding="8"
