@@ -39,6 +39,8 @@ public class UsersController : BaseController<User, AUser, AUserCreate, AUserUpd
 
     protected override void UpdateEntity(User entity, AUserUpdate dto)
     {
+        base.UpdateEntity(entity, dto);
+
         entity.Login = dto.Login;
         entity.Username = dto.Username;
         entity.Email = dto.Email;
@@ -87,6 +89,12 @@ public class UsersController : BaseController<User, AUser, AUserCreate, AUserUpd
         }
 
         UpdateEntity(entity, dto);
+
+        if (entity.IsDeleted && entity.DeletedAt == null)
+            entity.DeletedAt = DateTime.UtcNow;
+        if (!entity.IsDeleted)
+            entity.DeletedAt = null;
+
         await _context.SaveChangesAsync();
         return NoContent();
     }

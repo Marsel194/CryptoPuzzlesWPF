@@ -11,6 +11,14 @@ public class PuzzlesController : BaseController<Puzzle, APuzzle, APuzzleCreate, 
 {
     public PuzzlesController(AppDbContext context) : base(context) { }
 
+    protected override IQueryable<Puzzle> ApplyIncludes(IQueryable<Puzzle> query)
+    {
+        return query
+            .Include(p => p.Difficulty)
+            .Include(p => p.Method)
+            .Include(p => p.CreatedByAdmin);
+    }
+
     protected override APuzzle MapToDto(Puzzle entity)
     {
         return new APuzzle(

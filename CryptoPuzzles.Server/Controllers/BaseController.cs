@@ -42,10 +42,16 @@ namespace CryptoPuzzles.Server.Controllers
             }
         }
 
+        protected virtual IQueryable<TEntity> ApplyIncludes(IQueryable<TEntity> query)
+        {
+            return query;
+        }
+
         [HttpGet]
         public virtual async Task<ActionResult<IEnumerable<TDto>>> GetAll([FromQuery] bool includeDeleted = false)
         {
             var query = _context.Set<TEntity>().AsQueryable();
+            query = ApplyIncludes(query);
             if (!includeDeleted)
                 query = query.Where(e => !e.IsDeleted);
 
@@ -58,7 +64,9 @@ namespace CryptoPuzzles.Server.Controllers
         [HttpGet("{id}")]
         public virtual async Task<ActionResult<TDto>> Get(int id, [FromQuery] bool includeDeleted = false)
         {
-            var entity = await _context.Set<TEntity>()
+            var query = _context.Set<TEntity>().AsQueryable();
+            query = ApplyIncludes(query);
+            var entity = await query
                 .FirstOrDefaultAsync(e => e.Id == id && (includeDeleted || !e.IsDeleted));
             if (entity == null)
                 return NotFound();

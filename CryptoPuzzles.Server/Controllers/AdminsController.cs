@@ -41,6 +41,10 @@ namespace CryptoPuzzles.Server.Controllers
 
         protected override void UpdateEntity(Admin entity, AAdminUpdate dto)
         {
+            // Copy common properties (IsDeleted/DeletedAt etc.) from DTO to entity
+            base.UpdateEntity(entity, dto);
+
+            // Apply admin-specific fields
             entity.Login = dto.Login;
             entity.FirstName = dto.FirstName;
             entity.LastName = dto.LastName;

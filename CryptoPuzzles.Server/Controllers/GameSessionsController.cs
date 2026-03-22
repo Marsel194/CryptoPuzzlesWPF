@@ -15,11 +15,17 @@ namespace CryptoPuzzles.Server.Controllers
         public GameSessionsController(AppDbContext context) => _context = context;
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AGameSession>>> GetAll()
+        public async Task<ActionResult<IEnumerable<AGameSession>>> GetAll([FromQuery] bool includeDeleted = false)
         {
-            var sessions = await _context.GameSessions
+            var query = _context.GameSessions
                 .Include(s => s.User)
                 .Include(s => s.Progresses)
+                .AsQueryable();
+
+            if (!includeDeleted)
+                query = query.Where(s => !s.IsDeleted);
+
+            var sessions = await query
                 .OrderByDescending(s => s.SessionStart)
                 .Select(s => new AGameSession(
                     s.Id,
@@ -42,12 +48,17 @@ namespace CryptoPuzzles.Server.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<AGameSession>> Get(int id)
+        public async Task<ActionResult<AGameSession>> Get(int id, [FromQuery] bool includeDeleted = false)
         {
-            var session = await _context.GameSessions
+            var query = _context.GameSessions
                 .Include(s => s.User)
                 .Include(s => s.Progresses)
-                .Where(s => s.Id == id)
+                .Where(s => s.Id == id);
+
+            if (!includeDeleted)
+                query = query.Where(s => !s.IsDeleted);
+
+            var session = await query
                 .Select(s => new AGameSession(
                     s.Id,
                     s.UserId,
@@ -65,17 +76,23 @@ namespace CryptoPuzzles.Server.Controllers
                     s.DeletedAt
                 ))
                 .FirstOrDefaultAsync();
+
             if (session == null) return NotFound();
             return Ok(session);
         }
 
         [HttpGet("user/{userId}")]
-        public async Task<ActionResult<IEnumerable<AGameSession>>> GetByUser(int userId)
+        public async Task<ActionResult<IEnumerable<AGameSession>>> GetByUser(int userId, [FromQuery] bool includeDeleted = false)
         {
-            var sessions = await _context.GameSessions
+            var query = _context.GameSessions
                 .Include(s => s.User)
                 .Include(s => s.Progresses)
-                .Where(s => s.UserId == userId)
+                .Where(s => s.UserId == userId);
+
+            if (!includeDeleted)
+                query = query.Where(s => !s.IsDeleted);
+
+            var sessions = await query
                 .OrderByDescending(s => s.SessionStart)
                 .Select(s => new AGameSession(
                     s.Id,
@@ -167,12 +184,17 @@ namespace CryptoPuzzles.Server.Controllers
         }
 
         [HttpGet("{id}/progress")]
-        public async Task<ActionResult<IEnumerable<ASessionProgress>>> GetSessionProgress(int id)
+        public async Task<ActionResult<IEnumerable<ASessionProgress>>> GetSessionProgress(int id, [FromQuery] bool includeDeleted = false)
         {
-            var progress = await _context.SessionProgress
+            var query = _context.SessionProgress
                .Include(sp => sp.Puzzle)
                .Include(sp => sp.Session).ThenInclude(s => s.User)
-               .Where(sp => sp.SessionId == id && !sp.IsDeleted)
+               .Where(sp => sp.SessionId == id);
+
+            if (!includeDeleted)
+                query = query.Where(sp => !sp.IsDeleted && !sp.Session.IsDeleted);
+
+            var progress = await query
                .OrderBy(sp => sp.PuzzleOrder)
                .ToListAsync();
 

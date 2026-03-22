@@ -18,21 +18,29 @@ namespace CryptoPuzzles.Server.Controllers
         }
 
         [HttpGet("session/{sessionId}")]
-        public async Task<ActionResult<IEnumerable<ASessionProgress>>> GetBySession(int sessionId)
+        public async Task<ActionResult<IEnumerable<ASessionProgress>>> GetBySession(int sessionId, [FromQuery] bool includeDeleted = false)
         {
-            var results = await (from sp in _context.SessionProgress
-                                 join s in _context.GameSessions on sp.SessionId equals s.Id
-                                 join u in _context.Users on s.UserId equals u.Id
-                                 join p in _context.Puzzles on sp.PuzzleId equals p.Id
-                                 where sp.SessionId == sessionId && !sp.IsDeleted && !s.IsDeleted && !u.IsDeleted && !p.IsDeleted
-                                 orderby sp.PuzzleOrder
-                                 select new
-                                 {
-                                     SessionProgress = sp,
-                                     UserLogin = u.Login,
-                                     Username = u.Username,
-                                     PuzzleTitle = p.Title
-                                 }).ToListAsync();
+            var query = from sp in _context.SessionProgress
+                        join s in _context.GameSessions on sp.SessionId equals s.Id
+                        join u in _context.Users on s.UserId equals u.Id
+                        join p in _context.Puzzles on sp.PuzzleId equals p.Id
+                        where sp.SessionId == sessionId
+                        select new
+                        {
+                            SessionProgress = sp,
+                            UserLogin = u.Login,
+                            Username = u.Username,
+                            PuzzleTitle = p.Title
+                        };
+
+            if (!includeDeleted)
+            {
+                query = query.Where(x => !x.SessionProgress.IsDeleted && !x.SessionProgress.Session.IsDeleted && !x.SessionProgress.Session.User.IsDeleted && !x.SessionProgress.Puzzle.IsDeleted);
+            }
+
+            var results = await query
+                .OrderBy(x => x.SessionProgress.PuzzleOrder)
+                .ToListAsync();
 
             var progress = results.Select(x => new ASessionProgress(
                 x.SessionProgress.Id,
@@ -56,11 +64,18 @@ namespace CryptoPuzzles.Server.Controllers
         }
 
         [HttpGet("user/{userId}/statistics")]
-        public async Task<ActionResult<object>> GetUserPuzzleStatistics(int userId)
+        public async Task<ActionResult<object>> GetUserPuzzleStatistics(int userId, [FromQuery] bool includeDeleted = false)
         {
-            var statistics = await _context.SessionProgress
+            var query = _context.SessionProgress
                 .Include(sp => sp.Session)
-                .Where(sp => sp.Session.UserId == userId && !sp.IsDeleted && !sp.Session.IsDeleted)
+                .Where(sp => sp.Session.UserId == userId);
+
+            if (!includeDeleted)
+            {
+                query = query.Where(sp => !sp.IsDeleted && !sp.Session.IsDeleted);
+            }
+
+            var statistics = await query
                 .GroupBy(sp => 1)
                 .Select(g => new
                 {
@@ -193,20 +208,27 @@ namespace CryptoPuzzles.Server.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ASessionProgress>> Get(int id)
+        public async Task<ActionResult<ASessionProgress>> Get(int id, [FromQuery] bool includeDeleted = false)
         {
-            var result = await (from sp in _context.SessionProgress
-                                join s in _context.GameSessions on sp.SessionId equals s.Id
-                                join u in _context.Users on s.UserId equals u.Id
-                                join p in _context.Puzzles on sp.PuzzleId equals p.Id
-                                where sp.Id == id && !sp.IsDeleted && !s.IsDeleted && !u.IsDeleted && !p.IsDeleted
-                                select new
-                                {
-                                    SessionProgress = sp,
-                                    UserLogin = u.Login,
-                                    Username = u.Username,
-                                    PuzzleTitle = p.Title
-                                }).FirstOrDefaultAsync();
+            var query = from sp in _context.SessionProgress
+                        join s in _context.GameSessions on sp.SessionId equals s.Id
+                        join u in _context.Users on s.UserId equals u.Id
+                        join p in _context.Puzzles on sp.PuzzleId equals p.Id
+                        where sp.Id == id
+                        select new
+                        {
+                            SessionProgress = sp,
+                            UserLogin = u.Login,
+                            Username = u.Username,
+                            PuzzleTitle = p.Title
+                        };
+
+            if (!includeDeleted)
+            {
+                query = query.Where(x => !x.SessionProgress.IsDeleted && !x.SessionProgress.Session.IsDeleted && !x.SessionProgress.Session.User.IsDeleted && !x.SessionProgress.Puzzle.IsDeleted);
+            }
+
+            var result = await query.FirstOrDefaultAsync();
 
             if (result == null)
                 return NotFound();
@@ -236,13 +258,13 @@ namespace CryptoPuzzles.Server.Controllers
         public async Task<ActionResult<IEnumerable<ASessionProgress>>> GetAll(
             [FromQuery] int? userId = null,
             [FromQuery] int? sessionId = null,
-            [FromQuery] bool? solved = null)
+            [FromQuery] bool? solved = null,
+            [FromQuery] bool includeDeleted = false)
         {
             var query = from sp in _context.SessionProgress
                         join s in _context.GameSessions on sp.SessionId equals s.Id
                         join u in _context.Users on s.UserId equals u.Id
                         join p in _context.Puzzles on sp.PuzzleId equals p.Id
-                        where !sp.IsDeleted && !s.IsDeleted && !u.IsDeleted && !p.IsDeleted
                         select new
                         {
                             SessionProgress = sp,
@@ -250,6 +272,11 @@ namespace CryptoPuzzles.Server.Controllers
                             Username = u.Username,
                             PuzzleTitle = p.Title
                         };
+
+            if (!includeDeleted)
+            {
+                query = query.Where(x => !x.SessionProgress.IsDeleted && !x.SessionProgress.Session.IsDeleted && !x.SessionProgress.Session.User.IsDeleted && !x.SessionProgress.Puzzle.IsDeleted);
+            }
 
             if (userId.HasValue)
                 query = query.Where(x => x.SessionProgress.Session.UserId == userId.Value);

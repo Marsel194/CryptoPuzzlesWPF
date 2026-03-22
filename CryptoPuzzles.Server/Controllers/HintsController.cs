@@ -12,6 +12,11 @@ namespace CryptoPuzzles.Server.Controllers
     {
         public HintsController(AppDbContext context) : base(context) { }
 
+        protected override IQueryable<Hint> ApplyIncludes(IQueryable<Hint> query)
+        {
+            return query.Include(h => h.Puzzle);
+        }
+
         protected override AHint MapToDto(Hint entity)
         {
             return new AHint(
@@ -39,66 +44,11 @@ namespace CryptoPuzzles.Server.Controllers
 
         protected override void UpdateEntity(Hint entity, AHintUpdate dto)
         {
-            // Let base implementation copy common properties (including IsDeleted/DeletedAt)
             base.UpdateEntity(entity, dto);
 
-            // Then apply hint-specific fields
             entity.PuzzleId = dto.PuzzleId;
             entity.HintText = dto.HintText;
             entity.HintOrder = dto.HintOrder;
-        }
-
-        [HttpGet]
-        public override async Task<ActionResult<IEnumerable<AHint>>> GetAll([FromQuery] bool includeDeleted = false)
-        {
-            var query = _context.Hints.Include(h => h.Puzzle).AsQueryable();
-            if (!includeDeleted) query = query.Where(h => !h.IsDeleted);
-
-            var hints = await query
-                .OrderBy(h => h.Id)
-                .Select(h => new AHint(
-                    h.Id,
-                    h.PuzzleId,
-                    h.Puzzle.Title,
-                    h.HintText,
-                    h.HintOrder,
-                    h.CreatedAt,
-                    h.IsDeleted,
-                    h.DeletedAt
-                ))
-                .ToListAsync();
-            return Ok(hints);
-        }
-
-        [HttpGet("{id}")]
-        public override async Task<ActionResult<AHint>> Get(int id, [FromQuery] bool includeDeleted = false)
-        {
-            var hint = await _context.Hints
-                .Include(h => h.Puzzle)
-                .Where(h => h.Id == id && (includeDeleted || !h.IsDeleted))
-                .Select(h => new AHint(
-                    h.Id,
-                    h.PuzzleId,
-                    h.Puzzle.Title,
-                    h.HintText,
-                    h.HintOrder,
-                    h.CreatedAt,
-                    h.IsDeleted,
-                    h.DeletedAt
-                ))
-                .FirstOrDefaultAsync();
-            if (hint == null) return NotFound();
-            return Ok(hint);
-        }
-
-        [HttpPost]
-        public override async Task<ActionResult<AHint>> Create(AHintCreate dto)
-        {
-            var entity = MapToEntity(dto);
-            _context.Hints.Add(entity);
-            await _context.SaveChangesAsync();
-            await _context.Entry(entity).Reference(h => h.Puzzle).LoadAsync();
-            return CreatedAtAction(nameof(Get), new { id = entity.Id }, MapToDto(entity));
         }
     }
 }
