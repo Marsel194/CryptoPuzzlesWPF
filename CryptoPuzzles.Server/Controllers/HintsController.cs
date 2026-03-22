@@ -39,6 +39,10 @@ namespace CryptoPuzzles.Server.Controllers
 
         protected override void UpdateEntity(Hint entity, AHintUpdate dto)
         {
+            // Let base implementation copy common properties (including IsDeleted/DeletedAt)
+            base.UpdateEntity(entity, dto);
+
+            // Then apply hint-specific fields
             entity.PuzzleId = dto.PuzzleId;
             entity.HintText = dto.HintText;
             entity.HintOrder = dto.HintOrder;
