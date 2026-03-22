@@ -79,7 +79,14 @@
                             <DataGridTextColumn Header="Текст подсказки" Binding="{Binding HintText, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="300" Foreground="{StaticResource MaterialDesignBody}"/>
                             <DataGridTextColumn Header="Порядок" Binding="{Binding HintOrder, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="80" Foreground="{StaticResource MaterialDesignBody}"/>
                             <DataGridTextColumn Header="Дата создания" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
-                            <DataGridCheckBoxColumn Header="Удален" Binding="{Binding IsDeleted, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="150"/>
+                            <DataGridTemplateColumn Header="Удален" Width="Auto" MinWidth="150">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding IsDeleted, UpdateSourceTrigger=PropertyChanged}"
+                      VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                             <DataGridTextColumn Header="Дата удаления" Binding="{Binding DeletedAt, StringFormat='dd.MM.yyyy HH:mm'}" IsReadOnly="True" Width="Auto" MinWidth="150" Foreground="{StaticResource MaterialDesignBody}"/>
                         </DataGrid.Columns>
                     </DataGrid>

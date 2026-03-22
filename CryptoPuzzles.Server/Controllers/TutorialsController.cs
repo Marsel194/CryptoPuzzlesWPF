@@ -48,11 +48,12 @@ namespace CryptoPuzzles.Server.Controllers
         }
 
         [HttpGet]
-        public override async Task<ActionResult<IEnumerable<ATutorial>>> GetAll()
+        public override async Task<ActionResult<IEnumerable<ATutorial>>> GetAll([FromQuery] bool includeDeleted = false)
         {
-            var tutorials = await _context.Tutorials
-                .Include(t => t.Method)
-                .Where(t => !t.IsDeleted)
+            var query = _context.Tutorials.Include(t => t.Method).AsQueryable();
+            if (!includeDeleted) query = query.Where(t => !t.IsDeleted);
+
+            var tutorials = await query
                 .OrderBy(t => t.Id)
                 .Select(t => new ATutorial(
                     t.Id,
@@ -70,11 +71,11 @@ namespace CryptoPuzzles.Server.Controllers
         }
 
         [HttpGet("{id}")]
-        public override async Task<ActionResult<ATutorial>> Get(int id)
+        public override async Task<ActionResult<ATutorial>> Get(int id, [FromQuery] bool includeDeleted = false)
         {
             var tutorial = await _context.Tutorials
                 .Include(t => t.Method)
-                .Where(t => t.Id == id && !t.IsDeleted)
+                .Where(t => t.Id == id && (includeDeleted || !t.IsDeleted))
                 .Select(t => new ATutorial(
                     t.Id,
                     t.MethodId,

@@ -45,11 +45,12 @@ namespace CryptoPuzzles.Server.Controllers
         }
 
         [HttpGet]
-        public override async Task<ActionResult<IEnumerable<AHint>>> GetAll()
+        public override async Task<ActionResult<IEnumerable<AHint>>> GetAll([FromQuery] bool includeDeleted = false)
         {
-            var hints = await _context.Hints
-                .Include(h => h.Puzzle)
-                .Where(h => !h.IsDeleted)
+            var query = _context.Hints.Include(h => h.Puzzle).AsQueryable();
+            if (!includeDeleted) query = query.Where(h => !h.IsDeleted);
+
+            var hints = await query
                 .OrderBy(h => h.Id)
                 .Select(h => new AHint(
                     h.Id,
@@ -66,11 +67,11 @@ namespace CryptoPuzzles.Server.Controllers
         }
 
         [HttpGet("{id}")]
-        public override async Task<ActionResult<AHint>> Get(int id)
+        public override async Task<ActionResult<AHint>> Get(int id, [FromQuery] bool includeDeleted = false)
         {
             var hint = await _context.Hints
                 .Include(h => h.Puzzle)
-                .Where(h => h.Id == id && !h.IsDeleted)
+                .Where(h => h.Id == id && (includeDeleted || !h.IsDeleted))
                 .Select(h => new AHint(
                     h.Id,
                     h.PuzzleId,

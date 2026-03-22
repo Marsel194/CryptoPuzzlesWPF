@@ -43,19 +43,23 @@ namespace CryptoPuzzles.Server.Controllers
         }
 
         [HttpGet]
-        public virtual async Task<ActionResult<IEnumerable<TDto>>> GetAll()
+        public virtual async Task<ActionResult<IEnumerable<TDto>>> GetAll([FromQuery] bool includeDeleted = false)
         {
-            var entities = await _context.Set<TEntity>()
+            var query = _context.Set<TEntity>().AsQueryable();
+            if (!includeDeleted)
+                query = query.Where(e => !e.IsDeleted);
+
+            var entities = await query
                 .OrderBy(e => e.Id)
                 .ToListAsync();
             return Ok(entities.Select(MapToDto));
         }
 
         [HttpGet("{id}")]
-        public virtual async Task<ActionResult<TDto>> Get(int id)
+        public virtual async Task<ActionResult<TDto>> Get(int id, [FromQuery] bool includeDeleted = false)
         {
             var entity = await _context.Set<TEntity>()
-                .FirstOrDefaultAsync(e => e.Id == id);
+                .FirstOrDefaultAsync(e => e.Id == id && (includeDeleted || !e.IsDeleted));
             if (entity == null)
                 return NotFound();
             return Ok(MapToDto(entity));
