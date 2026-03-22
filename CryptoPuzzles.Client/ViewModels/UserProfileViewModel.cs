@@ -1,9 +1,9 @@
-﻿// UserProfileViewModel.cs
-using CryptoPuzzles.Client.Services;
+﻿using CryptoPuzzles.Client.Services;
 using CryptoPuzzles.Client.Services.ApiService;
 using CryptoPuzzles.Client.ViewModels.Base;
 using CryptoPuzzles.Shared;
 using Microsoft.Extensions.DependencyInjection;
+using System.Windows;
 using System.Windows.Input;
 
 namespace CryptoPuzzles.Client.ViewModels
@@ -197,8 +197,8 @@ namespace CryptoPuzzles.Client.ViewModels
             catch (Exception ex) when (ex.Message.Contains("401"))
             {
                 _userSession.ClearUser();
-                var navigation = App.Services.GetRequiredService<NavigationService>();
-                await navigation.NavigateToAsync<LoginViewModel>();
+                await Application.Current.Dispatcher.InvokeAsync(() => _closeAction?.Invoke());
+                throw;
             }
             catch (Exception ex)
             {
@@ -251,8 +251,8 @@ namespace CryptoPuzzles.Client.ViewModels
             catch (Exception ex) when (ex.Message.Contains("401"))
             {
                 _userSession.ClearUser();
-                var navigation = App.Services.GetRequiredService<NavigationService>();
-                await navigation.NavigateToAsync<LoginViewModel>();
+                await Application.Current.Dispatcher.InvokeAsync(() => _closeAction?.Invoke());
+                throw;
             }
             catch (Exception ex)
             {
@@ -340,8 +340,8 @@ namespace CryptoPuzzles.Client.ViewModels
             catch (Exception ex) when (ex.Message.Contains("401"))
             {
                 _userSession.ClearUser();
-                var navigation = App.Services.GetRequiredService<NavigationService>();
-                await navigation.NavigateToAsync<LoginViewModel>();
+                await Application.Current.Dispatcher.InvokeAsync(() => _closeAction?.Invoke());
+                throw;
             }
             catch (Exception ex)
             {

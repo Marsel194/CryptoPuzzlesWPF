@@ -1,6 +1,4 @@
-﻿// TrainingViewModel.cs (исправленный, добавлено свойство IsLoading)
-
-using CryptoPuzzles.Client.Helpers;
+﻿using CryptoPuzzles.Client.Helpers;
 using CryptoPuzzles.Client.Services;
 using CryptoPuzzles.Client.Services.ApiService;
 using CryptoPuzzles.Client.ViewModels.Base;
@@ -24,6 +22,7 @@ namespace CryptoPuzzles.Client.ViewModels
         private readonly Action _goBack;
         private readonly int _userId;
         private readonly DispatcherTimer _hintTimer;
+        private Task? _initializationTask;
 
         private ObservableCollection<ATutorial> _tutorials = [];
         private ObservableCollection<APuzzle> _puzzles = [];
@@ -90,8 +89,10 @@ namespace CryptoPuzzles.Client.ViewModels
             StartTrainingPracticeCommand = new AsyncRelayCommand(async _ => await StartTrainingPracticeAsync(), _ => Puzzles.Any());
             GoToTheory = new AsyncRelayCommand(async _ => await StartTheory());
 
-            LoadDataAsync().SafeFireAndForget();
+            _initializationTask = LoadDataAsync();
         }
+
+        public Task EnsureInitializedAsync() => _initializationTask ?? Task.CompletedTask;
 
         private async Task StartTheory()
         {
@@ -413,11 +414,9 @@ namespace CryptoPuzzles.Client.ViewModels
                     UpdateNavigationCommands();
                 });
             }
-            catch (Exception ex) when (ex.Message.Contains("401"))
+            catch (Exception ex) when (ex is UnauthorizedAccessException)
             {
-                _userSession.ClearUser();
-                var navigation = App.Services.GetRequiredService<NavigationService>();
-                await navigation.NavigateToAsync<LoginViewModel>();
+                throw;
             }
             catch (Exception ex)
             {
@@ -480,9 +479,14 @@ namespace CryptoPuzzles.Client.ViewModels
 
                 UpdateButtonVisibility();
             }
+            catch (Exception ex) when (ex is UnauthorizedAccessException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 await DialogService.ShowError($"Не удалось создать сессию: {ex.Message}");
+                throw;
             }
         }
 
@@ -501,6 +505,10 @@ namespace CryptoPuzzles.Client.ViewModels
                     DeletedAt: null
                 );
                 await _sessionApi.UpdateAsync(_currentSessionId.Value, update);
+            }
+            catch (Exception ex) when (ex is UnauthorizedAccessException)
+            {
+                throw;
             }
             catch { }
         }
@@ -555,6 +563,10 @@ namespace CryptoPuzzles.Client.ViewModels
                     ResetHintTimer();
                     AsyncRelayCommand.RaiseCanExecuteChanged();
                 });
+            }
+            catch (Exception ex) when (ex is UnauthorizedAccessException)
+            {
+                throw;
             }
             catch (Exception)
             {

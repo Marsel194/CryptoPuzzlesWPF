@@ -101,6 +101,7 @@ namespace CryptoPuzzles.Client.ViewModels
                 if (response == null)
                 {
                     Debug.WriteLine("Login response is NULL");
+                    await DialogService.ShowError("Сервер вернул пустой ответ при попытке входа.");
                     return;
                 }
 
@@ -123,6 +124,7 @@ namespace CryptoPuzzles.Client.ViewModels
                     if (admin == null)
                     {
                         Debug.WriteLine("Admin not found");
+                        await DialogService.ShowError("Не удалось получить данные администратора.");
                         return;
                     }
 

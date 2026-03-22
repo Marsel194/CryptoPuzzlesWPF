@@ -1,7 +1,5 @@
-﻿// BaseApiService.cs (добавляем возможность распознавать 401 по коду статуса)
-using CryptoPuzzles.Client.Services;
+﻿using CryptoPuzzles.Client.Services;
 using CryptoPuzzles.Shared;
-using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -20,20 +18,23 @@ namespace CryptoPuzzles.Client.Services.ApiService.Base
             _userSessionService = userSessionService;
         }
 
-        protected void SetAuthHeader(HttpRequestMessage request)
+        private void SetAuthHeader(HttpRequestMessage request)
         {
             var token = _userSessionService.Token;
-            if (request.Headers.Authorization != null)
-                return;
-
-            if (_httpClient.DefaultRequestHeaders.Authorization != null)
-                return;
-
             if (!string.IsNullOrEmpty(token))
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            {
+                if (token.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Substring(7));
+                else
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+            else
+            {
+                request.Headers.Authorization = null;
+            }
         }
 
-        protected async Task<T> SendAsync<T>(HttpRequestMessage request)
+        private async Task<T> SendCoreAsync<T>(HttpRequestMessage request)
         {
             SetAuthHeader(request);
 
@@ -55,7 +56,9 @@ namespace CryptoPuzzles.Client.Services.ApiService.Base
                 }
 
                 if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                    throw new Exception("Unauthorized (401)");
+                {
+                    throw new UnauthorizedAccessException("Unauthorized (401)");
+                }
 
                 if (string.IsNullOrWhiteSpace(content))
                     throw new Exception($"Ошибка сервера: {response.StatusCode}");
@@ -70,23 +73,25 @@ namespace CryptoPuzzles.Client.Services.ApiService.Base
                     throw new Exception($"Непредвиденная ошибка: {content}");
                 }
             }
-            catch (HttpRequestException ex)
+            catch (HttpRequestException)
             {
                 throw new Exception("Не удалось связаться с сервером. Проверьте подключение.");
             }
-            catch (TaskCanceledException ex)
+            catch (TaskCanceledException)
             {
                 throw new Exception("Время ожидания ответа от сервера истекло.");
             }
-            catch (Exception ex)
-            {
-                throw;
-            }
+        }
+
+        protected async Task<T> SendAsync<T>(HttpRequestMessage request)
+        {
+            return await SendCoreAsync<T>(request);
         }
 
         protected async Task<T> SendAsync<T>(Func<Task<HttpResponseMessage>> action)
         {
-            SetAuthHeaderToDefault();
+            using var request = new HttpRequestMessage();
+            SetAuthHeader(request);
 
             try
             {
@@ -106,7 +111,9 @@ namespace CryptoPuzzles.Client.Services.ApiService.Base
                 }
 
                 if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                    throw new Exception("Unauthorized (401)");
+                {
+                    throw new UnauthorizedAccessException("Unauthorized (401)");
+                }
 
                 if (string.IsNullOrWhiteSpace(content))
                     throw new Exception($"Ошибка сервера: {response.StatusCode}");
@@ -121,27 +128,14 @@ namespace CryptoPuzzles.Client.Services.ApiService.Base
                     throw new Exception($"Непредвиденная ошибка: {content}");
                 }
             }
-            catch (HttpRequestException ex)
+            catch (HttpRequestException)
             {
                 throw new Exception("Не удалось связаться с сервером. Проверьте подключение.");
             }
-            catch (TaskCanceledException ex)
+            catch (TaskCanceledException)
             {
                 throw new Exception("Время ожидания ответа от сервера истекло.");
             }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-
-        private void SetAuthHeaderToDefault()
-        {
-            var token = _userSessionService.Token;
-            if (!string.IsNullOrEmpty(token))
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            else
-                _httpClient.DefaultRequestHeaders.Authorization = null;
         }
     }
 }

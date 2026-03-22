@@ -1,5 +1,4 @@
-﻿// PracticeViewModel.cs
-using CryptoPuzzles.Client.Helpers;
+﻿using CryptoPuzzles.Client.Helpers;
 using CryptoPuzzles.Client.Services;
 using CryptoPuzzles.Client.Services.ApiService;
 using CryptoPuzzles.Client.ViewModels.Base;
@@ -27,6 +26,7 @@ namespace CryptoPuzzles.Client.ViewModels
         private readonly HashSet<int> _seenPuzzleIds;
         private bool _isSelectingInProgress;
         private static readonly Random _random = new();
+        private Task? _initializationTask;
 
         private ObservableCollection<ADifficulty>? _difficulties;
         private ADifficulty? _selectedDifficulty;
@@ -91,8 +91,10 @@ namespace CryptoPuzzles.Client.ViewModels
             FinishModuleCommand = new AsyncRelayCommand(async _ => await FinishModuleAsync());
             NextRandomQuestionCommand = new AsyncRelayCommand(async _ => await LoadRandomPuzzleAsync());
 
-            LoadDifficultiesAsync().SafeFireAndForget();
+            _initializationTask = LoadDifficultiesAsync();
         }
+
+        public Task EnsureInitializedAsync() => _initializationTask ?? Task.CompletedTask;
 
         public ObservableCollection<ADifficulty>? Difficulties
         {
@@ -213,15 +215,14 @@ namespace CryptoPuzzles.Client.ViewModels
                     Difficulties = new ObservableCollection<ADifficulty>(difficulties.Where(d => !d.IsDeleted));
                 });
             }
-            catch (Exception ex) when (ex.Message.Contains("401"))
+            catch (Exception ex) when (ex is UnauthorizedAccessException)
             {
-                _userSession.ClearUser();
-                var navigation = App.Services.GetRequiredService<NavigationService>();
-                await navigation.NavigateToAsync<LoginViewModel>();
+                throw;
             }
             catch (Exception ex)
             {
                 await DialogService.ShowError($"Ошибка загрузки сложностей: {ex.Message}");
+                throw;
             }
         }
 
@@ -231,6 +232,10 @@ namespace CryptoPuzzles.Client.ViewModels
             {
                 var solvedProgress = await _progressApi.GetAllAsync(userId: _userId, solved: true);
                 _solvedPuzzleIds = new HashSet<int>(solvedProgress.Select(p => p.PuzzleId));
+            }
+            catch (Exception ex) when (ex is UnauthorizedAccessException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -311,6 +316,10 @@ namespace CryptoPuzzles.Client.ViewModels
                     _puzzles = new ObservableCollection<APuzzle>(puzzles);
                 });
             }
+            catch (Exception ex) when (ex is UnauthorizedAccessException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 await DialogService.ShowError($"Ошибка загрузки заданий: {ex.Message}");
@@ -375,6 +384,10 @@ namespace CryptoPuzzles.Client.ViewModels
 
                 MoveToNextPuzzle();
             }
+            catch (Exception ex) when (ex is UnauthorizedAccessException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 await DialogService.ShowError($"Не удалось начать практику: {ex.Message}");
@@ -434,6 +447,10 @@ namespace CryptoPuzzles.Client.ViewModels
                     ResetHintTimer();
                     AsyncRelayCommand.RaiseCanExecuteChanged();
                 });
+            }
+            catch (Exception ex) when (ex is UnauthorizedAccessException)
+            {
+                throw;
             }
             catch
             {

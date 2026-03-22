@@ -1,5 +1,4 @@
-﻿// UserViewModel.cs
-using CryptoPuzzles.Client;
+﻿using CryptoPuzzles.Client;
 using CryptoPuzzles.Client.Services;
 using CryptoPuzzles.Client.Services.ApiService;
 using CryptoPuzzles.Client.ViewModels.Base;
@@ -131,10 +130,11 @@ namespace CryptoPuzzles.Client.ViewModels
 
                     await statsTask;
                 }
-                catch (Exception ex) when (ex.Message.Contains("401"))
+                catch (UnauthorizedAccessException)
                 {
                     _userSessionService.ClearUser();
                     await _navigationService.NavigateToAsync<LoginViewModel>();
+                    return;
                 }
                 catch (Exception ex)
                 {
@@ -166,10 +166,11 @@ namespace CryptoPuzzles.Client.ViewModels
                         .GroupBy(p => p.PuzzleId)
                         .Count();
                 }
-                catch (Exception ex) when (ex.Message.Contains("401"))
+                catch (UnauthorizedAccessException)
                 {
                     _userSessionService.ClearUser();
                     await _navigationService.NavigateToAsync<LoginViewModel>();
+                    return;
                 }
                 catch (Exception ex)
                 {
@@ -207,21 +208,20 @@ namespace CryptoPuzzles.Client.ViewModels
                     var profileVM = ActivatorUtilities.CreateInstance<UserProfileViewModel>(
                         _serviceProvider,
                         CurrentUserId,
-                        (Action)(async () =>
+                        (Action)(() =>
                         {
                             CurrentSection = null;
-                            await LoadUserStatsAsync();
-                            await LoadUserDataAsync();
                         })
                     );
 
                     CurrentSection = profileVM;
                     await profileVM.LoadUserDataAsync();
                 }
-                catch (Exception ex) when (ex.Message.Contains("401"))
+                catch (UnauthorizedAccessException)
                 {
                     _userSessionService.ClearUser();
                     await _navigationService.NavigateToAsync<LoginViewModel>();
+                    return;
                 }
                 catch (Exception ex)
                 {
@@ -251,12 +251,14 @@ namespace CryptoPuzzles.Client.ViewModels
                             await LoadUserStatsAsync();
                         })
                     );
+                    await trainingVM.EnsureInitializedAsync();
                     CurrentSection = trainingVM;
                 }
-                catch (Exception ex) when (ex.Message.Contains("401"))
+                catch (UnauthorizedAccessException)
                 {
                     _userSessionService.ClearUser();
                     await _navigationService.NavigateToAsync<LoginViewModel>();
+                    return;
                 }
                 catch (Exception ex)
                 {
@@ -280,12 +282,14 @@ namespace CryptoPuzzles.Client.ViewModels
                             await LoadUserStatsAsync();
                         })
                     );
+                    await practiceVM.EnsureInitializedAsync();
                     CurrentSection = practiceVM;
                 }
-                catch (Exception ex) when (ex.Message.Contains("401"))
+                catch (UnauthorizedAccessException)
                 {
                     _userSessionService.ClearUser();
                     await _navigationService.NavigateToAsync<LoginViewModel>();
+                    return;
                 }
                 catch (Exception ex)
                 {
