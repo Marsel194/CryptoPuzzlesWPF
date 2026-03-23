@@ -25,7 +25,7 @@
                 <TextBox Grid.Column="0" Text="{Binding NewItem.DifficultyName, UpdateSourceTrigger=PropertyChanged}" 
                          materialDesign:HintAssist.Hint="Название" Margin="4" Foreground="{StaticResource MaterialDesignBody}"/>
                 <Button Grid.Column="1" Command="{Binding AddCommand}" Content="Добавить" 
-                        Style="{StaticResource PrimaryButton}" Margin="4,0" Foreground="{StaticResource MaterialDesignBody}"/>
+                        Style="{StaticResource PrimaryButton}" Margin="4,0" Foreground="White"/>
             </Grid>
         </controls:EntityListControl.AddPanelContent>
 

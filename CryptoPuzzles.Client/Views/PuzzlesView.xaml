@@ -54,7 +54,7 @@
                          Foreground="{StaticResource MaterialDesignBody}"/>
                 <Button Grid.Column="8" Command="{Binding AddCommand}" Content="Добавить" 
                         Style="{StaticResource PrimaryButton}" Margin="4,0"
-                        Foreground="{StaticResource MaterialDesignBody}"/>
+                        Foreground="White"/>
             </Grid>
         </controls:EntityListControl.AddPanelContent>
 

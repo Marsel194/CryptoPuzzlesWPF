@@ -55,7 +55,7 @@
             <Button Grid.Column="2" Command="{Binding ClearFilterCommand, ElementName=ControlRoot}"
                     Content="Очистить" Style="{StaticResource MaterialDesignFlatButton}" Margin="8,0,0,0"/>
             <Button Grid.Column="3" Command="{Binding ExportToExcelCommand, ElementName=ControlRoot}"
-                    Content="Экспорт в Excel" Style="{StaticResource PrimaryButton}" Margin="8,0,0,0" MinWidth="140" Padding="8,0"
+                    Content="Экспорт в Excel" Style="{StaticResource PrimaryButton}" Margin="8,0,8,0" MinWidth="140" Padding="8,0"
                     Foreground="White"/>
         </Grid>
 
@@ -66,7 +66,7 @@
         <Button Grid.Row="4" HorizontalAlignment="Right" VerticalAlignment="Center"
                 Command="{Binding SaveCommand, ElementName=ControlRoot}"
                 Content="Сохранить изменения" Style="{StaticResource PrimaryButton}"
-                Margin="0,16,0,0" MinWidth="200" Padding="16,0"
+                Margin="0,16,8,8" MinWidth="200" Padding="16,0"
                 Visibility="{Binding IsSaveButtonVisible, ElementName=ControlRoot, Converter={StaticResource BoolToVis}}"
                 Foreground="White"/>
     </Grid>
